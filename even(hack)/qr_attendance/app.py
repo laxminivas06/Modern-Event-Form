@@ -49,7 +49,6 @@ import uuid
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this to a secure secret key
 
-# Initialize extensions
 
 mail = Mail(app)
 
@@ -195,44 +194,6 @@ def initialize_files():
         }
         with open(HOMEPAGE_CONFIG_FILE, 'w') as f:
             json.dump(default_homepage_config, f, indent=4)
-
-@app.route('/admin/receipts')
-def view_receipts():
-    """View receipts with filtering"""
-    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
-        return redirect(url_for('admin_login'))
-    
-    all_receipts = []
-    
-    try:
-        with open(DATABASE_FILE, 'r') as f:
-            data = json.load(f)
-            
-        for individual in data.get('individuals', []):
-            if individual.get('payment_method') == 'cash' and individual.get('cash_receipt_photo'):
-                all_receipts.append({
-                    'individual_id': individual['individual_id'],
-                    'name': individual['name'],
-                    'email': individual['email'],
-                    'receipt_id': individual.get('receipt_number', 'N/A'),
-                    'receipt_file': individual['cash_receipt_photo'],
-                    'receipt_date': individual.get('payment_date', 'N/A'),
-                    'amount': individual.get('registration_fee', 'N/A'),
-                    'year': individual.get('year', 'N/A'),
-                    'branch': individual.get('branch', 'N/A'),
-                    'contact': individual.get('contact_number', 'N/A'),
-                    'college': individual.get('college', 'N/A'),
-                    'receiver_name': individual.get('cash_receiver_name', 'N/A'),
-                    'receipt_verified': individual.get('payment_verified', False)
-                })
-                
-        all_receipts.sort(key=lambda x: x['receipt_date'], reverse=True)
-                
-    except Exception as e:
-        print(f"Error reading receipts: {str(e)}")
-        flash('Error loading receipts', 'error')
-    
-    return render_template('view_receipts.html', receipts=all_receipts, filter_type='all')
 
 @app.route('/admin/payment-screenshots')
 def view_payment_screenshots():
@@ -419,23 +380,57 @@ def view_verified_receipts():
                 individual.get('cash_receipt_photo') and 
                 individual.get('payment_verified')):
                 
-                verified_receipts.append({
-                    'individual_id': individual['individual_id'],
-                    'name': individual['name'],
-                    'email': individual['email'],
-                    'receipt_id': individual.get('receipt_number', 'N/A'),
-                    'receipt_file': individual['cash_receipt_photo'],
-                    'receipt_date': individual.get('payment_date', 'N/A'),
-                    'amount': individual.get('registration_fee', 'N/A'),
-                    'year': individual.get('year', 'N/A'),
-                    'branch': individual.get('branch', 'N/A'),
-                    'contact': individual.get('contact_number', 'N/A'),
-                    'college': individual.get('college', 'N/A'),
-                    'receiver_name': individual.get('cash_receiver_name', 'N/A'),
-                    'receipt_verified': individual.get('payment_verified', False)
-                })
+                # Build the correct file path for receipts
+                receipt_filename = individual['cash_receipt_photo']
                 
-        verified_receipts.sort(key=lambda x: x['receipt_date'], reverse=True)
+                # Check if file exists in any of the receipt locations
+                file_found = False
+                receipt_file_path = None
+                
+                # Check uploads folder first
+                uploads_path = os.path.join(app.config['UPLOAD_FOLDER'], receipt_filename)
+                if os.path.exists(uploads_path):
+                    file_found = True
+                    receipt_file_path = receipt_filename
+                else:
+                    # Check receipts folder and subfolders
+                    receipts_base_dir = os.path.join('static', 'receipts')
+                    if os.path.exists(receipts_base_dir):
+                        # Check root receipts folder
+                        root_receipt_path = os.path.join(receipts_base_dir, receipt_filename)
+                        if os.path.exists(root_receipt_path):
+                            file_found = True
+                            receipt_file_path = root_receipt_path
+                        else:
+                            # Check receiver subfolders
+                            for receiver_folder in os.listdir(receipts_base_dir):
+                                receiver_path = os.path.join(receipts_base_dir, receiver_folder, receipt_filename)
+                                if os.path.exists(receiver_path):
+                                    file_found = True
+                                    receipt_file_path = receiver_path
+                                    break
+                
+                if file_found and receipt_file_path:
+                    verified_receipts.append({
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'receipt_id': individual.get('receipt_number', 'N/A'),
+                        'receipt_file': receipt_file_path,  # Use the correct path
+                        'receipt_date': individual.get('payment_date', 'N/A'),
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'contact': individual.get('contact_number', 'N/A'),
+                        'college': individual.get('college', 'N/A'),
+                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                        'receipt_verified': True  # Always True for verified receipts
+                    })
+                else:
+                    print(f"⚠️ Receipt file not found: {receipt_filename}")
+                
+        # Sort by receiver name first, then by receipt date
+        verified_receipts.sort(key=lambda x: (x['receiver_name'], x['receipt_date']), reverse=False)
                 
     except Exception as e:
         print(f"Error reading verified receipts: {str(e)}")
@@ -460,30 +455,63 @@ def view_pending_receipts():
                 individual.get('cash_receipt_photo') and 
                 not individual.get('payment_verified')):
                 
-                pending_receipts.append({
-                    'individual_id': individual['individual_id'],
-                    'name': individual['name'],
-                    'email': individual['email'],
-                    'receipt_id': individual.get('receipt_number', 'N/A'),
-                    'receipt_file': individual['cash_receipt_photo'],
-                    'receipt_date': individual.get('payment_date', 'N/A'),
-                    'amount': individual.get('registration_fee', 'N/A'),
-                    'year': individual.get('year', 'N/A'),
-                    'branch': individual.get('branch', 'N/A'),
-                    'contact': individual.get('contact_number', 'N/A'),
-                    'college': individual.get('college', 'N/A'),
-                    'receiver_name': individual.get('cash_receiver_name', 'N/A'),
-                    'receipt_verified': individual.get('payment_verified', False)
-                })
+                # Build the correct file path for receipts
+                receipt_filename = individual['cash_receipt_photo']
                 
-        pending_receipts.sort(key=lambda x: x['receipt_date'], reverse=True)
+                # Check if file exists in any of the receipt locations
+                file_found = False
+                receipt_file_path = None
+                
+                # Check uploads folder first
+                uploads_path = os.path.join(app.config['UPLOAD_FOLDER'], receipt_filename)
+                if os.path.exists(uploads_path):
+                    file_found = True
+                    receipt_file_path = receipt_filename
+                else:
+                    # Check receipts folder and subfolders
+                    receipts_base_dir = os.path.join('static', 'receipts')
+                    if os.path.exists(receipts_base_dir):
+                        # Check root receipts folder
+                        root_receipt_path = os.path.join(receipts_base_dir, receipt_filename)
+                        if os.path.exists(root_receipt_path):
+                            file_found = True
+                            receipt_file_path = root_receipt_path
+                        else:
+                            # Check receiver subfolders
+                            for receiver_folder in os.listdir(receipts_base_dir):
+                                receiver_path = os.path.join(receipts_base_dir, receiver_folder, receipt_filename)
+                                if os.path.exists(receiver_path):
+                                    file_found = True
+                                    receipt_file_path = receiver_path
+                                    break
+                
+                if file_found and receipt_file_path:
+                    pending_receipts.append({
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'receipt_id': individual.get('receipt_number', 'N/A'),
+                        'receipt_file': receipt_file_path,  # Use the correct path
+                        'receipt_date': individual.get('payment_date', 'N/A'),
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'contact': individual.get('contact_number', 'N/A'),
+                        'college': individual.get('college', 'N/A'),
+                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                        'receipt_verified': individual.get('payment_verified', False)
+                    })
+                else:
+                    print(f"⚠️ Receipt file not found: {receipt_filename}")
+                
+        # Sort by receiver name
+        pending_receipts.sort(key=lambda x: x['receiver_name'])
                 
     except Exception as e:
         print(f"Error reading pending receipts: {str(e)}")
         flash('Error loading pending receipts', 'error')
     
     return render_template('view_receipts.html', receipts=pending_receipts, filter_type='pending')
-
 
 @app.route('/update_receipt_status/<individual_id>', methods=['POST'])
 def update_receipt_status(individual_id):
@@ -868,37 +896,206 @@ Smart N Light Innovations Team
     threading.Thread(target=send_email).start()
     return True
    
+@app.route('/admin/receipts')
+def view_receipts():
+    """View receipts organized by receiver"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    receivers = {}
+    
+    try:
+        # Define receiver information
+        receiver_info = {
+            
+            'Laxmi_Nivas': {'display_name': 'Laxmi Nivas', 'folder_name': 'Laxmi_Nivas'},
+            
+            'Govardhini_Reddy': {'display_name': 'Govardhini Reddy', 'folder_name': 'Govardhini_Reddy'},
+            'Sheshank': {'display_name': 'Sheshank', 'folder_name': 'Sheshank'},
+            'Raghava': {'display_name': 'Raghava', 'folder_name': 'Raghava'}
+        }
+        
+        # Scan receipts directory for each receiver
+        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+        
+        for receiver_key, info in receiver_info.items():
+            receiver_folder = info['folder_name']
+            receiver_dir = os.path.join(receipts_base_dir, receiver_folder)
+            
+            receipt_count = 0
+            latest_receipt = None
+            
+            if os.path.exists(receiver_dir):
+                # Count PDF files in the receiver's directory
+                pdf_files = [f for f in os.listdir(receiver_dir) if f.endswith('.pdf')]
+                receipt_count = len(pdf_files)
+                
+                # Get the latest receipt by modification time
+                if pdf_files:
+                    pdf_files_with_time = []
+                    for pdf_file in pdf_files:
+                        file_path = os.path.join(receiver_dir, pdf_file)
+                        mod_time = os.path.getmtime(file_path)
+                        pdf_files_with_time.append((pdf_file, mod_time))
+                    
+                    # Sort by modification time (newest first)
+                    pdf_files_with_time.sort(key=lambda x: x[1], reverse=True)
+                    latest_receipt = pdf_files_with_time[0][0] if pdf_files_with_time else None
+            
+            # Also count receipts from database for this receiver
+            with open(DATABASE_FILE, 'r') as f:
+                data = json.load(f)
+                
+            db_receipt_count = 0
+            for individual in data.get('individuals', []):
+                if (individual.get('payment_method') == 'cash' and 
+                    individual.get('cash_receiver_name') == info['display_name'].split(' (')[0] and
+                    individual.get('cash_receipt_photo')):
+                    db_receipt_count += 1
+            
+            # Use the higher count between file system and database
+            total_receipts = max(receipt_count, db_receipt_count)
+            
+            receivers[receiver_key] = {
+                'display_name': info['display_name'],
+                'folder_name': info['folder_name'],
+                'receipt_count': total_receipts,
+                'latest_receipt': latest_receipt
+            }
+        
+        # Sort receivers by receipt count (highest first)
+        receivers = dict(sorted(receivers.items(), key=lambda x: x[1]['receipt_count'], reverse=True))
+                
+    except Exception as e:
+        print(f"Error reading receipts: {str(e)}")
+        flash('Error loading receipts', 'error')
+        receivers = {}
+    
+    return render_template('view_receipts.html', receivers=receivers)
+
 @app.route('/admin/receipts/<receiver_name>')
 def view_receiver_receipts(receiver_name):
     """View all receipts for a specific receiver"""
     if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
         return redirect(url_for('admin_login'))
     
-    receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
-    receiver_dir = os.path.join(receipts_base_dir, receiver_name)
-    
     receipts = []
+    
     try:
+        # Map folder names to display names
+        receiver_display_names = {
+            
+            'Laxmi_Nivas': 'Laxmi Nivas',
+            
+            'Govardhini_Reddy': 'Govardhini Reddy',
+            'Sheshank': 'Sheshank',
+            'Raghava': 'Raghava'
+            
+        }
+        
+        display_name = receiver_display_names.get(receiver_name, receiver_name.replace('_', ' '))
+        
+        # Get receipts from file system
+        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+        receiver_dir = os.path.join(receipts_base_dir, receiver_name)
+        
         if os.path.exists(receiver_dir):
             for filename in os.listdir(receiver_dir):
                 if filename.endswith('.pdf'):
+                    file_path = os.path.join(receiver_dir, filename)
+                    stat_info = os.stat(file_path)
+                    
                     receipt_info = {
                         'filename': filename,
                         'filepath': f"/static/receipts/{receiver_name}/{filename}",
                         'receipt_no': filename.replace('receipt_', '').replace('.pdf', ''),
-                        'size': os.path.getsize(os.path.join(receiver_dir, filename))
+                        'size': stat_info.st_size,
+                        'modified_time': datetime.fromtimestamp(stat_info.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
+                        'type': 'file_system'
                     }
                     receipts.append(receipt_info)
+        
+        # Also get receipts from database for this receiver
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
             
-            # Sort by receipt number
-            receipts.sort(key=lambda x: x['receipt_no'], reverse=True)
+        for individual in data.get('individuals', []):
+            if (individual.get('payment_method') == 'cash' and 
+                individual.get('cash_receiver_name') == display_name.split(' (')[0] and
+                individual.get('cash_receipt_photo')):
+                
+                receipt_filename = individual['cash_receipt_photo']
+                
+                # Check if this receipt already exists in our list
+                existing_receipt = next((r for r in receipts if r['filename'] == receipt_filename), None)
+                
+                if not existing_receipt:
+                    receipt_info = {
+                        'filename': receipt_filename,
+                        'filepath': f"/view_document/{receipt_filename}",
+                        'receipt_no': individual.get('receipt_number', 'N/A'),
+                        'size': 'N/A',
+                        'modified_time': individual.get('payment_date', 'N/A'),
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'type': 'database'
+                    }
+                    receipts.append(receipt_info)
+        
+        # Sort by receipt number (extract numeric part for sorting)
+        def get_receipt_number(receipt):
+            receipt_no = receipt['receipt_no']
+            # Extract numeric part from receipt number
+            numbers = ''.join(filter(str.isdigit, receipt_no))
+            return int(numbers) if numbers else 0
+        
+        receipts.sort(key=get_receipt_number, reverse=True)
+        
     except Exception as e:
         print(f"Error reading receiver receipts: {str(e)}")
+        flash('Error loading receipts', 'error')
     
     return render_template('receiver_receipts.html', 
-                         receiver_name=receiver_name.replace('_', ' '),
+                         receiver_name=display_name,
                          receipts=receipts)
 
+@app.route('/view_receipt_file/<path:filename>')
+def view_receipt_file(filename):
+    """Serve receipt files"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Security check
+        filename = secure_filename(filename)
+        if not filename:
+            return "Invalid filename", 400
+        
+        # Build file path
+        file_path = os.path.join(app.root_path, 'static', 'receipts', filename)
+        
+        # Check if file exists directly in receipts folder
+        if not os.path.exists(file_path):
+            # Check in receiver subfolders
+            receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+            for receiver_folder in os.listdir(receipts_base_dir):
+                receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
+                if os.path.exists(receiver_path):
+                    file_path = receiver_path
+                    break
+            else:
+                return "File not found", 404
+        
+        return send_file(file_path, as_attachment=False)
+    
+    except Exception as e:
+        print(f"Error serving receipt file: {str(e)}")
+        return f"Server error: {str(e)}", 500
+    
 @app.route('/admin/excel-upload')
 def admin_excel_upload():
     """Admin page for Excel upload"""
@@ -1344,6 +1541,28 @@ def get_member_contact(team_id, member_id):
         member = next((m for m in team['members'] if m['id'] == member_id), None)
         return member.get('contact', 'Unknown') if member else 'Unknown'
     return 'Unknown'
+
+def find_receipt_file(filename):
+    """Find receipt file in various locations"""
+    # Check uploads folder
+    uploads_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(uploads_path):
+        return uploads_path
+    
+    # Check receipts folder
+    receipts_path = os.path.join(app.root_path, 'static', 'receipts', filename)
+    if os.path.exists(receipts_path):
+        return receipts_path
+    
+    # Check receiver subfolders
+    receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+    if os.path.exists(receipts_base_dir):
+        for receiver_folder in os.listdir(receipts_base_dir):
+            receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
+            if os.path.exists(receiver_path):
+                return receiver_path
+    
+    return None
 
 def find_team_by_id(team_id):
     """Find and return a team dict by its ID from the database."""
@@ -2767,7 +2986,7 @@ def get_participant_documents(participant_id):
 
 @app.route('/view_document/<filename>')
 def view_document(filename):
-    if not session.get('admin_logged_in'):
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
         return "Unauthorized", 401
     
     try:
@@ -2776,10 +2995,29 @@ def view_document(filename):
         if not filename:
             return "Invalid filename", 400
         
-        # Build the correct file path
-        file_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+        # First, check in uploads folder (for payment screenshots)
+        uploads_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
         
-        if not os.path.exists(file_path):
+        # Second, check in receipts folder (for generated receipts)
+        receipts_path = os.path.join(app.root_path, 'static', 'receipts', filename)
+        
+        # Third, check if it's a receiver-specific receipt
+        file_path = None
+        if os.path.exists(uploads_path):
+            file_path = uploads_path
+        elif os.path.exists(receipts_path):
+            file_path = receipts_path
+        else:
+            # Check in receiver-specific subfolders
+            receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+            if os.path.exists(receipts_base_dir):
+                for receiver_folder in os.listdir(receipts_base_dir):
+                    receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
+                    if os.path.exists(receiver_path):
+                        file_path = receiver_path
+                        break
+        
+        if not file_path:
             return "File not found", 404
         
         # Determine MIME type
@@ -2799,8 +3037,6 @@ def view_document(filename):
     except Exception as e:
         print(f"Error in view_document: {str(e)}")
         return f"Server error: {str(e)}", 500
-      
-
 
 
 @app.route('/admin/export/<export_type>')
@@ -2960,7 +3196,7 @@ def view_teams():
         
         all_participants = []
         
-        # Payment statistics
+        # Initialize payment statistics with proper structure
         payment_stats = {
             'total_cash': 0,
             'total_online': 0,
@@ -2972,7 +3208,13 @@ def view_teams():
         
         # Add individuals
         for individual in individuals:
-            registration_fee = 500 if individual.get('year') == '1st' else 600
+            # Get registration fee - handle both string and integer values
+            registration_fee = individual.get('registration_fee', 500)
+            if isinstance(registration_fee, str):
+                try:
+                    registration_fee = int(registration_fee)
+                except (ValueError, TypeError):
+                    registration_fee = 500 if individual.get('year') == '1st' else 600
             
             participant_data = {
                 'type': 'individual',
@@ -2984,7 +3226,7 @@ def view_teams():
                 'branch': individual['branch'],
                 'year': individual['year'],
                 'gender': individual['gender'],
-                'rollno': individual['roll_number'],
+                'rollno': individual.get('roll_number', ''),
                 'section': individual.get('section'),
                 'payment_verified': individual.get('payment_verified', False),
                 'payment_method': individual.get('payment_method'),
@@ -2998,16 +3240,21 @@ def view_teams():
             }
             all_participants.append(participant_data)
             
-            # Update payment statistics
-            if individual.get('payment_verified'):
-                payment_stats['total_verified'] += 1
-                
-                if individual.get('payment_method') == 'cash':
+            # Update payment statistics - FIXED LOGIC
+            payment_method = individual.get('payment_method')
+            is_verified = individual.get('payment_verified', False)
+            
+            if payment_method == 'cash':
+                payment_stats['payment_methods']['cash'] += 1
+                if is_verified:
+                    payment_stats['total_verified'] += 1
                     payment_stats['total_cash'] += registration_fee
-                    payment_stats['payment_methods']['cash'] += 1
                     
-                    # Track cash receivers
-                    receiver = individual.get('cash_receiver_name', 'Unknown')
+                    # Track cash receivers - FIXED: Handle None/Unknown receiver names
+                    receiver = individual.get('cash_receiver_name')
+                    if not receiver or receiver.strip() == '':
+                        receiver = 'Not Specified'
+                    
                     if receiver in payment_stats['cash_receivers']:
                         payment_stats['cash_receivers'][receiver]['count'] += 1
                         payment_stats['cash_receivers'][receiver]['amount'] += registration_fee
@@ -3016,11 +3263,18 @@ def view_teams():
                             'count': 1,
                             'amount': registration_fee
                         }
-                        
-                elif individual.get('payment_method') == 'online':
+                else:
+                    payment_stats['total_pending'] += 1
+                    
+            elif payment_method == 'online':
+                payment_stats['payment_methods']['online'] += 1
+                if is_verified:
+                    payment_stats['total_verified'] += 1
                     payment_stats['total_online'] += registration_fee
-                    payment_stats['payment_methods']['online'] += 1
+                else:
+                    payment_stats['total_pending'] += 1
             else:
+                # No payment method set yet
                 payment_stats['total_pending'] += 1
         
         # Calculate statistics
@@ -3029,6 +3283,10 @@ def view_teams():
         section_counts = {}
         year_counts = {'1st': 0, '2nd': 0}
         college_counts = {}
+        
+        # Separate amounts for first and second year
+        first_year_amount = 0
+        second_year_amount = 0
         
         for participant in all_participants:
             # Gender counts
@@ -3045,10 +3303,18 @@ def view_teams():
                 section = participant.get('section')
                 section_counts[section] = section_counts.get(section, 0) + 1
             
-            # Year counts
+            # Year counts and amounts
             year = participant.get('year')
             if year in year_counts:
                 year_counts[year] += 1
+            
+            # Calculate year-wise amounts for verified payments
+            if participant.get('payment_verified'):
+                fee = participant.get('registration_fee', 0)
+                if year == '1st':
+                    first_year_amount += fee
+                elif year == '2nd':
+                    second_year_amount += fee
             
             # College counts
             college = participant.get('college', 'Unknown')
@@ -3057,12 +3323,21 @@ def view_teams():
         # Calculate total amount
         total_amount = payment_stats['total_cash'] + payment_stats['total_online']
         
-        # Sort cash receivers by amount (highest first)
-        sorted_cash_receivers = dict(sorted(
-            payment_stats['cash_receivers'].items(), 
-            key=lambda x: x[1]['amount'], 
-            reverse=True
-        ))
+        # Sort cash receivers by amount (highest first) - FIXED sorting
+        sorted_cash_receivers = {}
+        if payment_stats['cash_receivers']:
+            sorted_items = sorted(
+                payment_stats['cash_receivers'].items(),
+                key=lambda x: x[1]['amount'],
+                reverse=True
+            )
+            sorted_cash_receivers = dict(sorted_items)
+        
+        # Debug output to console
+        print(f"DEBUG: Total participants: {len(all_participants)}")
+        print(f"DEBUG: Payment stats - Cash: {payment_stats['total_cash']}, Online: {payment_stats['total_online']}")
+        print(f"DEBUG: Cash receivers: {sorted_cash_receivers}")
+        print(f"DEBUG: First year amount: {first_year_amount}, Second year amount: {second_year_amount}")
         
         return render_template('view_teams.html', 
                              participants=all_participants,
@@ -3073,8 +3348,8 @@ def view_teams():
                              year_counts=year_counts,
                              college_counts=college_counts,
                              total_amount=total_amount,
-                             first_year_amount=payment_stats['total_cash'] + payment_stats['total_online'],  # Simplified
-                             second_year_amount=0,  # You might want to calculate this properly
+                             first_year_amount=first_year_amount,
+                             second_year_amount=second_year_amount,
                              payment_stats=payment_stats,
                              cash_receivers=sorted_cash_receivers,
                              is_admin=session.get('admin_logged_in', False))
@@ -3716,7 +3991,16 @@ def generate_receipt():
             }
 
             # Generate PDF in receiver-specific folder
+            # After generating the receipt PDF in generate_receipt() function:
             pdf_path = create_receipt_pdf(receipt_data)
+
+# Store the relative path in the database, not just filename
+            receipt_filename = os.path.basename(pdf_path)
+            receiver_name = form.receiver_name.data.replace(' ', '_')
+            relative_path = f"static/receipts/{receiver_name}/{receipt_filename}"
+
+# Update individual data with the correct path
+            individual_data['cash_receipt_photo'] = relative_path
             
             if not os.path.exists(pdf_path):
                 raise Exception("Failed to create PDF file")
@@ -3744,6 +4028,29 @@ def generate_receipt():
 
     return render_template('generate_receipt.html', form=form)
 
+@app.route('/debug-receipts')
+def debug_receipts():
+    """Debug route to check receipt files"""
+    if not session.get('admin_logged_in'):
+        return "Unauthorized", 401
+    
+    receipts_info = []
+    receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+    
+    if os.path.exists(receipts_base_dir):
+        for root, dirs, files in os.walk(receipts_base_dir):
+            for file in files:
+                if file.endswith('.pdf'):
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, app.root_path)
+                    receipts_info.append({
+                        'filename': file,
+                        'full_path': full_path,
+                        'relative_path': relative_path,
+                        'exists': os.path.exists(full_path)
+                    })
+    
+    return jsonify(receipts_info)
 def log_receipt_generation(receipt_data):
     """Log receipt generation for tracking"""
     try:
