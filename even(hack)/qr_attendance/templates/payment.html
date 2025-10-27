@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Individual Registration</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5651d9;
+            --secondary: #FF6584;
+            --dark: #2A2D3E;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --success: #28a745;
+            --accent: #f72585;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            padding-top: 80px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+            padding: 0.5rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            min-height: 60px;
+        }
+
+        .navbar.scrolled {
+            padding: 0.3rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary) !important;
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 0.25rem 0;
+        }
+
+        .navbar-toggler {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            margin: 0 0.4rem;
+            color: var(--dark) !important;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0.8rem !important;
+            font-size: 0.9rem;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary) !important;
+            background-color: rgba(108, 99, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .btn-register {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 12px rgba(108, 99, 255, 0.25);
+            font-size: 0.9rem;
+            margin-left: 0.8rem;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.35);
+            color: white;
+        }
+
+        /* Payment Card */
+        .payment-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 25px;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            position: relative;
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background-color: var(--accent);
+            animation: underlineSlide 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes underlineSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100% - 100px)); }
+        }
+
+        /* Team Info Card */
+        .team-info {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 25px;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .team-info:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .payment-card-header {
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            font-weight: 600;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+            outline: none;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .input-group-text {
+            background-color: #f8f9fc;
+            border-right: none;
+            transition: var(--transition);
+        }
+
+        /* Buttons */
+        .btn-pay {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        /* Fee Display */
+        .fee-display {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .fee-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .fee-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Updated Payment Method Tabs */
+        .payment-method-tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .payment-method-tab {
+            flex: 1;
+            min-width: 160px;
+            padding: 12px 16px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            color: #6c757d;
+            text-align: center;
+            background: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-method-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #6C63FF;
+            color: #6C63FF;
+        }
+
+        .payment-method-tab.active {
+            background: linear-gradient(135deg, #6C63FF 0%, #5651d9 100%);
+            color: white;
+            border-color: #6C63FF;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .payment-method-tab.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .tab-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: inherit;
+            font-weight: 500;
+        }
+
+        .payment-method-tab:not(.active) .tab-badge {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .payment-method-content {
+            display: none;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .payment-method-content.active {
+            display: block;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            color: #0c5460;
+        }
+
+        /* QR Code Container */
+        .qr-code-container {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
+        }
+
+        .qr-code-container:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .qr-code {
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        /* Payment Instructions */
+        .payment-instructions {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .payment-instructions ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .payment-instructions li {
+            margin-bottom: 8px;
+        }
+
+        /* Payment Options */
+        .payment-options-container {
+            margin: 20px 0;
+        }
+
+        .payment-option {
+            display: block;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            text-align: center;
+            height: 100%;
+            border: 1px solid #e9ecef;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .payment-option:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .payment-logo {
+            max-height: 40px;
+            width: auto;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        /* Notices */
+        .mobile-payment-notice {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius);
+            animation: pulse 2s infinite;
+        }
+
+        .desktop-payment-notice {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+        }
+
+        /* File Upload */
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .file-upload-input {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--light);
+            border: 1px solid #d1d3e2;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .file-upload-button:hover {
+            background-color: #e9ecef;
+            border-color: var(--primary);
+        }
+
+        .file-upload-name {
+            margin-left: 10px;
+            font-style: italic;
+            color: var(--gray);
+        }
+
+        /* Preview Container */
+        .preview-container {
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .copyright {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        /* Animation for tab switch */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Active state indicators */
+        .payment-method-tab.active::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: #f72585;
+            border-radius: 2px;
+        }
+
+        /* Focus states for accessibility */
+        .payment-method-tab:focus {
+            outline: 2px solid #6C63FF;
+            outline-offset: 2px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                max-width: 960px;
+                padding: 25px 15px;
+            }
+            
+            .card-header {
+                font-size: 1.6rem;
+            }
+            
+            .payment-card, .team-info {
+                padding: 20px;
+            }
+            
+            .fee-amount {
+                font-size: 2.2rem;
+            }
+            
+            .qr-code-container {
+                max-width: 250px;
+            }
+            
+            .desktop-payment-notice {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
+            
+            .navbar {
+                min-height: 55px;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .navbar-collapse {
+                background: white;
+                padding: 0.8rem;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                margin-top: 0.8rem;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            
+            .navbar-nav .nav-link {
+                margin: 0.2rem 0;
+                padding: 0.6rem 1rem !important;
+                text-align: center;
+            }
+            
+            .btn-register {
+                margin: 0.5rem 0 0 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .container {
+                max-width: 720px;
+                padding: 20px 15px;
+            }
+            
+            .payment-card, .team-info {
+                padding: 20px;
+            }
+            
+            .fee-amount {
+                font-size: 2rem;
+            }
+            
+            .card-header {
+                font-size: 1.5rem;
+            }
+            
+            .payment-method-tabs {
+                flex-direction: column;
+                gap: 6px;
+                padding: 6px;
+            }
+            
+            .payment-method-tab {
+                min-width: 100%;
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .tab-badge {
+                font-size: 0.65rem;
+                padding: 1px 4px;
+            }
+            
+            .qr-code-container {
+                max-width: 200px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding-top: 55px;
+            }
+            
+            .navbar {
+                min-height: 50px;
+                padding: 0.4rem 0;
+            }
+            
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+            
+            .btn-register {
+                padding: 0.4rem 1.2rem;
+                font-size: 0.85rem;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .payment-card, .team-info {
+                padding: 15px;
+            }
+            
+            .card-header {
+                font-size: 1.4rem;
+                margin-bottom: 20px;
+            }
+            
+            .btn-pay {
+                width: 100%;
+                padding: 14px 20px;
+            }
+            
+            .fee-display {
+                padding: 15px;
+            }
+            
+            .fee-amount {
+                font-size: 1.8rem;
+            }
+            
+            .fee-label {
+                font-size: 0.9rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 14px 12px;
+            }
+            
+            .payment-method-tabs {
+                padding: 4px;
+            }
+            
+            .payment-method-tab {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .payment-method-tab i {
+                font-size: 0.9rem;
+            }
+            
+            .qr-code-container {
+                max-width: 180px;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 10px 8px;
+            }
+            
+            .payment-card, .team-info {
+                padding: 12px 8px;
+            }
+            
+            .card-header {
+                font-size: 1.3rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 12px 10px;
+                font-size: 16px;
+            }
+            
+            .fee-amount {
+                font-size: 1.5rem;
+            }
+            
+            .payment-method-tab {
+                min-width: 100px;
+                font-size: 0.85rem;
+                padding: 0.5rem 0.8rem;
+            }
+            
+            .qr-code-container {
+                max-width: 150px;
+                padding: 10px;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .card-header::after {
+                animation: none;
+            }
+            
+            .mobile-payment-notice {
+                animation: none;
+            }
+            
+            .payment-card:hover, .team-info:hover, .payment-option:hover {
+                transform: none;
+            }
+            
+            .btn-pay:hover, .btn-register:hover {
+                transform: none;
+            }
+            
+            .payment-method-tab {
+                transition: none;
+            }
+            
+            .payment-method-content {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+    
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="fas fa-users me-2"></i>Event Registration
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="tel:+919059160424"><i class="fas fa-phone me-1"></i>Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="payment-card animate__animated animate__fadeIn">
+                <div class="card-header">
+                    <h2 class="mb-4 text-center"><i class="fas fa-credit-card me-2"></i>Complete Your Registration</h2>
+                </div>
+                <div class="card-body">
+                    <div class="fee-display animate__animated animate__fadeInUp">
+                        <div class="fee-label">Registration Fee</div>
+                        <div class="fee-amount" id="feeAmount">₹500</div>
+                        <div class="fee-label" id="feeDescription">
+                            For 1st Year Students
+                        </div>
+                    </div>
+
+                    <p class="mb-4 text-center">Please choose your payment method to complete your registration of ₹500.</p>
+
+                    <div class="payment-method-tabs mb-4">
+                        <div class="payment-method-tab active" data-target="online-payment">
+                            <i class="fas fa-mobile-alt me-2"></i>Online Payment
+                            <span class="tab-badge">Recommended</span>
+                        </div>
+                        <div class="payment-method-tab" data-target="cash-payment">
+                            <i class="fas fa-money-bill-wave me-2"></i>Cash Payment
+                            <span class="tab-badge">In-Person</span>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('payment') }}" enctype="multipart/form-data" id="paymentForm" class="needs-validation" novalidate>
+                        <input type="hidden" name="payment_method" id="payment_method" value="online">
+
+                        <!-- Online Payment Content -->
+                        <div id="online-payment" class="payment-method-content active">
+                            <div class="mobile-payment-notice animate__animated animate__pulse animate__infinite animate__slower">
+                                <h6><i class="fas fa-mobile-alt me-2"></i>Mobile Users</h6>
+                                <p>Tap on your preferred payment app below to pay instantly. If you don't have these apps, scan the QR code instead.</p>
+                            </div>
+                            
+                            <div class="desktop-payment-notice">
+                                <h6><i class="fas fa-desktop me-2"></i>Desktop Users</h6>
+                                <p>Please scan the QR code below using any UPI payment app on your mobile device.</p>
+                            </div>
+
+                            <div class="text-center my-4">
+                                <div class="qr-code-container">
+                                    <img src="https://res.cloudinary.com/dvfqvqbkn/image/upload/v1753275054/pp_o0ilmb.jpg" 
+                                         alt="UPI QR Code" class="img-fluid qr-code">
+                                    <p class="small mt-2"><strong>Amount: ₹500</strong></p>
+                                </div>
+                                
+                                <div class="payment-instructions">
+                                    <h6><i class="fas fa-info-circle me-2"></i>Payment Instructions</h6>
+                                    <ul>
+                                        <li>Scan the QR code with any UPI app</li>
+                                        <li>Enter the exact amount shown</li>
+                                        <li>Complete the payment</li>
+                                        <li>Submit your transaction details below</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="payment-options-container mb-4 d-lg-none">
+                                <h6 class="text-center mb-3">Pay with:</h6>
+                                <div class="row g-3 justify-content-center">
+                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                        <a href="phonepe://pay?pa=7095643408@ybl&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20IND_0001%20Registration" 
+                                           class="payment-option animate__animated animate__fadeIn">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
+                                                 alt="Pay with PhonePe" class="img-fluid payment-logo">
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                        <a href="tez://upi/pay?pa=tinkukrishna1101@oksbi&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20IND_0001%20Registration" 
+                                           class="payment-option animate__animated animate__fadeIn animate__delay-1s">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/1024px-Google_Pay_Logo.svg.png" 
+                                                 alt="Pay with Google Pay" class="img-fluid payment-logo">
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                        <a href="paytmmp://pay?pa=7095643408@ptyes&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20IND_0001%20Registration" 
+                                           class="payment-option animate__animated animate__fadeIn animate__delay-2s">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Paytm_logo.png/1200px-Paytm_logo.png" 
+                                                 alt="Pay with Paytm" class="img-fluid payment-logo">
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <a href="#" class="text-primary" id="noUpiLink" data-bs-toggle="modal" data-bs-target="#noUpiModal">
+                                        <i class="fas fa-question-circle me-1"></i> Don't have these apps?
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="payment_id" class="form-label"><i class="fas fa-receipt me-2"></i>Payment Transaction ID</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" class="form-control" id="payment_id" name="payment_id"
+                                           placeholder="Enter transaction ID" required>
+                                </div>
+                                <div class="invalid-feedback">Please enter your transaction ID</div>
+                                <small class="text-muted">Enter the transaction ID from your UPI payment</small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-image me-2"></i>Payment Screenshot</label>
+                                <div class="file-upload">
+                                    <label class="file-upload-button btn btn-outline-secondary">
+                                        <i class="fas fa-upload me-2"></i>Choose Image
+                                        <input type="file" class="file-upload-input" id="payment_screenshot" name="payment_screenshot" accept="image/*" required>
+                                    </label>
+                                    <span class="file-upload-name" id="file-name">No file chosen</span>
+                                </div>
+                                <div class="invalid-feedback">Please upload a payment screenshot (max 100KB)</div>
+                                <small class="text-muted">Upload a clear screenshot of the successful payment (max 100KB, PNG/JPG)</small>
+                                <div class="preview-container mt-2" id="preview-container" style="display: none;">
+                                    <p class="small mb-1">Preview:</p>
+                                    <img id="preview-image" class="preview-image" src="#" alt="Preview">
+                                </div>
+                            </div>
+
+                            <!-- SUBMIT BUTTON FOR ONLINE PAYMENT -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-pay">
+                                    <span><i class="fas fa-check-circle me-2"></i>Complete Registration</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Cash Payment Content -->
+                        <div id="cash-payment" class="payment-method-content">
+                            <div class="alert alert-info mb-4">
+                                <i class="fas fa-info-circle me-2"></i> Please provide details about the person who received your cash payment.
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="cash_receiver_name" class="form-label">
+                                    <i class="fas fa-user-tie me-2"></i>Name of Receiver
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <select class="form-select" id="cash_receiver_name" name="cash_receiver_name" required>
+                                        <option value="" selected disabled>Select receiver</option>
+                                        <option value="Laxmi Nivas">Laxmi Nivas</option>
+                                        <option value="Sheshank">Sheshank</option>
+                                        <option value="Govardhini Reddy">Govardhini Reddy</option>
+                                        <option value="Raghava">Raghava</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select the receiver's name</div>
+                                <small class="text-muted">Select the Creators Club member who received your payment</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-alt me-2"></i>Date of Payment
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                    <input type="date" class="form-control" id="cash_received_at" name="cash_received_at" required>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="badge bg-primary" id="current-date-display"></span>
+                                </div>
+                                <small class="text-muted">Automatically set to today's date</small>
+                            </div>
+
+                            <!-- SUBMIT BUTTON FOR CASH PAYMENT -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-pay">
+                                    <span><i class="fas fa-check-circle me-2"></i>Complete Registration</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-8 mt-4 mt-xl-0">
+            <div class="team-info animate__animated animate__fadeIn">
+                <div class="payment-card-header">
+                    <h3 class="mb-4 text-center"><i class="fas fa-user me-2"></i>Registration Information</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Registration ID:</strong> <span class="badge bg-primary">IND_0001</span></p>
+                    <p><strong>Name:</strong> John Doe</p>
+                    <p><strong>Payment Amount:</strong> <span class="badge bg-success">₹500</span></p>
+                    <p><strong>College:</strong> Sphoorthy Engineering College</p>
+                    <p><strong>Branch:</strong> CSE</p>
+                    <p><strong>Year:</strong> 1st</p>
+                    <p><strong>Section:</strong> A</p>
+                    <p><strong>Roll Number:</strong> 21CSE001</p>
+                    <p><strong>Email:</strong> john.doe@example.com</p>
+                    <p><strong>Contact:</strong> 9876543210</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- No UPI Modal -->
+<div class="modal fade" id="noUpiModal" tabindex="-1" aria-labelledby="noUpiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="noUpiModalLabel"><i class="fas fa-question-circle me-2"></i>No UPI App Installed?</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> You can still make the payment using these methods:
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-qrcode me-2 text-primary"></i>Option 1: Scan QR Code</h6>
+                    <p>Use any banking app that supports QR code scanning to make the payment.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-mobile-alt me-2 text-primary"></i>Option 2: Manual UPI Payment</h6>
+                    <p>Open any banking app and send money to:</p>
+                    <div class="card bg-light p-3">
+                        <p class="mb-1"><strong>UPI ID:</strong> 7095643408@ybl</p>
+                        <p class="mb-1"><strong>Name:</strong> Creators Club</p>
+                        <p class="mb-1"><strong>Amount:</strong> ₹500</p>
+                        <p class="mb-0"><strong>Note:</strong> Individual IND_0001 Registration</p>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-money-bill-wave me-2 text-primary"></i>Option 3: Cash Payment</h6>
+                    <p>Switch to the "Cash Payment" tab above to pay in person to any of our team members.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="text-center">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> Creator Club. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Function to set current date
+    function setCurrentDate() {
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        const displayDate = today.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Set the date input value
+        const dateInput = document.getElementById('cash_received_at');
+        if (dateInput) {
+            dateInput.value = formattedDate;
+        }
+        
+        // Update the display
+        const dateDisplay = document.getElementById('current-date-display');
+        if (dateDisplay) {
+            dateDisplay.textContent = displayDate;
+        }
+    }
+
+    // Enhanced tab functionality
+    function initializePaymentTabs() {
+        const tabs = document.querySelectorAll('.payment-method-tab');
+        const paymentMethodInput = document.getElementById('payment_method');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active classes from all tabs and contents
+                document.querySelectorAll('.payment-method-tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                
+                document.querySelectorAll('.payment-method-content').forEach(c => {
+                    c.classList.remove('active');
+                    c.setAttribute('aria-hidden', 'true');
+                });
+
+                // Add active class to clicked tab
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                
+                const targetId = this.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    targetContent.setAttribute('aria-hidden', 'false');
+                }
+
+                // Update hidden input value
+                paymentMethodInput.value = targetId === 'online-payment' ? 'online' : 'cash';
+                
+                // Set current date when switching to cash payment
+                if (targetId === 'cash-payment') {
+                    setCurrentDate();
+                }
+                
+                // Reset validation
+                resetValidation();
+                
+                // Trigger custom event for tab change
+                const event = new CustomEvent('paymentTabChanged', {
+                    detail: { tab: targetId }
+                });
+                document.dispatchEvent(event);
+            });
+
+            // Keyboard navigation
+            tab.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+
+        // Initialize ARIA attributes
+        document.querySelectorAll('.payment-method-tab').forEach((tab, index) => {
+            tab.setAttribute('role', 'tab');
+            tab.setAttribute('tabindex', index === 0 ? '0' : '-1');
+            tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+            tab.setAttribute('aria-controls', tab.getAttribute('data-target'));
+        });
+
+        document.querySelectorAll('.payment-method-content').forEach((content, index) => {
+            content.setAttribute('role', 'tabpanel');
+            content.setAttribute('aria-hidden', index === 0 ? 'false' : 'true');
+        });
+    }
+
+    // Enhanced form validation for cash payment
+    function validateCashPayment() {
+        let isValid = true;
+        
+        const receiverName = document.getElementById('cash_receiver_name');
+        const receivedDate = document.getElementById('cash_received_at');
+        
+        // Validate receiver name
+        if (!receiverName.value) {
+            receiverName.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            receiverName.classList.remove('is-invalid');
+        }
+        
+        // Validate date
+        if (!receivedDate.value) {
+            receivedDate.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            receivedDate.classList.remove('is-invalid');
+        }
+        
+        return isValid;
+    }
+
+    // File upload handling
+    function handleFileUpload(event, inputElement, fileNameElement, previewContainerElement, previewImageElement, type) {
+        const file = event.target.files[0];
+        if (file) {
+            fileNameElement.textContent = file.name;
+
+            // Validate file type
+            const isValidType = (type === 'image' && file.type.startsWith('image/'));
+            if (!isValidType) {
+                inputElement.classList.add('is-invalid');
+                fileNameElement.textContent = 'Only image files are allowed (PNG, JPG, JPEG)';
+                if (previewContainerElement) previewContainerElement.style.display = 'none';
+                return;
+            }
+
+            // Validate file size - 100KB limit
+            const maxSize = 100 * 1024; // 100KB in bytes
+            if (file.size > maxSize) {
+                inputElement.classList.add('is-invalid');
+                fileNameElement.textContent = `File too large (max 100KB). Current: ${(file.size/1024).toFixed(0)}KB`;
+                if (previewContainerElement) previewContainerElement.style.display = 'none';
+                return;
+            }
+
+            inputElement.classList.remove('is-invalid');
+
+            if (type === 'image') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImageElement.src = e.target.result;
+                    previewContainerElement.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        } else {
+            fileNameElement.textContent = 'No file chosen';
+            if (previewContainerElement) previewContainerElement.style.display = 'none';
+        }
+    }
+
+    // Reset validation
+    function resetValidation() {
+        const form = document.getElementById('paymentForm');
+        const invalidFields = form.querySelectorAll('.is-invalid');
+        invalidFields.forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initializePaymentTabs();
+        setCurrentDate();
+        
+        // File upload handling for online payment
+        const fileUpload = document.getElementById('payment_screenshot');
+        const fileName = document.getElementById('file-name');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+
+        if (fileUpload) {
+            fileUpload.addEventListener('change', function(e) {
+                handleFileUpload(e, this, fileName, previewContainer, previewImage, 'image');
+            });
+        }
+
+      
+        
+        // Form validation
+        const form = document.getElementById('paymentForm');
+        const paymentIdInput = document.getElementById('payment_id');
+
+        if (paymentIdInput) {
+            paymentIdInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                if (value) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const activeMethod = document.querySelector('.payment-method-tab.active').getAttribute('data-target');
+
+                if (activeMethod === 'online-payment') {
+                    // Online payment validation
+                    const paymentIdValue = paymentIdInput.value.trim();
+                    if (!paymentIdValue) {
+                        paymentIdInput.classList.add('is-invalid');
+                        isValid = false;
+                    }
+
+                    const file = fileUpload.files[0];
+                    if (!file) {
+                        fileUpload.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        // Double-check file size on form submission
+                        const maxSize = 100 * 1024;
+                        if (file.size > maxSize) {
+                            fileUpload.classList.add('is-invalid');
+                            fileName.textContent = `File too large (max 100KB). Current: ${(file.size/1024).toFixed(0)}KB`;
+                            isValid = false;
+                        }
+                    }
+                } else {
+                    // Cash payment validation
+                    isValid = validateCashPayment();
+                    
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    const firstInvalid = form.querySelector('.is-invalid');
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    // Show loading state on submit button
+                    const submitBtn = form.querySelector('.btn-pay');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                    submitBtn.disabled = true;
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

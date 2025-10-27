@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR Scanner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+       :root {
+    --primary: #6C63FF;
+    --primary-dark: #5651d9;
+    --secondary: #FF6584;
+    --dark: #2A2D3E;
+    --light: #F8F9FA;
+    --gray: #6C757D;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light);
+    color: var(--dark);
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Container */
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Buttons */
+.btn {
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secondary {
+    background: var(--gray);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition);
+    background: white;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+    padding: 20px;
+    border-bottom: none;
+}
+
+.card-header h3 {
+    margin-bottom: 0;
+    font-size: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Form Controls */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--dark);
+}
+
+.form-select {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: var(--transition);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+}
+
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+    outline: none;
+}
+
+/* QR Scanner */
+#qrScanner {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: #000;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+
+#qrScanner:hover {
+    transform: scale(1.02);
+}
+
+#qrVideo {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--border-radius);
+}
+
+.scan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(0, 255, 0, 0.6);
+    box-sizing: border-box;
+    pointer-events: none;
+    border-radius: var(--border-radius);
+    animation: scanPulse 2s infinite;
+}
+
+@keyframes scanPulse {
+    0%, 100% { border-color: rgba(0, 255, 0, 0.6); }
+    50% { border-color: rgba(0, 255, 0, 0.9); }
+}
+
+/* Participant Info */
+.participant-info {
+    background: #f8f9fa;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid var(--primary);
+    transition: var(--transition);
+}
+
+.participant-info:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-sm);
+}
+
+.participant-info h5 {
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.participant-info p {
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.participant-info p:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Alerts */
+.alert {
+    border-radius: var(--border-radius);
+    border: none;
+    padding: 15px 20px;
+    margin: 15px 0;
+    animation: fadeInDown 0.5s ease-out;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-left: 4px solid var(--danger);
+    color: #721c24;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-left: 4px solid var(--success);
+    color: #155724;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    border-bottom: none;
+    background: transparent;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 0;
+    padding: 12px 20px;
+    color: var(--gray);
+    font-weight: 500;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    border-bottom: 3px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom: 3px solid var(--primary);
+    color: var(--primary);
+}
+
+/* Tables */
+.table-responsive {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.log-table {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.log-table th {
+    background-color: #f8f9fa;
+    color: var(--dark);
+    font-weight: 600;
+    padding: 12px 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.log-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.log-table tbody tr {
+    transition: var(--transition);
+}
+
+.log-table tbody tr:hover {
+    background-color: rgba(108, 99, 255, 0.05);
+    transform: translateX(2px);
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .container-fluid {
+        max-width: 1140px;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .container-fluid {
+        max-width: 960px;
+        padding: 0 15px;
+    }
+    
+    .card-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    #qrScanner {
+        max-width: 400px;
+    }
+    
+    .participant-info {
+        padding: 15px;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    .container-fluid {
+        max-width: 720px;
+    }
+    
+    .card-header {
+        padding: 15px;
+    }
+    
+    .card-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    #qrScanner {
+        max-width: 100%;
+        height: 300px;
+    }
+    
+    .form-select {
+        padding: 10px 12px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .participant-info {
+        padding: 12px;
+        margin: 15px 0;
+    }
+    
+    .participant-info h5 {
+        font-size: 1.1rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .log-table {
+        font-size: 0.85rem;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container-fluid {
+        padding: 0 10px;
+    }
+    
+    .card-header {
+        padding: 12px;
+    }
+    
+    .card-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    #qrScanner {
+        height: 250px;
+    }
+    
+    .form-select {
+        padding: 8px 10px;
+    }
+    
+    .btn {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .participant-info {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .participant-info h5 {
+        font-size: 1rem;
+    }
+    
+    .alert {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .log-table {
+        font-size: 0.8rem;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    body {
+        padding: 8px;
+    }
+    
+    .container-fluid {
+        padding: 0 8px;
+    }
+    
+    .card-header {
+        padding: 10px;
+    }
+    
+    .card-header h3 {
+        font-size: 1rem;
+    }
+    
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    #qrScanner {
+        height: 200px;
+    }
+    
+    .form-select {
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+    
+    .btn {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .participant-info {
+        padding: 8px;
+    }
+    
+    .participant-info h5 {
+        font-size: 0.9rem;
+    }
+    
+    .alert {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .log-table {
+        font-size: 0.75rem;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 4px 6px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .btn,
+    #qrScanner,
+    .scan-overlay,
+    .nav-tabs {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .card-header {
+        background: #f8f9fa !important;
+        color: black !important;
+    }
+    
+    body {
+        background: white !important;
+        padding: 10px !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #000000;
+        --primary-dark: #333333;
+        --secondary: #666666;
+        --dark: #000000;
+        --light: #FFFFFF;
+        --gray: #444444;
+    }
+    
+    .card {
+        border: 2px solid black;
+    }
+    
+    .card-header {
+        background: black !important;
+    }
+    
+    .scan-overlay {
+        border-color: #00ff00;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .scan-overlay {
+        animation: none;
+        border-color: rgba(0, 255, 0, 0.8);
+    }
+    
+    .card:hover,
+    #qrScanner:hover,
+    .participant-info:hover,
+    .log-table tbody tr:hover {
+        transform: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+}
+
+/* Focus states for accessibility */
+.form-select:focus,
+.btn:focus,
+.nav-tabs .nav-link:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Loading state for buttons */
+.btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Participant Details Card */
+.participant-details {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--success);
+    transition: var(--transition);
+}
+
+.participant-details:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.participant-details h5 {
+    color: var(--success);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.participant-details h5 i {
+    font-size: 1.1em;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.detail-item:hover {
+    background: #e9ecef;
+    transform: translateX(3px);
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray);
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+/* Responsive adjustments for participant details */
+@media (max-width: 768px) {
+    .participant-details {
+        padding: 15px;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .detail-item {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .participant-details {
+        padding: 12px;
+    }
+    
+    .participant-details h5 {
+        font-size: 1.1rem;
+    }
+    
+    .detail-value {
+        font-size: 0.95rem;
+    }
+}
+
+/* Add to existing CSS */
+.export-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .card-header.bg-light {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .export-buttons {
+        align-self: flex-end;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .export-buttons {
+        align-self: stretch;
+        justify-content: center;
+    }
+    
+    .log-table {
+        font-size: 0.75rem;
+    }
+}
+/* Add to existing CSS */
+.scanner-status {
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.scanner-status.active {
+    background-color: #e7f3ff;
+    color: #0066cc;
+    border-left: 4px solid #0066cc;
+}
+
+.scanner-status.scanning {
+    background-color: #f0fff4;
+    color: #38a169;
+    border-left: 4px solid #38a169;
+}
+
+.scanner-status.error {
+    background-color: #fed7d7;
+    color: #c53030;
+    border-left: 4px solid #c53030;
+}
+
+.scanner-status.inactive {
+    background-color: #f7fafc;
+    color: #4a5568;
+    border-left: 4px solid #a0aec0;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Enhanced responsive styles */
+@media (max-width: 768px) {
+    .camera-controls {
+        justify-content: center;
+    }
+    
+    .camera-controls .btn {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .camera-controls {
+        flex-direction: column;
+    }
+    
+    .camera-controls .btn {
+        width: 100%;
+    }
+    
+    #qrScanner {
+        height: 280px !important;
+    }
+}
+
+/* Ensure video maintains aspect ratio */
+#qrVideo {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <button onclick="window.location.href='/admin'" class="btn btn-secondary mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Admin
+                </button>
+                
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3 class="mb-0"><i class="fas fa-qrcode me-2"></i>QR Code Scanner</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+    <label for="scanType" class="form-label fw-bold">Scan Type</label>
+    <select class="form-select" id="scanType" required>
+        <option value="">Select scan type</option>
+        <option value="entry">Entry Validation</option>
+        <option value="food">Food Service</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label class="form-label fw-bold">QR Scanner</label>
+    <div id="scannerStatus" class="scanner-status inactive">
+        <i class="fas fa-camera me-2"></i>Scanner Ready - Select scan type to start
+    </div>
+    <div id="qrScanner" style="display: none;">
+        <video id="qrVideo" playsinline></video>
+        <div class="scan-overlay"></div>
+    </div>
+    <div id="cameraError" class="alert alert-danger mt-2" style="display: none;"></div>
+    <div class="camera-controls mt-2">
+        <button id="stopScanner" class="btn btn-secondary btn-sm">
+            <i class="fas fa-stop me-1"></i>Stop Scanner
+        </button>
+        <button id="switchCamera" class="btn btn-info btn-sm">
+            <i class="fas fa-sync-alt me-1"></i>Switch Camera
+        </button>
+    </div>
+    <small class="text-muted">Camera will automatically start when you select scan type. Make sure camera permissions are granted.</small>
+</div>
+
+                                <form id="scanForm" style="display: none;">
+                                    <input type="hidden" id="qrData">
+                                    <input type="hidden" id="formScanType">
+
+                                    <div id="participantInfo" class="participant-details" style="display: none;">
+                                        <h5><i class="fas fa-user-check"></i>Participant Information</h5>
+                                        <div class="detail-grid">
+                                            <div class="detail-item">
+                                                <span class="detail-label">Name</span>
+                                                <span class="detail-value" id="participantName">-</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Roll No</span>
+                                                <span class="detail-value" id="participantRollno">-</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Year</span>
+                                                <span class="detail-value" id="participantYear">-</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Branch</span>
+                                                <span class="detail-value" id="participantBranch">-</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">College</span>
+                                                <span class="detail-value" id="participantCollege">-</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label">Type</span>
+                                                <span class="detail-value" id="participantType">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success w-100 mt-3">
+                                        <i class="fas fa-check me-2"></i>Confirm Scan
+                                    </button>
+                                </form>
+
+                                <div id="scanResult" class="alert mt-3" style="display: none;"></div>
+                            </div>
+
+                            
+                          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <ul class="nav nav-tabs card-header-tabs" id="scanLogTabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#entryLogs">
+                <i class="fas fa-door-open me-2" style="color: white;"></i> <span style="color: white;">Entry Logs</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#foodLogs">
+                <i class="fas fa-utensils me-2" style="color: white;"></i> <span style="color: white;">Food Logs</span>
+            </button>
+        </li>
+    </ul>
+    <div class="export-buttons">
+        <button id="exportPdf" class="btn btn-danger btn-sm">
+            <i class="fas fa-file-pdf me-1"></i>PDF
+        </button>
+        <button id="exportExcel" class="btn btn-success btn-sm">
+            <i class="fas fa-file-excel me-1"></i>Excel
+        </button>
+    </div>
+</div>
+                                    <div class="card-body p-0">
+                                        <div class="tab-content">
+                                          <!-- Update the table headers to include more columns -->
+                                           <!-- Update both entryLogs and foodLogs table headers -->
+
+
+                                           <!-- Update both entryLogs and foodLogs table headers -->
+<div class="tab-pane fade show active" id="entryLogs">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover log-table mb-0">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Year</th>
+                    <th>Branch</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody id="entryLogTable"></tbody>
+        </table>
+    </div>
+</div>
+<div class="tab-pane fade" id="foodLogs">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover log-table mb-0">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Year</th>
+                    <th>Branch</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody id="foodLogTable"></tbody>
+        </table>
+    </div>
+</div>
+<div id="participantInfo" class="participant-details" style="display: none;">
+    <h5><i class="fas fa-user-check"></i>Participant Information</h5>
+    <div class="detail-grid">
+        <div class="detail-item">
+            <span class="detail-label">Name</span>
+            <span class="detail-value" id="participantName">-</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Year</span>
+            <span class="detail-value" id="participantYear">-</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Branch</span>
+            <span class="detail-value" id="participantBranch">-</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Type</span>
+            <span class="detail-value" id="participantType">-</span>
+        </div>
+    </div>
+</div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add these CDN links in the head section -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        const video = document.getElementById('qrVideo');
+        const scanTypeSelect = document.getElementById('scanType');
+        const scanForm = document.getElementById('scanForm');
+        const qrDataInput = document.getElementById('qrData');
+        const formScanType = document.getElementById('formScanType');
+        const participantInfo = document.getElementById('participantInfo');
+        const participantName = document.getElementById('participantName');
+        const participantYear = document.getElementById('participantYear');
+        const participantBranch = document.getElementById('participantBranch');
+        const participantType = document.getElementById('participantType');
+        const scanResult = document.getElementById('scanResult');
+        const cameraError = document.getElementById('cameraError');
+        const scannerStatus = document.getElementById('scannerStatus');
+        const qrScanner = document.getElementById('qrScanner');
+        const stopScannerBtn = document.getElementById('stopScanner');
+        const switchCameraBtn = document.getElementById('switchCamera');
+        const entryLogTable = document.getElementById('entryLogTable');
+        const foodLogTable = document.getElementById('foodLogTable');
+
+        let scannerActive = false;
+        let stream = null;
+        let currentParticipant = null;
+        let currentFacingMode = 'environment';
+        let animationFrameId = null;
+        let autoRestartTimeout = null;
+
+        // Initialize scanner controls
+        initScannerControls();
+        loadScanLog();
+
+        function initScannerControls() {
+            scanTypeSelect.addEventListener('change', handleScanTypeChange);
+            stopScannerBtn.addEventListener('click', stopScanner);
+            switchCameraBtn.addEventListener('click', switchCamera);
+        }
+
+        function handleScanTypeChange() {
+            const scanType = scanTypeSelect.value;
+            
+            // Reset form and hide previous results
+            scanForm.style.display = 'none';
+            scanResult.style.display = 'none';
+            participantInfo.style.display = 'none';
+            
+            if (scanType) {
+                // Stop any existing scanner
+                if (scannerActive) {
+                    stopScanner();
+                }
+                
+                // Start scanner automatically after a short delay
+                setTimeout(() => {
+                    initScanner();
+                }, 300);
+            } else {
+                // No scan type selected, stop scanner
+                stopScanner();
+            }
+        }
+
+        function updateScannerStatus(status, message) {
+            scannerStatus.className = `scanner-status ${status}`;
+            scannerStatus.innerHTML = `<i class="fas fa-${getStatusIcon(status)} me-2"></i>${message}`;
+        }
+
+        function getStatusIcon(status) {
+            switch(status) {
+                case 'active': return 'camera';
+                case 'error': return 'exclamation-triangle';
+                case 'scanning': return 'search';
+                default: return 'camera-slash';
+            }
+        }
+
+        function initScanner() {
+            if (scannerActive) return;
+
+            const scanType = scanTypeSelect.value;
+            if (!scanType) {
+                updateScannerStatus('inactive', 'Select scan type to start scanner');
+                return;
+            }
+
+            scannerActive = true;
+            cameraError.style.display = 'none';
+            updateScannerStatus('active', 'Starting camera...');
+
+            const constraints = {
+                video: {
+                    facingMode: currentFacingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            };
+
+            // Stop any existing stream
+            if (stream) {
+                stopStream();
+            }
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(s) {
+                    stream = s;
+                    video.srcObject = stream;
+
+                    video.onloadedmetadata = () => {
+                        video.play()
+                            .then(() => {
+                                qrScanner.style.display = 'block';
+                                updateScannerStatus('scanning', 'Scanner Active - Point camera at QR code');
+                                stopScannerBtn.style.display = 'inline-block';
+                                startQRScanning();
+                                
+                                // Auto-adjust video size for responsiveness
+                                setTimeout(() => {
+                                    adjustVideoSize();
+                                }, 100);
+                            })
+                            .catch(err => {
+                                console.error("Error playing video:", err);
+                                showCameraError("Could not start video playback: " + err.message);
+                                stopScanner();
+                            });
+                    };
+
+                    video.onerror = () => {
+                        showCameraError("Video error occurred");
+                        stopScanner();
+                    };
+                })
+                .catch(function(err) {
+                    console.error("Error accessing camera:", err);
+                    scannerActive = false;
+                    let errorMsg = "Could not access camera.";
+
+                    if (err.name === 'NotAllowedError') {
+                        errorMsg = "Camera permission denied. Please enable camera access in your browser settings.";
+                    } else if (err.name === 'NotFoundError') {
+                        errorMsg = "No camera found on this device.";
+                    } else if (err.name === 'NotSupportedError') {
+                        errorMsg = "Camera not supported in this browser.";
+                    } else if (err.name === 'NotReadableError') {
+                        errorMsg = "Camera is already in use by another application.";
+                    } else if (err.name === 'OverconstrainedError') {
+                        errorMsg = "Camera constraints could not be satisfied. Trying alternative camera...";
+                        tryAlternativeConstraints();
+                        return;
+                    }
+
+                    showCameraError(errorMsg);
+                    updateScannerStatus('error', errorMsg);
+                });
+        }
+
+        function adjustVideoSize() {
+            const scanner = document.getElementById('qrScanner');
+            const video = document.getElementById('qrVideo');
+            
+            if (scanner && video) {
+                const containerWidth = scanner.parentElement.offsetWidth;
+                const maxWidth = Math.min(500, containerWidth - 30);
+                
+                scanner.style.maxWidth = maxWidth + 'px';
+                video.style.width = '100%';
+                video.style.height = 'auto';
+                
+                // Adjust height for mobile
+                if (window.innerWidth <= 768) {
+                    const height = Math.min(300, maxWidth * 0.75);
+                    scanner.style.height = height + 'px';
+                    video.style.height = height + 'px';
+                } else {
+                    scanner.style.height = 'auto';
+                    video.style.height = 'auto';
+                }
+            }
+        }
+
+        function tryAlternativeConstraints() {
+            const alternativeConstraints = {
+                video: {
+                    facingMode: currentFacingMode
+                },
+                audio: false
+            };
+
+            navigator.mediaDevices.getUserMedia(alternativeConstraints)
+                .then(function(s) {
+                    stream = s;
+                    video.srcObject = stream;
+                    video.play()
+                        .then(() => {
+                            qrScanner.style.display = 'block';
+                            updateScannerStatus('scanning', 'Scanner Active - Point camera at QR code');
+                            stopScannerBtn.style.display = 'inline-block';
+                            startQRScanning();
+                            
+                            setTimeout(() => {
+                                adjustVideoSize();
+                            }, 100);
+                        })
+                        .catch(err => {
+                            showCameraError("Could not start video with alternative constraints");
+                            stopScanner();
+                        });
+                })
+                .catch(function(err) {
+                    showCameraError("Could not access camera even with alternative constraints");
+                    updateScannerStatus('error', "Camera access failed");
+                });
+        }
+
+        function showCameraError(message) {
+            cameraError.textContent = message;
+            cameraError.style.display = 'block';
+        }
+
+        function stopStream() {
+            if (stream) {
+                stream.getTracks().forEach(track => {
+                    track.stop();
+                });
+                stream = null;
+            }
+        }
+
+        function stopScanner() {
+            scannerActive = false;
+            
+            // Clear any pending auto-restart
+            if (autoRestartTimeout) {
+                clearTimeout(autoRestartTimeout);
+                autoRestartTimeout = null;
+            }
+            
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            
+            stopStream();
+            
+            video.srcObject = null;
+            qrScanner.style.display = 'none';
+            stopScannerBtn.style.display = 'none';
+            updateScannerStatus('inactive', 'Scanner Stopped - Select scan type to restart');
+        }
+
+        function switchCamera() {
+            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+            if (scannerActive) {
+                stopScanner();
+                // Auto-restart after switch
+                autoRestartTimeout = setTimeout(() => {
+                    if (scanTypeSelect.value) {
+                        initScanner();
+                    }
+                }, 800);
+            }
+        }
+
+        function startQRScanning() {
+            function scanQR() {
+                if (!scannerActive) return;
+
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "dontInvert",
+                        });
+
+                        if (code) {
+                            console.log("QR Code detected:", code.data);
+                            try {
+                                const qrData = JSON.parse(code.data);
+                                handleQRScan(qrData);
+                            } catch (e) {
+                                console.error("Invalid QR code data:", e);
+                                showError("Invalid QR code format. Please try again.");
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error during QR scanning:", error);
+                    }
+                }
+
+                if (scannerActive) {
+                    animationFrameId = requestAnimationFrame(scanQR);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(scanQR);
+        }
+
+        function handleQRScan(qrData) {
+            const scanType = scanTypeSelect.value;
+            if (!scanType) {
+                showError("Please select a scan type first.");
+                return;
+            }
+
+            currentParticipant = qrData;
+            qrDataInput.value = JSON.stringify(qrData);
+            formScanType.value = scanType;
+            
+            // Display participant information
+            participantName.textContent = qrData.name || 'N/A';
+            participantYear.textContent = qrData.year || 'N/A';
+            participantBranch.textContent = qrData.branch || 'N/A';
+            
+            if (qrData.individual_id) {
+                participantType.textContent = 'Individual';
+            } else {
+                participantType.textContent = 'Team Member';
+            }
+            
+            participantInfo.style.display = 'block';
+            scanForm.style.display = 'block';
+            stopScanner();
+            
+            // Auto-restart scanner after form submission or timeout
+            autoRestartTimeout = setTimeout(() => {
+                if (scanTypeSelect.value && !scannerActive) {
+                    initScanner();
+                }
+            }, 3000);
+        }
+
+        scanForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                qr_data: qrDataInput.value,
+                scan_type: formScanType.value
+            };
+
+            fetch("/admin/scan", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    window.location.href = '/admin-login';
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success) {
+                    showSuccess(`Successfully scanned ${currentParticipant.name} for ${data.data.scan_type}`);
+                    loadScanLog();
+
+                    // Reset form
+                    scanForm.style.display = 'none';
+                    participantInfo.style.display = 'none';
+                    
+                    // Auto-restart scanner after successful scan
+                    autoRestartTimeout = setTimeout(() => {
+                        if (scanTypeSelect.value && !scannerActive) {
+                            initScanner();
+                        }
+                    }, 2000);
+                } else {
+                    showError(data?.message || 'Scan failed');
+                    // Auto-restart even on failure
+                    autoRestartTimeout = setTimeout(() => {
+                        if (scanTypeSelect.value && !scannerActive) {
+                            initScanner();
+                        }
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Scan error:', error);
+                showError('Failed to process scan');
+                // Auto-restart even on error
+                autoRestartTimeout = setTimeout(() => {
+                    if (scanTypeSelect.value && !scannerActive) {
+                        initScanner();
+                    }
+                }, 2000);
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        function loadScanLog() {
+            fetch('/get_scan_log')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateScanLogTables(data);
+                })
+                .catch(error => {
+                    console.error('Error loading scan log:', error);
+                    showError('Failed to load scan log');
+                });
+        }
+
+        function updateScanLogTables(logData) {
+            // Clear tables
+            entryLogTable.innerHTML = '';
+            foodLogTable.innerHTML = '';
+
+            if (!logData || !Array.isArray(logData)) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = '<td colspan="5" class="text-center text-muted">No scan data available</td>';
+                entryLogTable.appendChild(emptyRow);
+                foodLogTable.appendChild(emptyRow.cloneNode(true));
+                return;
+            }
+
+            // Populate tables
+            logData.forEach(entry => {
+                const row = document.createElement('tr');
+                
+                const timeCell = document.createElement('td');
+                timeCell.textContent = new Date(entry.timestamp).toLocaleString();
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = entry.name || 'Unknown';
+                
+                const yearCell = document.createElement('td');
+                yearCell.textContent = entry.year || 'N/A';
+                
+                const branchCell = document.createElement('td');
+                branchCell.textContent = entry.branch || 'N/A';
+                
+                const typeCell = document.createElement('td');
+                typeCell.textContent = entry.scan_type === 'entry' ? 'Entry' : 'Food';
+
+                row.appendChild(timeCell);
+                row.appendChild(nameCell);
+                row.appendChild(yearCell);
+                row.appendChild(branchCell);
+                row.appendChild(typeCell);
+
+                if (entry.scan_type === 'entry') {
+                    entryLogTable.appendChild(row);
+                } else {
+                    foodLogTable.appendChild(row);
+                }
+            });
+
+            // Add empty message if no data
+            if (entryLogTable.children.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = '<td colspan="5" class="text-center text-muted">No entry scans yet</td>';
+                entryLogTable.appendChild(emptyRow);
+            }
+            
+            if (foodLogTable.children.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = '<td colspan="5" class="text-center text-muted">No food scans yet</td>';
+                foodLogTable.appendChild(emptyRow);
+            }
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const currentTab = document.querySelector('#scanLogTabs .nav-link.active').getAttribute('data-bs-target');
+            const table = currentTab === '#entryLogs' ? entryLogTable : foodLogTable;
+            const title = currentTab === '#entryLogs' ? 'Entry Scan Logs' : 'Food Scan Logs';
+            
+            doc.text(title, 14, 15);
+            
+            const headers = [['Time', 'Name', 'Year', 'Branch', 'Type']];
+            const data = [];
+            
+            Array.from(table.rows).forEach(row => {
+                const rowData = [];
+                Array.from(row.cells).forEach(cell => {
+                    rowData.push(cell.textContent);
+                });
+                data.push(rowData);
+            });
+            
+            doc.autoTable({
+                head: headers,
+                body: data,
+                startY: 20,
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [108, 99, 255] }
+            });
+            
+            doc.save(`${title.toLowerCase().replace(' ', '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        function exportToExcel() {
+            const currentTab = document.querySelector('#scanLogTabs .nav-link.active').getAttribute('data-bs-target');
+            const table = currentTab === '#entryLogs' ? entryLogTable : foodLogTable;
+            const title = currentTab === '#entryLogs' ? 'Entry Scan Logs' : 'Food Scan Logs';
+            
+            let csv = 'Time,Name,Year,Branch,Type\n';
+            
+            Array.from(table.rows).forEach(row => {
+                const rowData = [];
+                Array.from(row.cells).forEach(cell => {
+                    rowData.push(`"${cell.textContent}"`);
+                });
+                csv += rowData.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.toLowerCase().replace(' ', '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Add event listeners for export buttons
+        document.getElementById('exportPdf').addEventListener('click', exportToPDF);
+        document.getElementById('exportExcel').addEventListener('click', exportToExcel);
+
+        function showError(message) {
+            scanResult.textContent = message;
+            scanResult.className = "alert alert-danger";
+            scanResult.style.display = 'block';
+            setTimeout(() => {
+                scanResult.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            scanResult.textContent = message;
+            scanResult.className = "alert alert-success";
+            scanResult.style.display = 'block';
+            setTimeout(() => {
+                scanResult.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add responsive behavior for window resize
+        window.addEventListener('resize', function() {
+            if (scannerActive) {
+                adjustVideoSize();
+            }
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && scannerActive) {
+                stopScanner();
+            } else if (!document.hidden && scanTypeSelect.value && !scannerActive) {
+                // Auto-restart when page becomes visible again
+                setTimeout(() => {
+                    initScanner();
+                }, 500);
+            }
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            stopScanner();
+        });
+    });
+</script>
+
+</body>
+</html>

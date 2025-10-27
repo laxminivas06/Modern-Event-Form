@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Registration Success</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <style>
+      :root {
+          --primary: #6C63FF;
+          --primary-dark: #5651d9;
+          --secondary: #FF6584;
+          --dark: #2A2D3E;
+          --light: #F8F9FA;
+          --gray: #6C757D;
+          --success: #28a745;
+          --accent: #f72585;
+          --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+          --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+          --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+          --border-radius: 12px;
+          --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Poppins', sans-serif;
+          background-color: var(--light);
+          color: var(--dark);
+          padding-top: 80px;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+          line-height: 1.6;
+          overflow-x: hidden;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+          font-weight: 700;
+          line-height: 1.2;
+      }
+
+      /* Container */
+      .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+
+    /* Navigation */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem 0; /* Reduced padding */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    min-height: 60px; /* Reduced height */
+}
+
+.navbar.scrolled {
+    padding: 0.3rem 0; /* Even smaller when scrolled */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem; /* Slightly smaller */
+    color: var(--primary) !important;
+    text-decoration: none;
+    transition: var(--transition);
+    padding: 0.25rem 0; /* Reduced padding */
+}
+
+.navbar-toggler {
+    padding: 0.25rem 0.5rem; /* Smaller toggle button */
+    border: none;
+    font-size: 1rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    margin: 0 0.4rem; /* Reduced margin */
+    color: var(--dark) !important;
+    transition: color 0.3s ease;
+    padding: 0.5rem 0.8rem !important; /* Smaller padding */
+    font-size: 0.9rem; /* Slightly smaller font */
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary) !important;
+    background-color: rgba(108, 99, 255, 0.05);
+    border-radius: 6px;
+}
+
+.btn-register {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 25px; /* Slightly smaller radius */
+    padding: 0.5rem 1.5rem; /* Reduced padding */
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px rgba(108, 99, 255, 0.25);
+    font-size: 0.9rem; /* Smaller font */
+    margin-left: 0.8rem; /* Reduced margin */
+}
+
+.btn-register:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 99, 255, 0.35);
+    color: white;
+}
+
+/* Mobile Responsive Updates */
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px; /* Reduced padding for mobile */
+    }
+    
+    .navbar {
+        min-height: 55px; /* Even smaller on mobile */
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .navbar-collapse {
+        background: white;
+        padding: 0.8rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        margin-top: 0.8rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .navbar-nav .nav-link {
+        margin: 0.2rem 0;
+        padding: 0.6rem 1rem !important;
+        text-align: center;
+    }
+    
+    .btn-register {
+        margin: 0.5rem 0 0 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding-top: 55px; /* Further reduced */
+    }
+    
+    .navbar {
+        min-height: 50px;
+        padding: 0.4rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .btn-register {
+        padding: 0.4rem 1.2rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Navbar animation on scroll */
+.navbar {
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar.hidden {
+    transform: translateY(-100%);
+}
+
+/* Active nav link styling */
+.navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+    background-color: rgba(108, 99, 255, 0.1);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Dropdown menu styling (if you add dropdowns later) */
+.navbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+}
+
+.navbar .dropdown-item {
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: rgba(108, 99, 255, 0.1);
+    color: var(--primary);
+}
+
+      /* Success Card */
+      .success-card {
+          background-color: white;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-sm);
+          padding: 0;
+          transition: var(--transition);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          margin-bottom: 30px;
+          overflow: hidden;
+      }
+
+      .success-card:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-lg);
+      }
+
+      .card-header {
+          background: var(--success);
+          padding: 2rem;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+          color: white;
+          border-bottom: none;
+      }
+
+      .card-header::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+              to bottom right,
+              rgba(255, 255, 255, 0.3) 0%,
+              rgba(255, 255, 255, 0) 60%
+          );
+          transform: rotate(30deg);
+          animation: shine 3s infinite;
+      }
+
+      @keyframes shine {
+          0% { transform: rotate(30deg) translate(-30%, -30%); }
+          100% { transform: rotate(30deg) translate(30%, 30%); }
+      }
+
+      .card-body {
+          padding: 3rem;
+      }
+
+      /* Ticket Design - Updated for better mobile visibility */
+      .ticket {
+          display: flex;
+          background: url("https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?cs=srgb&dl=pexels-vishnurnair-1105666.jpg&fm=jpg") center/cover no-repeat;
+          border-radius: var(--border-radius);
+          overflow: hidden;
+          width: 100%;
+          max-width: 550px;
+          aspect-ratio: 5.5 / 2;
+          box-shadow: var(--shadow-md);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          position: relative;
+          margin: 0 auto;
+      }
+
+      .ticket::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.3);
+          z-index: 0;
+      }
+
+      .ticket-left {
+          flex: 1 1 80%;
+          padding: 15px 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          position: relative;
+          z-index: 1;
+      }
+
+      .header-section {
+          margin-bottom: 8px;
+      }
+
+      .ticket-left small {
+          font-size: 0.75rem;
+          letter-spacing: 1.5px;
+          font-weight: 700;
+          color: #222;
+          text-transform: uppercase;
+      }
+
+      .ticket-left h1 {
+          font-size: 1.5rem;
+          line-height: 1.1;
+          color: #111;
+          font-weight: 900;
+          text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+      }
+
+      .details {
+          margin: 8px 0;
+          color: #ffffff;
+      }
+
+      .details div {
+          margin-bottom: 5px;
+         
+          padding: 4px 8px;
+          font-size: 0.7rem;
+          font-weight: 600;
+         
+          display: inline-block;
+      }
+
+      .info-fields {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          margin-top: 8px;
+      }
+
+      .info-field {
+          display: flex;
+          align-items: center;
+      }
+
+      .info-field label {
+          font-weight: 600;
+          min-width: 60px;
+          margin-right: 5px;
+          color: #ffea07;
+          font-size: 0.65rem;
+          flex-shrink: 0;
+      }
+
+      .info-field span {
+          flex: 1;
+          padding: 3px 6px;
+          border-bottom: 1px dashed #666;
+          font-weight: 500;
+        
+          border-radius: 2px;
+          font-size: 0.65rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .ticket-right {
+          flex: 1 1 20%;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1;
+      }
+
+      .ticket-stub {
+          background: rgba(255, 255, 255, 0.8);
+          width: 100%;
+          height: 100%;
+          border-left: 2px dashed #666;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 10px 8px;
+          text-align: center;
+      }
+
+      .ticket-stub h3 {
+          font-size: 0.75rem;
+          letter-spacing: 1px;
+          margin-bottom: 5px;
+          color: #333;
+      }
+
+      .ticket-stub p {
+          font-size: 0.7rem;
+          font-weight: 500;
+          color: #000;
+          margin-bottom: 8px;
+      }
+
+      .qr-placeholder {
+          width: 90px;
+          height: 90px;
+          border: 1.5px dashed #000;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #000;
+          font-weight: 700;
+          background: rgba(255,255,255,0.7);
+          font-size: 0.6rem;
+          overflow: hidden;
+      }
+
+      .qr-placeholder img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+      }
+
+      /* Individual Card */
+      #individual-card {
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-sm);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          margin: 2rem 0;
+          overflow: hidden;
+      }
+
+      #individual-card .card-header {
+          background: var(--dark);
+          padding: 1.5rem;
+          text-align: left;
+      }
+
+      #individual-card .card-body {
+          padding: 2rem;
+      }
+
+      /* Buttons */
+      .btn-primary {
+          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+          border: none;
+          padding: 12px 30px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+          box-shadow: var(--shadow-sm);
+          color: white;
+          letter-spacing: 0.5px;
+      }
+
+      .btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-md);
+          color: white;
+      }
+
+      .btn-success {
+          background-color: var(--success);
+          border: none;
+          padding: 12px 30px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+          box-shadow: var(--shadow-sm);
+          color: white;
+      }
+
+      .btn-success:hover {
+          background-color: #218838;
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-md);
+          color: white;
+      }
+
+      .btn-outline-primary {
+          color: var(--primary);
+          border-color: var(--primary);
+          border: 2px solid;
+          padding: 10px 28px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+      }
+
+      .btn-outline-primary:hover {
+          background-color: var(--primary);
+          color: white;
+          transform: translateY(-2px);
+      }
+
+      /* Alerts */
+      .alert {
+          border-radius: var(--border-radius);
+          border: none;
+          padding: 20px;
+          margin: 20px 0;
+          animation: fadeInDown 0.5s ease-out;
+      }
+
+      .alert-info {
+          background-color: #e3f2fd;
+          border-left: 4px solid #2196f3;
+          color: #0c5460;
+      }
+
+      .alert-warning {
+          background-color: #fff8e1;
+          border-left: 4px solid #ffc107;
+          color: #856404;
+      }
+
+      .alert-success {
+          background-color: #e8f5e8;
+          border-left: 4px solid var(--success);
+          color: #155724;
+      }
+
+      .alert ul {
+          margin-bottom: 0;
+          padding-left: 0;
+      }
+
+      .alert li {
+          margin-bottom: 8px;
+          padding-left: 0;
+          list-style: none;
+      }
+
+      .alert li:last-child {
+          margin-bottom: 0;
+      }
+
+      /* Footer */
+      .footer {
+          background: var(--dark);
+          color: white;
+          padding: 40px 0 20px;
+          margin-top: auto;
+          width: 100%;
+      }
+
+      .footer-content {
+          max-width: 1200px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 0 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+
+      .copyright {
+          margin-top: 20px;
+          font-size: 0.9rem;
+          opacity: 0.8;
+          text-align: center;
+          width: 100%;
+      }
+
+      /* Mobile Responsive Updates */
+      @media (max-width: 768px) {
+          body {
+              padding-top: 70px;
+          }
+          
+          .container {
+              max-width: 720px;
+              padding: 20px 15px;
+          }
+          
+          .card-body {
+              padding: 2rem;
+          }
+          
+          .card-header {
+              padding: 1.5rem;
+          }
+          
+          #individual-card .card-body {
+              padding: 1.5rem;
+          }
+          
+          .ticket {
+              max-width: 450px;
+          }
+          
+          .ticket-left {
+              padding: 10px 12px;
+              flex: 1 1 80%;
+          }
+          
+          .ticket-left h1 {
+              font-size: 1.1rem;
+          }
+          
+          .info-fields {
+              grid-template-columns: 1fr;
+              gap: 3px;
+              margin-top: 5px;
+          }
+          
+          .info-field {
+              flex-direction: row;
+              align-items: center;
+              min-height: 18px;
+          }
+          
+          .info-field label {
+              min-width: 45px;
+              margin-right: 4px;
+              font-size: 0.5rem;
+          }
+          
+          .info-field span {
+              font-size: 0.5rem;
+              padding: 2px 4px;
+          }
+          
+          .details {
+              margin: 5px 0;
+          }
+          
+          .details div {
+              font-size: 0.55rem;
+              padding: 2px 5px;
+          }
+          
+          .qr-placeholder {
+              width: 60px;
+              height: 60px;
+          }
+          
+          .ticket-stub h3 {
+              font-size: 0.6rem;
+          }
+          
+          .ticket-stub p {
+              font-size: 0.55rem;
+          }
+          
+          .navbar-collapse {
+            
+              padding: 1rem;
+              border-radius: 15px;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+              margin-top: 1rem;
+          }
+      }
+
+      @media (max-width: 576px) {
+          body {
+              padding-top: 60px;
+          }
+          
+          .container {
+              padding: 15px 10px;
+          }
+          
+          .card-body {
+              padding: 1.5rem;
+          }
+          
+          #individual-card .card-body {
+              padding: 1rem;
+          }
+          
+          .ticket {
+              max-width: 380px;
+          }
+          
+          .ticket-left {
+              padding: 8px 10px;
+              flex: 1 1 80%;
+          }
+          
+          .ticket-left h1 {
+              font-size: 1rem;
+          }
+          
+          .info-field {
+              min-height: 16px;
+          }
+          
+          .info-field label {
+              min-width: 40px;
+              font-size: 0.45rem;
+          }
+          
+          .info-field span {
+              font-size: 0.45rem;
+          }
+          
+          .details div {
+              font-size: 0.5rem;
+          }
+          
+          .qr-placeholder {
+              width: 50px;
+              height: 50px;
+          }
+          
+          .btn {
+              padding: 10px 20px;
+              font-size: 0.9rem;
+          }
+      }
+
+      @media (max-width: 400px) {
+          .container {
+              padding: 10px 8px;
+          }
+          
+          .card-body {
+              padding: 1rem;
+          }
+          
+          .ticket {
+              max-width: 340px;
+          }
+          
+          .ticket-left {
+              padding: 6px 8px;
+              flex: 1 1 80%;
+          }
+          
+          .info-field {
+              min-height: 14px;
+          }
+          
+          .info-field label {
+              min-width: 35px;
+              font-size: 0.4rem;
+          }
+          
+          .info-field span {
+              font-size: 0.4rem;
+          }
+          
+          .details div {
+              font-size: 0.45rem;
+          }
+          
+          .qr-placeholder {
+              width: 45px;
+              height: 45px;
+          }
+      }
+
+      /* Print Styles */
+      @media print {
+          .navbar, .btn, .no-print, .footer, .alert, .success-card .card-header {
+              display: none !important;
+          }
+          
+          body {
+              background: white !important;
+              padding-top: 0 !important;
+          }
+          
+          .container {
+              margin-bottom: 0 !important;
+              padding: 0 !important;
+          }
+          
+          .success-card, #individual-card {
+              box-shadow: none !important;
+              border: none !important;
+              margin: 0 !important;
+          }
+          
+          .card-body {
+              padding: 0 !important;
+          }
+          
+          .ticket {
+              box-shadow: none !important;
+              border: 1px solid #000 !important;
+          }
+      }
+
+      /* Animation */
+      .animate__animated {
+          opacity: 1;
+          transition: opacity 0.6s ease-out;
+      }
+
+      /* Button Container */
+      .button-container {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          flex-wrap: wrap;
+      }
+      
+      @media (max-width: 576px) {
+          .button-container {
+              flex-direction: column;
+              align-items: center;
+          }
+          
+          .button-container .btn {
+              width: 100%;
+              max-width: 250px;
+          }
+      }
+</style>
+</head>
+<body>
+   <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="fas fa-users me-2"></i>Event Registration
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="tel:+919059160424"><i class="fas fa-phone me-1"></i>Contact</a>
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</nav>
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row justify-content-center animate__animated animate__fadeIn">
+        <div class="col-xl-8 col-lg-10 col-md-12">
+            <div class="card success-card">
+                <div class="card-header">
+                    <div class="logo mb-3">
+                        <i class="fas fa-check-circle fa-4x text-success"></i>
+                    </div>
+                    <h3 class="mb-0"><i class="fas fa-user me-2"></i>Registration Successful!</h3>
+                </div>
+                <div class="card-body">
+                  <div class="button-container mb-4 no-print">
+                        <button onclick="downloadImage()" class="btn btn-primary animate__animated animate__fadeInUp download-btn">
+                            <i class="fas fa-download me-1"></i> Download Ticket Image
+                        </button>
+                        <button onclick="printTicket()" class="btn btn-success animate__animated animate__fadeInUp">
+                            <i class="fas fa-print me-1"></i> Print Ticket
+                        </button>
+                    </div>
+
+                    <!-- Ticket Design -->
+                    <div class="card my-4" id="individual-card">
+                        <div class="card-header bg-dark text-white">
+                            <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Your Event Ticket</h4>
+                        </div>
+                      <div class="card-body">
+    <div class="ticket" id="ticket-to-download">
+        <!-- Left side content -->
+        <div class="ticket-left">
+            <div class="header-section">
+
+                <h1 style="color: #FFFFFF; font-size: clamp(1.2rem, 4vw, 1.8rem); margin: 8px 0; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.3); font-weight: 900; letter-spacing: 1px;">Freshers Fiesta</h1>
+                <div class="details">
+                    <div>November 09th, 2025</div>
+                </div>
+                 <div class="info-fields">
+                                        <div class="info-field" >
+                                            <span style="font-weight: 600; color: #fbfbfb; font-size: 0.7rem; min-width: 50px;">NAME: {{ individual.name }}</span>
+                                        </div>
+                                    </div>
+            </div>
+
+                                    
+                                    
+                                    <!-- Updated info fields with inline styles -->
+                                   
+                                </div>
+
+                                <!-- Right side with QR code -->
+                                <div class="ticket-right">
+                                    <div class="ticket-stub">
+                                         <div class="info-field" style="display: flex; align-items: center;">
+                                          
+                                           
+                                        </div>
+                                        <div class="qr-container">
+                                            <div class="qr-placeholder">
+                                                <img src="data:image/png;base64,{{ qr_img }}" alt="Registration QR Code">
+                                            </div>
+                                            
+                                            <p style="font-size: 10px;">{{ individual.individual_id }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="alert alert-info mx-auto" style="max-width: 600px;">
+                        <h5><i class="fas fa-info-circle me-2"></i>Important Instructions</h5>
+                        <ul class="text-start" type="none">
+                            <li><i class="fas fa-check-circle me-2"></i>Save this ticket - you'll need it for event entry</li>
+                            <li><i class="fas fa-check-circle me-2"></i>Keep this ticket accessible on your phone</li>
+                            <li><i class="fas fa-check-circle me-2"></i>Present this ticket at registration desk during the event</li>
+                            <li><i class="fas fa-check-circle me-2"></i>Keep your registration ID handy for reference</li>
+                            <li><i class="fas fa-check-circle me-2"></i>This ticket will be used for attendance and meals</li>
+                        </ul>
+                    </div>
+
+                    <!-- Payment Status (if applicable) -->
+                    {% if not individual.payment_verified %}
+                    <div class="alert alert-warning mx-auto" style="max-width: 600px;">
+                        <h5><i class="fas fa-clock me-2"></i>Payment Status: Pending</h5>
+                        <p class="mb-1">Your registration is complete but payment verification is pending.</p>
+                        <p class="mb-0">You will receive a confirmation email once payment is verified.</p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success mx-auto" style="max-width: 600px;">
+                        <h5><i class="fas fa-check-circle me-2"></i>Payment Status: Verified</h5>
+                        <p class="mb-0">Your payment has been verified. You're all set for the event!</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Back Button -->
+                    <div class="text-center mt-4 no-print animate__animated animate__fadeIn">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+ <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="text-center">
+                    <p>&copy; <script>document.write(new Date().getFullYear())</script> Creator Club. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- html2canvas library for image generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script>
+        function downloadImage() {
+            // Get the ticket element
+            const ticketElement = document.getElementById('ticket-to-download');
+            
+            // Use html2canvas to capture the ticket as an image
+            html2canvas(ticketElement, {
+                scale: 2, // Higher scale for better quality
+                useCORS: true,
+                logging: false,
+                backgroundColor: null
+            }).then(canvas => {
+                // Convert canvas to image data URL
+                const imageData = canvas.toDataURL('image/png');
+                
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.href = imageData;
+                link.download = 'event_ticket.png';
+                
+                // Trigger the download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+        
+        function printTicket() {
+            window.print();
+        }
+        
+        // Add animation to elements when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            
+            animatedElements.forEach(element => {
+                element.style.opacity = '0';
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

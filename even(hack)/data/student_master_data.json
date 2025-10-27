@@ -1,0 +1,67 @@
+{
+    "students": [
+        {
+            "roll_number": "23N81A62A1",
+            "name": "Nivas",
+            "year": "1st",
+            "branch": "Freshman",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        },
+        {
+            "roll_number": "23N81A62A2",
+            "name": "Bunny",
+            "year": "2nd",
+            "branch": "CSE",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        },
+        {
+            "roll_number": "23N81A62A3",
+            "name": "SHIVA",
+            "year": "2nd",
+            "branch": "AIML",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        },
+        {
+            "roll_number": "23N81A62A4",
+            "name": "MANI",
+            "year": "2nd",
+            "branch": "CSE",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        },
+        {
+            "roll_number": "23N81A62A5",
+            "name": "ANISH",
+            "year": "1st",
+            "branch": "Freshman",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        },
+        {
+            "roll_number": "23N81A62A6",
+            "name": "PANDYA",
+            "year": "1st",
+            "branch": "Freshman",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        },
+        {
+            "roll_number": "23N81A62A7",
+            "name": "MAGHESH",
+            "year": "1st",
+            "branch": "Freshman",
+            "section": null,
+            "added_date": "2025-10-26 12:53:57",
+            "added_by": "unknown"
+        }
+    ]
+}

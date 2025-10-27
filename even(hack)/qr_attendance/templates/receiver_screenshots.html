@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshots - {{ receiver_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .screenshot-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .screenshot-img:hover {
+            transform: scale(1.05);
+        }
+        .payment-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .payment-card:hover {
+            border-color: #6C63FF;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .badge-online {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('view_payment_screenshots') }}">
+                                <i class="fas fa-money-bill-wave me-1"></i>Payment Screenshots
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ receiver_name }}</li>
+                    </ol>
+                </nav>
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2>
+                            <i class="fas fa-user-tie me-2 text-primary"></i>
+                            {{ receiver_name }}'s Payment Screenshots
+                        </h2>
+                        <p class="text-muted mb-0">
+                            {{ payments|length }} online payment screenshot(s) collected
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('view_payment_screenshots') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-1"></i>Back
+                        </a>
+                        <button class="btn btn-success" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Screenshots Grid -->
+                <div class="row">
+                    {% for payment in payments %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card payment-card h-100">
+                            <div class="card-header bg-transparent">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 text-truncate" title="{{ payment.name }}">
+                                        {{ payment.name }}
+                                    </h6>
+                                    <span class="badge badge-online text-white">Online</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- Payment Screenshot -->
+                                <div class="text-center mb-3">
+                                    <img src="{{ url_for('view_document', filename=payment.payment_screenshot) }}" 
+                                         alt="Payment Screenshot" 
+                                         class="screenshot-img"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#screenshotModal"
+                                         data-src="{{ url_for('view_document', filename=payment.payment_screenshot) }}"
+                                         data-name="{{ payment.name }}">
+                                </div>
+
+                                <!-- Payment Details -->
+                                <div class="payment-details">
+                                    <div class="row small g-2">
+                                        <div class="col-6">
+                                            <strong>Payment ID:</strong>
+                                        </div>
+                                        <div class="col-6 text-truncate" title="{{ payment.payment_id }}">
+                                            {{ payment.payment_id }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong>Amount:</strong>
+                                        </div>
+                                        <div class="col-6 text-success fw-bold">
+                                            ₹{{ payment.amount }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong>Date:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ payment.payment_date }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong>Year:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ payment.year }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong>Branch:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ payment.branch }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('view_document', filename=payment.payment_screenshot) }}" 
+                                       target="_blank" 
+                                       class="btn btn-primary btn-sm flex-fill">
+                                        <i class="fas fa-expand me-1"></i>View Full
+                                    </a>
+                                    <a href="{{ url_for('view_document', filename=payment.payment_screenshot) }}" 
+                                       download 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No Screenshots Found</h4>
+                                <p class="text-muted">
+                                    {{ receiver_name }} hasn't collected any online payment screenshots yet.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Summary Card -->
+                {% if payments %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-chart-bar me-2"></i>Summary
+                                </h5>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <h4 class="text-primary">{{ payments|length }}</h4>
+                                        <small class="text-muted">Total Payments</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 class="text-success">
+                                            ₹{{ payments|sum(attribute='amount') }}
+                                        </h4>
+                                        <small class="text-muted">Total Amount</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 class="text-info">
+                                            {{ (payments|sum(attribute='amount') / payments|length)|round|int if payments|length > 0 else 0 }}
+                                        </h4>
+                                        <small class="text-muted">Average Payment</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h4 class="text-warning">
+                                            {{ payments|selectattr('year', 'equalto', '1st')|list|length }}
+                                        </h4>
+                                        <small class="text-muted">1st Year Students</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div class="modal fade" id="screenshotModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="screenshotModalLabel">Payment Screenshot</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalScreenshot" src="" alt="Payment Screenshot" class="img-fluid">
+                    <p class="mt-2 text-muted" id="modalStudentName"></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="downloadScreenshot" class="btn btn-success">
+                        <i class="fas fa-download me-1"></i>Download
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Modal functionality
+        const screenshotModal = document.getElementById('screenshotModal');
+        if (screenshotModal) {
+            screenshotModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const screenshotSrc = button.getAttribute('data-src');
+                const studentName = button.getAttribute('data-name');
+                
+                const modalImage = document.getElementById('modalScreenshot');
+                const modalTitle = document.getElementById('screenshotModalLabel');
+                const modalStudentName = document.getElementById('modalStudentName');
+                const downloadLink = document.getElementById('downloadScreenshot');
+                
+                modalImage.src = screenshotSrc;
+                modalTitle.textContent = `Payment Screenshot - ${studentName}`;
+                modalStudentName.textContent = studentName;
+                downloadLink.href = screenshotSrc;
+                downloadLink.download = `payment_screenshot_${studentName}.jpg`;
+            });
+        }
+
+        // Print functionality
+        function printScreenshots() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

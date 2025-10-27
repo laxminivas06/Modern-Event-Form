@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Homepage Content</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+            --error-color: #e74a3b;
+            --success-color: #1cc88a;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            padding: 1rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-header .logo {
+            max-width: 50px;
+        }
+        
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .sidebar-menu {
+            padding: 1rem 0;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .nav-link {
+            color: #5a5c69;
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 0;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .nav-link i {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            transition: all 0.3s;
+            margin-top: 0;
+        }
+        
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-header {
+            background: var(--primary-color);
+            padding: 1.5rem;
+            color: white;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(30deg) translate(-30%, -30%); }
+            100% { transform: rotate(30deg) translate(30%, 30%); }
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .form-control {
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d3e2;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.05rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        /* Animation for form elements */
+        .animate-form {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 1000;
+                height: 100vh;
+                top: 0;
+                left: 0;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+                padding-top: 70px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 1.25rem;
+            }
+            
+            .form-control {
+                padding: 0.7rem;
+            }
+            
+            h2 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <span class="d-none d-sm-inline">Admin Panel</span>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+
+            <h4 class="mb-0">Admin Panel</h4>
+        </div>
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('generate_receipt') }}">
+                        <i class="fas fa-receipt"></i>
+                        <span>Receipt Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('message_center') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Message Center</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('admin_homepage') }}">
+                        <i class="fas fa-home"></i>
+                        <span>Edit Homepage</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link " href="{{ url_for('admin_excel_upload') }}">
+                        <i class="fas fa-upload me-2"></i>
+                        <span>SDM</span>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container animate__animated animate__fadeIn">
+            <div class="row justify-content-center">
+
+                <div class="col-lg-10">
+                     <br>        <br>                 
+<button onclick="window.location.href='/admin'" class="back-btn" style="
+    background-color: #095feb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    width: fit-content;
+    min-width: 100px;
+    text-align: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink: 0;">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg>
+    <span style="white-space: nowrap;">Back</span>
+</button>
+
+                    <h2 class="mb-4 text-center"><i class="fas fa-edit me-2"></i>Edit Homepage Content</h2>
+                    
+                    <form method="POST" action="{{ url_for('admin_homepage') }}" class="animate-form">
+                        <div class="card mb-4 animate__animated animate__fadeInUp">
+                            <div class="card-header">
+                                <i class="fas fa-star me-2"></i>Hero Section
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="hero_title" class="form-label">Hero Title</label>
+                                    <input type="text" class="form-control" id="hero_title" name="hero_title" 
+                                           value="{{ config.hero_title }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hero_subtitle" class="form-label">Hero Subtitle</label>
+                                    <input type="text" class="form-control" id="hero_subtitle" name="hero_subtitle" 
+                                           value="{{ config.hero_subtitle }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4 animate__animated animate__fadeInUp">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-2"></i>Event Details
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="event_date" class="form-label">Event Date</label>
+                                    <input type="text" class="form-control" id="event_date" name="event_date" 
+                                           value="{{ config.event_date }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="event_location" class="form-label">Event Location</label>
+                                    <input type="text" class="form-control" id="event_location" name="event_location" 
+                                           value="{{ config.event_location }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registration_deadline" class="form-label">Registration Deadline</label>
+                                    <input type="text" class="form-control" id="registration_deadline" name="registration_deadline" 
+                                           value="{{ config.registration_deadline }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="about_event" class="form-label">About the Event</label>
+                                    <textarea class="form-control" id="about_event" name="about_event" rows="10" required>{{ config.about_event }}</textarea>
+                                    <small class="text-muted">You can use HTML tags for formatting: &lt;b&gt;, &lt;i&gt;, &lt;u&gt;, &lt;span style="color:red"&gt;</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4 animate__animated animate__fadeInUp">
+                            <div class="card-header">
+                                <i class="fas fa-list-check me-2"></i>Registration Requirements
+                            </div>
+                            <div class="card-body">
+                                {% for i in range(5) %}
+                                <div class="mb-3">
+                                    <label for="requirement{{ i+1 }}" class="form-label">Requirement {{ i+1 }}</label>
+                                    <input type="text" class="form-control" id="requirement{{ i+1 }}" name="requirement{{ i+1 }}" 
+                                           value="{{ config.requirements[i] if i < config.requirements|length else '' }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            // Toggle sidebar on hamburger click
+            hamburger.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+            });
+            
+            // Close sidebar when clicking on overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            });
+            
+            // Close sidebar when clicking on a nav link (for mobile)
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.remove('active');
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Add animation to form elements
+            const formElements = document.querySelectorAll('.animate-form .card');
+            formElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    sidebar.classList.remove('active');
+                    overlay.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

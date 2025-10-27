@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       :root {
+    --primary: #6C63FF;
+    --primary-dark: #5651d9;
+    --secondary: #FF6584;
+    --dark: #2A2D3E;
+    --light: #F8F9FA;
+    --gray: #6C757D;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Base styles */
+body {
+    font-family: 'Poppins', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--dark);
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    background-color: #f6f6f6;
+}
+
+/* Email container */
+.container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    background-color: #ffffff;
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 30px 20px 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+    background-size: cover;
+}
+
+.logo {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 15px;
+    filter: brightness(0) invert(1);
+    transition: var(--transition);
+    position: relative;
+    z-index: 1;
+}
+
+.header h2 {
+    color: white;
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.3;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+.header p {
+    margin: 10px 0 0;
+    opacity: 0.9;
+    font-size: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Content styles */
+.content {
+    padding: 0 30px 20px;
+    font-size: 16px;
+}
+
+.content p {
+    margin: 0 0 20px 0;
+}
+
+.greeting {
+    font-size: 18px;
+    margin-bottom: 25px !important;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.message-content {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--primary);
+    margin: 20px 0;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    line-height: 1.7;
+    transition: var(--transition);
+}
+
+.message-content:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-sm);
+}
+
+.message-content a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.message-content a:hover {
+    text-decoration: underline;
+    color: var(--primary-dark);
+}
+
+.team-info {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #f0f4ff;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 15px 0;
+    border: 1px solid rgba(108, 99, 255, 0.2);
+    transition: var(--transition);
+}
+
+.team-info:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Attachments styles */
+.attachments {
+    margin: 25px 0;
+    padding: 0;
+}
+
+.attachments h4 {
+    margin-bottom: 15px;
+    color: var(--dark);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.attachments h4 i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.attachment-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 12px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    border: 1px solid #e0e0e0;
+    transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+}
+
+.attachment-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+    text-decoration: none;
+    color: inherit;
+}
+
+.attachment-icon {
+    margin-right: 12px;
+    color: var(--primary);
+    font-size: 22px;
+    width: 24px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.attachment-item:hover .attachment-icon {
+    transform: scale(1.1);
+    color: var(--primary-dark);
+}
+
+.attachment-link {
+    color: var(--dark);
+    text-decoration: none;
+    font-weight: 500;
+    flex-grow: 1;
+    transition: var(--transition);
+}
+
+.attachment-item:hover .attachment-link {
+    color: var(--primary);
+}
+
+.attachment-size {
+    color: var(--gray);
+    font-size: 13px;
+    margin-left: 10px;
+}
+
+/* Footer styles */
+.footer {
+    margin-top: 30px;
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    padding: 25px 30px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #e9ecef;
+}
+
+.footer-links {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.footer-links a:hover {
+    background-color: rgba(108, 99, 255, 0.1);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: var(--primary-dark);
+}
+
+.footer-links a i {
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+.copyright {
+    margin-top: 15px;
+    font-size: 12px;
+    color: var(--gray);
+    opacity: 0.8;
+}
+
+/* Button styles */
+.button {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white !important;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    margin: 15px 0;
+    text-align: center;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+    color: white !important;
+}
+
+/* File type specific colors */
+.fa-file-pdf {
+    color: #e74c3c;
+}
+
+.fa-file-image {
+    color: #3498db;
+}
+
+.fa-file-word {
+    color: #2c5aa0;
+}
+
+.fa-file-excel {
+    color: #27ae60;
+}
+
+.fa-file {
+    color: var(--gray);
+}
+
+/* Responsive adjustments */
+@media only screen and (max-width: 600px) {
+    .container {
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+    .header {
+        padding: 25px 15px 15px;
+    }
+    
+    .header h2 {
+        font-size: 22px;
+    }
+    
+    .content {
+        padding: 0 20px 15px;
+        font-size: 15px;
+    }
+    
+    .logo {
+        max-width: 140px;
+    }
+    
+    .message-content {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .footer-links a {
+        justify-content: center;
+        width: 200px;
+    }
+    
+    .button {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .attachment-item {
+        padding: 10px;
+    }
+    
+    .attachment-icon {
+        font-size: 18px;
+        margin-right: 10px;
+    }
+    
+    .attachment-link {
+        font-size: 14px;
+    }
+    
+    .attachment-size {
+        font-size: 12px;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .header {
+        padding: 20px 10px 10px;
+    }
+    
+    .content {
+        padding: 0 15px 10px;
+        font-size: 14px;
+    }
+    
+    .header h2 {
+        font-size: 20px;
+    }
+    
+    .greeting {
+        font-size: 16px;
+    }
+    
+    .message-content {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    .footer {
+        padding: 20px 15px;
+    }
+    
+    .footer-links a {
+        width: 100%;
+        max-width: 180px;
+    }
+    
+    .button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .container {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .header {
+        background: #f8f9fa !important;
+        color: black !important;
+    }
+    
+    .logo {
+        filter: none !important;
+    }
+    
+    .button {
+        background: #6c757d !important;
+        color: white !important;
+    }
+    
+    .footer {
+        background: #f8f9fa !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #000000;
+        --primary-dark: #333333;
+        --secondary: #666666;
+        --dark: #000000;
+        --light: #FFFFFF;
+        --gray: #444444;
+    }
+    
+    .container {
+        border: 2px solid black;
+    }
+    
+    .header {
+        background: black !important;
+    }
+    
+    .message-content {
+        border-left: 4px solid black;
+    }
+    
+    .attachment-item {
+        border: 1px solid black;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .message-content:hover,
+    .team-info:hover,
+    .attachment-item:hover,
+    .footer-links a:hover,
+    .button:hover {
+        transform: none;
+    }
+    
+    .attachment-item:hover .attachment-icon {
+        transform: none;
+    }
+}
+
+/* Focus states for accessibility */
+.button:focus,
+.footer-links a:focus,
+.attachment-item:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Loading state for button */
+.button.loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.button.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Email client specific fixes */
+@media only screen and (max-width: 480px) {
+    table.container {
+        width: 100% !important;
+    }
+    
+    .header, .content, .footer {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
+
+/* Dark mode support for email clients that support it */
+@media (prefers-color-scheme: dark) {
+    .container {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .content {
+        color: #ffffff;
+    }
+    
+    .message-content {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+    
+    .team-info {
+        background-color: #333333;
+        color: #ffffff;
+    }
+    
+    .footer {
+        background-color: #2d2d2d;
+        color: #cccccc;
+    }
+    
+    .attachment-item {
+        background-color: #333333;
+        border-color: #444444;
+        color: #ffffff;
+    }
+    
+    .attachment-link {
+        color: #ffffff;
+    }
+    
+    .attachment-size {
+        color: #999999;
+    }
+} 
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://i.postimg.cc/mZd7npmt/creator.png" alt="Creators Club Logo" class="logo">
+            <h2>{{ subject }}</h2>
+            <p>Message from Creators Club</p>
+        </div>
+        
+        <div class="content">
+            <p class="greeting">Hello {{ recipient.name }},</p>
+            
+            <div class="message-content">{{ message | safe }}</div>
+            
+            {% if call_to_action %}
+            <div style="text-align: center;">
+                <a href="{{ call_to_action.url }}" class="button">
+                    {{ call_to_action.text }}
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if attachments %}
+            <div class="attachments">
+                <h4><i class="fas fa-paperclip"></i> Attachments</h4>
+                {% for attachment in attachments %}
+                <a href="{{ attachment.url }}" class="attachment-item" target="_blank">
+                    <div class="attachment-icon">
+                        {% if attachment.type == 'pdf' %}
+                            <i class="fas fa-file-pdf"></i>
+                        {% elif attachment.type == 'image' %}
+                            <i class="fas fa-file-image"></i>
+                        {% elif attachment.type == 'word' %}
+                            <i class="fas fa-file-word"></i>
+                        {% elif attachment.type == 'excel' %}
+                            <i class="fas fa-file-excel"></i>
+                        {% else %}
+                            <i class="fas fa-file"></i>
+                        {% endif %}
+                    </div>
+                    <span class="attachment-link">{{ attachment.name }}</span>
+                    <span class="attachment-size">{{ attachment.size }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="team-info">
+                <i class="fas fa-users" style="margin-right: 8px;"></i>
+                Team: {{ recipient.team }}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This message was sent to all participants by Creators Club.</p>
+            <div class="footer-links">
+                <a href="https://instagram.com/creatorsclub" target="_blank">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
+                <a href="mailto:creatorsclub@spurty.edu">
+                    <i class="fas fa-envelope"></i> Email Us
+                </a>
+                <a href="https://creatorsclub.org" target="_blank">
+                    <i class="fas fa-globe"></i> Our Website
+                </a>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> Creators Club. All rights reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

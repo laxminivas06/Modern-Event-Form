@@ -1,0 +1,26 @@
+{
+    "individuals": [
+        {
+            "individual_id": "IND_0001",
+            "roll_number": "23N81A62A5",
+            "name": "ANISH",
+            "year": "1st",
+            "branch": "Freshman",
+            "gender": "Male",
+            "email": "morishettylaxminivas@gmail.com",
+            "contact_number": "9059160421",
+            "registration_date": "2025-10-26 22:41:13",
+            "payment_verified": false,
+            "payment_method": "online",
+            "payment_date": "2025-10-26 22:41:23",
+            "registration_fee": 500,
+            "college": "Sphoorthy Engineering College",
+            "payment_screenshot": "payment_IND_0001.jpeg",
+            "cash_receipt_photo": null,
+            "payment_id": "34124124214",
+            "cash_receiver_name": null,
+            "cash_received_at": null,
+            "receipt_number": null
+        }
+    ]
+}

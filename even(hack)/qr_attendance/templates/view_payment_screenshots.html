@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Screenshots</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .screenshot-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .screenshot-img:hover {
+            transform: scale(1.05);
+        }
+        .payment-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .payment-card:hover {
+            border-color: #6C63FF;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .badge-verified {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        .badge-pending {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+        .badge-online {
+            background: linear-gradient(135deg, #6C63FF, #5651d9);
+        }
+        .filter-buttons .btn {
+            border-radius: 20px;
+        }
+        .stats-card {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="fas fa-money-bill-wave me-2"></i>Online Payment Screenshots</h2>
+                        <p class="text-muted mb-0">View and manage all online payment verification screenshots</p>
+                    </div>
+                    <a href="{{ url_for('view_teams') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Teams
+                    </a>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card stats-card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Payments</h6>
+                                        <h3 class="mb-0">{{ payments|length }}</h3>
+                                    </div>
+                                    <i class="fas fa-credit-card fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card stats-card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Verified</h6>
+                                        <h3 class="mb-0">
+                                            {{ payments|selectattr('payment_verified', 'equalto', true)|list|length }}
+                                        </h3>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card stats-card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Pending</h6>
+                                        <h3 class="mb-0">
+                                            {{ payments|rejectattr('payment_verified', 'equalto', true)|list|length }}
+                                        </h3>
+                                    </div>
+                                    <i class="fas fa-clock fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card stats-card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Amount</h6>
+                                        <h3 class="mb-0">
+                                            ₹{{ payments|sum(attribute='amount') }}
+                                        </h3>
+                                    </div>
+                                    <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title mb-3">Filter Payments:</h6>
+                                <div class="filter-buttons d-flex flex-wrap gap-2">
+                                    <a href="{{ url_for('view_payment_screenshots') }}" 
+                                       class="btn {{ 'btn-primary' if not filter_type else 'btn-outline-primary' }}">
+                                        <i class="fas fa-layer-group me-1"></i>All Payments
+                                    </a>
+                                    <a href="{{ url_for('view_verified_screenshots') }}" 
+                                       class="btn {{ 'btn-success' if filter_type == 'verified' else 'btn-outline-success' }}">
+                                        <i class="fas fa-check-circle me-1"></i>Verified Only
+                                    </a>
+                                    <a href="{{ url_for('view_pending_screenshots') }}" 
+                                       class="btn {{ 'btn-warning' if filter_type == 'pending' else 'btn-outline-warning' }}">
+                                        <i class="fas fa-clock me-1"></i>Pending Only
+                                    </a>
+                                    <button class="btn btn-outline-info" onclick="window.print()">
+                                        <i class="fas fa-print me-1"></i>Print
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Screenshots Grid -->
+                {% if payments %}
+                <div class="row">
+                    {% for payment in payments %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card payment-card h-100">
+                            <div class="card-header bg-transparent">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 text-truncate" title="{{ payment.name }}">
+                                        {{ payment.name }}
+                                    </h6>
+                                    <div>
+                                        <span class="badge badge-online text-white">Online</span>
+                                        {% if payment.payment_verified %}
+                                        <span class="badge badge-verified text-white">
+                                            <i class="fas fa-check me-1"></i>Verified
+                                        </span>
+                                        {% else %}
+                                        <span class="badge badge-pending text-white">
+                                            <i class="fas fa-clock me-1"></i>Pending
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- Payment Screenshot -->
+                                <div class="text-center mb-3">
+                                    <img src="{{ url_for('view_document', filename=payment.payment_screenshot) }}" 
+                                         alt="Payment Screenshot" 
+                                         class="screenshot-img"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#screenshotModal"
+                                         data-src="{{ url_for('view_document', filename=payment.payment_screenshot) }}"
+                                         data-name="{{ payment.name }}"
+                                         data-payment-id="{{ payment.payment_id }}"
+                                         data-amount="{{ payment.amount }}">
+                                </div>
+
+                                <!-- Payment Details -->
+                                <div class="payment-details">
+                                    <div class="row small g-2">
+                                        <div class="col-6">
+                                            <strong><i class="fas fa-id-card me-1"></i>Payment ID:</strong>
+                                        </div>
+                                        <div class="col-6 text-truncate" title="{{ payment.payment_id }}">
+                                            {{ payment.payment_id }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong><i class="fas fa-rupee-sign me-1"></i>Amount:</strong>
+                                        </div>
+                                        <div class="col-6 text-success fw-bold">
+                                            ₹{{ payment.amount }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong><i class="fas fa-calendar me-1"></i>Date:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ payment.payment_date }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong><i class="fas fa-graduation-cap me-1"></i>Year:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ payment.year }}
+                                        </div>
+                                        
+                                        <div class="col-6">
+                                            <strong><i class="fas fa-building me-1"></i>Branch:</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ payment.branch }}
+                                        </div>
+
+                                        <div class="col-6">
+                                            <strong><i class="fas fa-envelope me-1"></i>Email:</strong>
+                                        </div>
+                                        <div class="col-6 text-truncate" title="{{ payment.email }}">
+                                            {{ payment.email }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('view_document', filename=payment.payment_screenshot) }}" 
+                                       target="_blank" 
+                                       class="btn btn-primary btn-sm flex-fill">
+                                        <i class="fas fa-expand me-1"></i>View Full
+                                    </a>
+                                    <a href="{{ url_for('view_document', filename=payment.payment_screenshot) }}" 
+                                       download 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    {% if not payment.payment_verified %}
+                                    <button class="btn btn-warning btn-sm verify-btn"
+                                            data-individual-id="{{ payment.individual_id }}"
+                                            data-payment-id="{{ payment.payment_id }}">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Summary Section -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-chart-bar me-2"></i>Payment Summary
+                                </h5>
+                                <div class="row text-center">
+                                    <div class="col-md-2">
+                                        <h4 class="text-primary">{{ payments|length }}</h4>
+                                        <small class="text-muted">Total</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="text-success">
+                                            {{ payments|selectattr('payment_verified', 'equalto', true)|list|length }}
+                                        </h4>
+                                        <small class="text-muted">Verified</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="text-warning">
+                                            {{ payments|rejectattr('payment_verified', 'equalto', true)|list|length }}
+                                        </h4>
+                                        <small class="text-muted">Pending</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="text-info">₹{{ payments|sum(attribute='amount') }}</h4>
+                                        <small class="text-muted">Total Amount</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="text-secondary">
+                                            {{ payments|selectattr('year', 'equalto', '1st')|list|length }}
+                                        </h4>
+                                        <small class="text-muted">1st Year</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="text-secondary">
+                                            {{ payments|selectattr('year', 'equalto', '2nd')|list|length }}
+                                        </h4>
+                                        <small class="text-muted">2nd Year</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- No Payments Found -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">
+                                    {% if filter_type == 'verified' %}
+                                    No Verified Payments Found
+                                    {% elif filter_type == 'pending' %}
+                                    No Pending Payments Found
+                                    {% else %}
+                                    No Payment Screenshots Found
+                                    {% endif %}
+                                </h4>
+                                <p class="text-muted">
+                                    {% if filter_type == 'verified' %}
+                                    There are no verified online payments yet.
+                                    {% elif filter_type == 'pending' %}
+                                    All online payments have been verified.
+                                    {% else %}
+                                    No online payment screenshots have been uploaded yet.
+                                    {% endif %}
+                                </p>
+                                <a href="{{ url_for('view_teams') }}" class="btn btn-primary">
+                                    <i class="fas fa-users me-1"></i>View Participants
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div class="modal fade" id="screenshotModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="screenshotModalLabel">Payment Screenshot</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalScreenshot" src="" alt="Payment Screenshot" class="img-fluid rounded">
+                    <div class="mt-3">
+                        <p class="mb-1"><strong id="modalStudentName"></strong></p>
+                        <p class="mb-1 text-muted">Payment ID: <span id="modalPaymentId"></span></p>
+                        <p class="mb-0 text-success fw-bold">Amount: ₹<span id="modalAmount"></span></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="downloadScreenshot" class="btn btn-success">
+                        <i class="fas fa-download me-1"></i>Download
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Modal functionality
+        const screenshotModal = document.getElementById('screenshotModal');
+        if (screenshotModal) {
+            screenshotModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const screenshotSrc = button.getAttribute('data-src');
+                const studentName = button.getAttribute('data-name');
+                const paymentId = button.getAttribute('data-payment-id');
+                const amount = button.getAttribute('data-amount');
+                
+                const modalImage = document.getElementById('modalScreenshot');
+                const modalTitle = document.getElementById('screenshotModalLabel');
+                const modalStudentName = document.getElementById('modalStudentName');
+                const modalPaymentId = document.getElementById('modalPaymentId');
+                const modalAmount = document.getElementById('modalAmount');
+                const downloadLink = document.getElementById('downloadScreenshot');
+                
+                modalImage.src = screenshotSrc;
+                modalTitle.textContent = `Payment Screenshot - ${studentName}`;
+                modalStudentName.textContent = studentName;
+                modalPaymentId.textContent = paymentId;
+                modalAmount.textContent = amount;
+                downloadLink.href = screenshotSrc;
+                downloadLink.download = `payment_screenshot_${studentName.replace(/\s+/g, '_')}.jpg`;
+            });
+        }
+
+        // Verify payment functionality
+        document.querySelectorAll('.verify-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const individualId = this.getAttribute('data-individual-id');
+                const paymentId = this.getAttribute('data-payment-id');
+                
+                if (confirm(`Are you sure you want to verify payment ${paymentId}?`)) {
+                    // Send verification request
+                    fetch(`/update_payment_status/${individualId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'approve'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Payment verified successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error verifying payment: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Network error. Please try again.');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

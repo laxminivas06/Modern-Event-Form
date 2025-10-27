@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Student Registration</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <style>
+      :root {
+          --primary: #6C63FF;
+          --primary-dark: #5651d9;
+          --secondary: #FF6584;
+          --dark: #2A2D3E;
+          --light: #F8F9FA;
+          --gray: #6C757D;
+          --success: #28a745;
+          --accent: #f72585;
+          --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+          --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+          --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+          --border-radius: 12px;
+          --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Poppins', sans-serif;
+          background-color: var(--light);
+          color: var(--dark);
+         
+          display: flex;
+          flex-direction: column;
+          background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+          line-height: 1.6;
+          overflow-x: hidden;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+          font-weight: 700;
+          line-height: 1.2;
+      }
+
+      /* Container */
+      .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+
+  /* Navigation */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem 0; /* Reduced padding */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    min-height: 60px; /* Reduced height */
+}
+
+.navbar.scrolled {
+    padding: 0.3rem 0; /* Even smaller when scrolled */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem; /* Slightly smaller */
+    color: var(--primary) !important;
+    text-decoration: none;
+    transition: var(--transition);
+    padding: 0.25rem 0; /* Reduced padding */
+}
+
+.navbar-toggler {
+    padding: 0.25rem 0.5rem; /* Smaller toggle button */
+    border: none;
+    font-size: 1rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    margin: 0 0.4rem; /* Reduced margin */
+    color: var(--dark) !important;
+    transition: color 0.3s ease;
+    padding: 0.5rem 0.8rem !important; /* Smaller padding */
+    font-size: 0.9rem; /* Slightly smaller font */
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary) !important;
+    background-color: rgba(108, 99, 255, 0.05);
+    border-radius: 6px;
+}
+
+.btn-register {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 25px; /* Slightly smaller radius */
+    padding: 0.5rem 1.5rem; /* Reduced padding */
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px rgba(108, 99, 255, 0.25);
+    font-size: 0.9rem; /* Smaller font */
+    margin-left: 0.8rem; /* Reduced margin */
+}
+
+.btn-register:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 99, 255, 0.35);
+    color: white;
+}
+
+/* Mobile Responsive Updates */
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px; /* Reduced padding for mobile */
+    }
+    
+    .navbar {
+        min-height: 55px; /* Even smaller on mobile */
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .navbar-collapse {
+        background: white;
+        padding: 0.8rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        margin-top: 0.8rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .navbar-nav .nav-link {
+        margin: 0.2rem 0;
+        padding: 0.6rem 1rem !important;
+        text-align: center;
+    }
+    
+    .btn-register {
+        margin: 0.5rem 0 0 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding-top: 55px; /* Further reduced */
+    }
+    
+    .navbar {
+        min-height: 50px;
+        padding: 0.4rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .btn-register {
+        padding: 0.4rem 1.2rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Navbar animation on scroll */
+.navbar {
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar.hidden {
+    transform: translateY(-100%);
+}
+
+/* Active nav link styling */
+.navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+    background-color: rgba(108, 99, 255, 0.1);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Dropdown menu styling (if you add dropdowns later) */
+.navbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+}
+
+.navbar .dropdown-item {
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: rgba(108, 99, 255, 0.1);
+    color: var(--primary);
+}
+
+      /* Form Card */
+      .form-card {
+          background-color: white;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-sm);
+          padding: 0;
+          transition: var(--transition);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          margin-bottom: 30px;
+          overflow: hidden;
+      }
+
+      .form-card:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-lg);
+      }
+
+      .form-header {
+          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+          padding: 2rem;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+          color: white;
+          border-bottom: none;
+      }
+
+      .form-header::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+              to bottom right,
+              rgba(255, 255, 255, 0.3) 0%,
+              rgba(255, 255, 255, 0) 60%
+          );
+          transform: rotate(30deg);
+          animation: shine 3s infinite;
+      }
+
+      @keyframes shine {
+          0% { transform: rotate(30deg) translate(-30%, -30%); }
+          100% { transform: rotate(30deg) translate(30%, 30%); }
+      }
+
+      .card-body {
+          padding: 3rem;
+      }
+
+      /* Step Indicator */
+      .step-indicator {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 2rem;
+          position: relative;
+      }
+
+      .step-indicator::before {
+          content: '';
+          position: absolute;
+          top: 15px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: #dee2e6;
+          z-index: 1;
+      }
+
+      .step {
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          flex: 1;
+      }
+
+      .step-number {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #dee2e6;
+          color: #6c757d;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 0.5rem;
+          font-weight: bold;
+          transition: var(--transition);
+      }
+
+      .step.active .step-number {
+          background: var(--primary);
+          color: white;
+          transform: scale(1.1);
+      }
+
+      .step.completed .step-number {
+          background: var(--success);
+          color: white;
+      }
+
+      .step-label {
+          font-size: 0.875rem;
+          color: #6c757d;
+          transition: var(--transition);
+      }
+
+      .step.active .step-label {
+          color: var(--primary);
+          font-weight: 500;
+      }
+
+      /* Form Elements */
+      .form-control, .form-select {
+          border-radius: 8px;
+          padding: 12px 15px;
+          border: 1px solid #e0e0e0;
+          transition: var(--transition);
+      }
+
+      .form-control:focus, .form-select:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+      }
+
+      .auto-fill-field {
+          background-color: #f8f9fa;
+          border: 1px solid #dee2e6;
+          padding: 0.75rem;
+          border-radius: 0.375rem;
+          color: #495057;
+          font-weight: 500;
+      }
+
+      .btn-primary {
+          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+          border: none;
+          padding: 12px 30px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+          box-shadow: var(--shadow-sm);
+          color: white;
+          letter-spacing: 0.5px;
+      }
+
+      .btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-md);
+          color: white;
+      }
+
+      .btn-success {
+          background-color: var(--success);
+          border: none;
+          padding: 12px 30px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+          box-shadow: var(--shadow-sm);
+          color: white;
+      }
+
+      .btn-success:hover {
+          background-color: #218838;
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-md);
+          color: white;
+      }
+
+      .btn-outline-secondary {
+          color: var(--gray);
+          border-color: var(--gray);
+          border: 2px solid;
+          padding: 10px 28px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+      }
+
+      .btn-outline-secondary:hover {
+          background-color: var(--gray);
+          color: white;
+          transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+          background-color: var(--gray);
+          border: none;
+          padding: 10px 28px;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: var(--transition);
+          color: white;
+      }
+
+      .btn-secondary:hover {
+          background-color: #5a6268;
+          transform: translateY(-2px);
+          color: white;
+      }
+
+      /* Alerts */
+      .alert {
+          border-radius: var(--border-radius);
+          border: none;
+          padding: 20px;
+          margin: 20px 0;
+          animation: fadeInDown 0.5s ease-out;
+      }
+
+      .alert-info {
+          background-color: #e3f2fd;
+          border-left: 4px solid #2196f3;
+          color: #0c5460;
+      }
+
+      .alert-warning {
+          background-color: #fff8e1;
+          border-left: 4px solid #ffc107;
+          color: #856404;
+      }
+
+      .alert-success {
+          background-color: #e8f5e8;
+          border-left: 4px solid var(--success);
+          color: #155724;
+      }
+
+      .alert-danger {
+          background-color: #f8d7da;
+          border-left: 4px solid #dc3545;
+          color: #721c24;
+      }
+
+      .alert ul {
+          margin-bottom: 0;
+          padding-left: 0;
+      }
+
+      .alert li {
+          margin-bottom: 8px;
+          padding-left: 0;
+          list-style: none;
+      }
+
+      .alert li:last-child {
+          margin-bottom: 0;
+      }
+
+      /* Error messages */
+      .error-message {
+          color: #dc3545;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+          display: none;
+      }
+
+      .error-message.show {
+          display: block;
+          animation: fadeIn 0.3s ease;
+      }
+
+      .is-invalid {
+          border-color: #dc3545 !important;
+          box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+      }
+
+      .is-valid {
+          border-color: #198754 !important;
+          box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+      }
+
+      /* Registration status badge */
+      .registration-status {
+          font-size: 0.75rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.375rem;
+          margin-left: 0.5rem;
+      }
+
+      /* Footer */
+      .footer {
+          background: var(--dark);
+          color: white;
+          padding: 40px 0 20px;
+          margin-top: auto;
+          width: 100%;
+      }
+
+      .footer-content {
+          max-width: 1200px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 0 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+
+      .copyright {
+          margin-top: 20px;
+          font-size: 0.9rem;
+          opacity: 0.8;
+          text-align: center;
+          width: 100%;
+      }
+
+      /* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #000000;
+        --primary-dark: #333333;
+        --secondary: #666666;
+        --dark: #000000;
+        --light: #FFFFFF;
+        --gray: #444444;
+    }
+    
+    .hero-section {
+        background: black;
+    }
+    
+    .card {
+        border: 2px solid black;
+    }
+}
+      @media (max-width: 576px) {
+          body {
+              padding-top: 60px;
+          }
+          
+          .container {
+              padding: 15px 10px;
+          }
+          
+          .card-body {
+              padding: 1.5rem;
+          }
+          
+          .step-indicator {
+              margin-bottom: 1.5rem;
+          }
+          
+          .step-label {
+              font-size: 0.75rem;
+          }
+          
+          .btn {
+              padding: 10px 20px;
+              font-size: 0.9rem;
+          }
+      }
+
+      /* Animation */
+      .animate__animated {
+          opacity: 1;
+          transition: opacity 0.6s ease-out;
+      }
+
+      /* Button Container */
+      .button-container {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          flex-wrap: wrap;
+      }
+      
+      @media (max-width: 576px) {
+          .button-container {
+              flex-direction: column;
+              align-items: center;
+          }
+          
+          .button-container .btn {
+              width: 100%;
+              max-width: 250px;
+          }
+      }
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="fas fa-users me-2"></i>Event Registration
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="tel:+919059160424"><i class="fas fa-phone me-1"></i>Contact</a>
+                </li>
+            </ul>
+          
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row justify-content-center animate__animated animate__fadeIn">
+        <div class="col-xl-8 col-lg-10 col-md-12">
+            <div class="card form-card">
+                <div class="form-header">
+                    <div class="logo mb-3">
+                        <i class="fas fa-user-graduate fa-4x text-white"></i>
+                    </div>
+                    <h3 class="mb-0"><i class="fas fa-user me-2"></i>Student Registration</h3>
+                    <p class="mb-0 mt-2">Freshers Feista 2025</p>
+                </div>
+                <div class="card-body">
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step active" id="step1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Roll Number</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Details</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Payment</div>
+                        </div>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show animate__animated animate__fadeIn">
+                                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Registration Form -->
+                    <form id="registrationForm" method="POST">
+                        <!-- Step 1: Roll Number Verification -->
+                        <div id="step1-content" class="animate__animated animate__fadeIn">
+                            <div class="mb-4">
+                                <label for="roll_number" class="form-label">
+                                    <strong>Enter Your Roll Number *</strong>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="roll_number" 
+                                           name="roll_number"
+                                           placeholder="Enter your roll number"
+                                           required
+                                           maxlength="20">
+                                    <button type="button" class="btn btn-primary" onclick="verifyRollNumber()">
+                                        <i class="fas fa-search me-1"></i>Verify
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    Enter your official college roll number to auto-fill your details.
+                                </div>
+                                <!-- Roll number error message -->
+                                <div id="rollNumberError" class="error-message"></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Student Details (Initially Hidden) -->
+                        <div id="step2-content" class="d-none animate__animated animate__fadeIn">
+                            <div class="alert alert-success" id="successAlert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Roll number verified successfully! Please complete your registration.
+                            </div>
+
+                            <!-- Roll number already registered warning -->
+                            <div class="alert alert-warning d-none" id="rollNumberRegisteredAlert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>This roll number is already registered.</strong> Please try another roll number or contact the team for assistance.
+                            </div>
+
+                            <!-- Auto-filled Fields (Read-only) -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Name</label>
+                                    <div class="auto-fill-field" id="display_name">-</div>
+                                    <input type="hidden" name="name" id="name">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Year</label>
+                                    <div class="auto-fill-field" id="display_year">-</div>
+                                    <input type="hidden" name="year" id="year">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Branch</label>
+                                    <div class="auto-fill-field" id="display_branch">-</div>
+                                    <input type="hidden" name="branch" id="branch">
+                                </div>
+                            </div>
+
+                            <!-- User Input Fields -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="gender" class="form-label">Gender *</label>
+                                    <select class="form-select" id="gender" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                    <div id="genderError" class="error-message"></div>
+                                </div>
+                                <div class="col-md-6">
+    <label for="contact_number" class="form-label">Contact Number *</label>
+    <input type="tel" 
+           class="form-control" 
+           id="contact_number" 
+           name="contact_number" 
+           placeholder="Enter your contact number" 
+           required
+           maxlength="10"
+           oninput="validateContactNumber(this)"
+           onblur="checkContactNumber()">
+    <div id="contactError" class="error-message"></div>
+</div>
+
+                           <div class="mb-3">
+    <label for="email" class="form-label">Email ID *</label>
+    <input type="email" 
+           class="form-control" 
+           id="email" 
+           name="email" 
+           placeholder="Enter your email address" 
+           required
+           oninput="validateEmail(this)"
+           onblur="checkEmail()">
+    <div id="emailError" class="error-message"></div>
+</div>
+
+                            <!-- Hidden roll number field -->
+                            <input type="hidden" name="verified_roll_number" id="verified_roll_number">
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary me-md-2" onclick="backToStep1()">
+                                    <i class="fas fa-arrow-left me-1"></i>Back
+                                </button>
+                                <button type="submit" class="btn btn-success" id="submitBtn">
+                                    Complete Registration <i class="fas fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center mt-3">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+    
+ <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="text-center">
+                    <p>&copy; <script>document.write(new Date().getFullYear())</script> Creator Club. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentRollNumber = '';
+        let isRollNumberRegistered = false;
+
+        function verifyRollNumber() {
+            const rollNumber = document.getElementById('roll_number').value.trim();
+            const rollNumberError = document.getElementById('rollNumberError');
+            
+            if (!rollNumber) {
+                rollNumberError.textContent = 'Please enter your roll number';
+                rollNumberError.classList.add('show');
+                document.getElementById('roll_number').classList.add('is-invalid');
+                return;
+            }
+
+            currentRollNumber = rollNumber;
+            rollNumberError.classList.remove('show');
+            document.getElementById('roll_number').classList.remove('is-invalid');
+
+            // Show loading state
+            const verifyBtn = document.querySelector('button[onclick="verifyRollNumber()"]');
+            const originalText = verifyBtn.innerHTML;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verifying...';
+            verifyBtn.disabled = true;
+
+            fetch('{{ url_for("verify_roll_number") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    roll_number: rollNumber,
+                    context: 'registration'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Populate the auto-filled fields
+                    document.getElementById('display_name').textContent = data.student.name;
+                    document.getElementById('display_year').textContent = data.student.year;
+                    document.getElementById('display_branch').textContent = data.student.branch;
+                    
+                    // Set hidden fields
+                    document.getElementById('name').value = data.student.name;
+                    document.getElementById('year').value = data.student.year;
+                    document.getElementById('branch').value = data.student.branch;
+                    document.getElementById('verified_roll_number').value = rollNumber;
+
+                    // Check if roll number is already registered
+                    isRollNumberRegistered = data.is_registered;
+                    
+                    if (data.is_registered) {
+                        // Show warning for already registered roll number
+                        document.getElementById('successAlert').classList.add('d-none');
+                        document.getElementById('rollNumberRegisteredAlert').classList.remove('d-none');
+                        
+                        // Add warning badge to name field
+                        document.getElementById('display_name').innerHTML = 
+                            data.student.name + ' <span class="badge bg-warning registration-status">Already Registered</span>';
+                        
+                        // Disable form submission
+                        document.getElementById('submitBtn').disabled = true;
+                        document.getElementById('submitBtn').innerHTML = 
+                            'Cannot Register - Roll Number Already Registered <i class="fas fa-ban ms-1"></i>';
+                    } else {
+                        // Show success message
+                        document.getElementById('successAlert').classList.remove('d-none');
+                        document.getElementById('rollNumberRegisteredAlert').classList.add('d-none');
+                        
+                        // Enable form submission
+                        document.getElementById('submitBtn').disabled = false;
+                        document.getElementById('submitBtn').innerHTML = 
+                            'Complete Registration <i class="fas fa-arrow-right ms-1"></i>';
+                    }
+
+                    // Move to step 2
+                    document.getElementById('step1-content').classList.add('d-none');
+                    document.getElementById('step2-content').classList.remove('d-none');
+                    
+                    // Update step indicator
+                    document.getElementById('step1').classList.remove('active');
+                    document.getElementById('step1').classList.add('completed');
+                    document.getElementById('step2').classList.add('active');
+
+                } else {
+                    if (data.is_registered) {
+                        rollNumberError.textContent = 'This roll number is already registered. Please try another roll number or contact the team.';
+                    } else {
+                        rollNumberError.textContent = data.message || 'Roll number not found in our database. Please contact administrator.';
+                    }
+                    rollNumberError.classList.add('show');
+                    document.getElementById('roll_number').classList.add('is-invalid');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                rollNumberError.textContent = 'An error occurred while verifying roll number. Please try again.';
+                rollNumberError.classList.add('show');
+                document.getElementById('roll_number').classList.add('is-invalid');
+            })
+            .finally(() => {
+                verifyBtn.innerHTML = originalText;
+                verifyBtn.disabled = false;
+            });
+        }
+
+
+        // Validate contact number input (only digits, max 10)
+function validateContactNumber(input) {
+    const contactError = document.getElementById('contactError');
+    
+    // Remove any non-digit characters
+    input.value = input.value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    if (input.value.length > 10) {
+        input.value = input.value.slice(0, 10);
+    }
+    
+    // Remove any validation states when user is typing
+    contactError.classList.remove('show');
+    input.classList.remove('is-invalid');
+    input.classList.remove('is-valid');
+}
+
+// Validate email input (convert to lowercase)
+function validateEmail(input) {
+    const emailError = document.getElementById('emailError');
+    
+    // Convert to lowercase
+    input.value = input.value.toLowerCase();
+    
+    // Remove any validation states when user is typing
+    emailError.classList.remove('show');
+    input.classList.remove('is-invalid');
+    input.classList.remove('is-valid');
+}
+
+ function checkEmail() {
+    const email = document.getElementById('email').value.trim();
+    const emailError = document.getElementById('emailError');
+    
+    if (!email) {
+        emailError.classList.remove('show');
+        document.getElementById('email').classList.remove('is-invalid');
+        document.getElementById('email').classList.remove('is-valid');
+        return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.classList.add('show');
+        document.getElementById('email').classList.add('is-invalid');
+        document.getElementById('email').classList.remove('is-valid');
+        return;
+    }
+
+    // Check if email is already registered
+    fetch('{{ url_for("check_member_details") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.email) {
+            emailError.textContent = 'This email is already registered. Please use a different email address.';
+            emailError.classList.add('show');
+            document.getElementById('email').classList.add('is-invalid');
+            document.getElementById('email').classList.remove('is-valid');
+        } else {
+            emailError.classList.remove('show');
+            document.getElementById('email').classList.remove('is-invalid');
+            // Don't add is-valid class for email to prevent green color
+        }
+    })
+    .catch(error => {
+        console.error('Error checking email:', error);
+        emailError.classList.remove('show');
+        document.getElementById('email').classList.remove('is-invalid');
+    });
+}
+
+function checkContactNumber() {
+    const contact = document.getElementById('contact_number').value.trim();
+    const contactError = document.getElementById('contactError');
+    
+    if (!contact) {
+        contactError.classList.remove('show');
+        document.getElementById('contact_number').classList.remove('is-invalid');
+        document.getElementById('contact_number').classList.remove('is-valid');
+        return;
+    }
+
+    // Basic contact validation (10 digits)
+    const contactRegex = /^[6-9]\d{9}$/;
+    if (!contactRegex.test(contact)) {
+        contactError.textContent = 'Please enter a valid 10-digit contact number';
+        contactError.classList.add('show');
+        document.getElementById('contact_number').classList.add('is-invalid');
+        document.getElementById('contact_number').classList.remove('is-valid');
+        return;
+    }
+
+    // Check if contact is already registered
+    fetch('{{ url_for("check_member_details") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contact: contact })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.contact) {
+            contactError.textContent = 'This contact number is already registered. Please use a different contact number.';
+            contactError.classList.add('show');
+            document.getElementById('contact_number').classList.add('is-invalid');
+            document.getElementById('contact_number').classList.remove('is-valid');
+        } else {
+            contactError.classList.remove('show');
+            document.getElementById('contact_number').classList.remove('is-invalid');
+            // Don't add is-valid class for contact to prevent green color
+        }
+    })
+    .catch(error => {
+        console.error('Error checking contact:', error);
+        contactError.classList.remove('show');
+        document.getElementById('contact_number').classList.remove('is-invalid');
+    });
+}
+
+        function backToStep1() {
+            document.getElementById('step2-content').classList.add('d-none');
+            document.getElementById('step1-content').classList.remove('d-none');
+            
+            // Update step indicator
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step1').classList.remove('completed');
+            
+            // Reset form validation states
+            document.getElementById('email').classList.remove('is-invalid', 'is-valid');
+            document.getElementById('contact_number').classList.remove('is-invalid', 'is-valid');
+            document.getElementById('emailError').classList.remove('show');
+            document.getElementById('contactError').classList.remove('show');
+        }
+
+        // Form submission
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Basic validation
+    const gender = document.getElementById('gender').value;
+    const email = document.getElementById('email').value;
+    const contact = document.getElementById('contact_number').value;
+    const genderError = document.getElementById('genderError');
+
+    let hasErrors = false;
+
+    // Reset errors
+    genderError.classList.remove('show');
+    document.getElementById('gender').classList.remove('is-invalid');
+
+    if (!gender) {
+        genderError.textContent = 'Please select your gender';
+        genderError.classList.add('show');
+        document.getElementById('gender').classList.add('is-invalid');
+        hasErrors = true;
+    }
+
+    if (!email) {
+        document.getElementById('emailError').textContent = 'Please enter your email address';
+        document.getElementById('emailError').classList.add('show');
+        document.getElementById('email').classList.add('is-invalid');
+        hasErrors = true;
+    }
+
+    if (!contact) {
+        document.getElementById('contactError').textContent = 'Please enter your contact number';
+        document.getElementById('contactError').classList.add('show');
+        document.getElementById('contact_number').classList.add('is-invalid');
+        hasErrors = true;
+    }
+
+    // Check if roll number is already registered
+    if (isRollNumberRegistered) {
+        alert('This roll number is already registered. Please contact the team for assistance.');
+        hasErrors = true;
+    }
+
+    // Final check for existing email/contact - force re-check before submission
+    const emailInvalid = document.getElementById('email').classList.contains('is-invalid');
+    const contactInvalid = document.getElementById('contact_number').classList.contains('is-invalid');
+    
+    if (emailInvalid || contactInvalid) {
+        // Show appropriate messages
+        if (emailInvalid) {
+            document.getElementById('emailError').classList.add('show');
+        }
+        if (contactInvalid) {
+            document.getElementById('contactError').classList.add('show');
+        }
+        hasErrors = true;
+    }
+
+    if (hasErrors) {
+        // Scroll to first error
+        const firstError = document.querySelector('.is-invalid');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+    }
+
+    // If no errors, submit the form
+    this.submit();
+});
+
+
+
+
+        // Enter key support for roll number
+        document.getElementById('roll_number').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyRollNumber();
+            }
+        });
+
+        // Real-time validation for email and contact
+        document.getElementById('email').addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid', 'is-valid');
+                document.getElementById('emailError').classList.remove('show');
+            }
+        });
+
+        document.getElementById('contact_number').addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid', 'is-valid');
+                document.getElementById('contactError').classList.remove('show');
+            }
+        });
+
+        // Add animation to elements when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            
+            animatedElements.forEach(element => {
+                element.style.opacity = '0';
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

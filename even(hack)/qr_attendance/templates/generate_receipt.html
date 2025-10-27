@@ -1,0 +1,1326 @@
+]<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Receipt</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5651d9;
+            --secondary: #FF6584;
+            --dark: #2A2D3E;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --sidebar-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            padding: 0;
+            display: flex;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .mobile-header .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .mobile-header .logo {
+            height: 35px;
+            width: auto;
+            margin-right: 10px;
+            filter: brightness(0) invert(1);
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .hamburger:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: var(--shadow-md);
+            height: 100vh;
+            position: fixed;
+            transition: var(--transition);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+            background-size: cover;
+        }
+
+        .sidebar-header h4 {
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 0;
+            border-left: 3px solid transparent;
+            transition: var(--transition);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(108, 99, 255, 0.1);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            transition: var(--transition);
+            margin-top: 0;
+            min-height: 100vh;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            transition: var(--transition);
+        }
+
+        /* Back Button */
+        .back-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            width: fit-content;
+            min-width: 120px;
+            text-align: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Receipt Card Styles */
+        .receipt-card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .receipt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: none;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(30deg) translate(-30%, -30%); }
+            100% { transform: rotate(30deg) translate(30%, 30%); }
+        }
+
+        .card-body {
+            padding: 3rem;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+            outline: none;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fc;
+            border-right: none;
+            transition: var(--transition);
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: var(--primary);
+            background-color: rgba(108, 99, 255, 0.05);
+        }
+
+        .input-icon {
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-generate {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            color: white;
+            letter-spacing: 0.5px;
+            width: 100%;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .btn-verify {
+            background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            color: white;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: var(--border-radius);
+            border: none;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-left: 4px solid var(--danger);
+            color: #721c24;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-left: 4px solid var(--success);
+            color: #155724;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border-left: 4px solid var(--info);
+            color: #0c5460;
+        }
+
+        /* Display Elements */
+        .amount-display {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--success);
+            padding: 1rem;
+            background-color: #f1f8fe;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-top: 0.5rem;
+            border: 2px solid #e3f2fd;
+            transition: var(--transition);
+        }
+
+        .amount-display:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .receipt-no-display {
+            font-size: 1.1rem;
+            color: var(--gray);
+            padding: 0.8rem;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-top: 0.5rem;
+            border: 2px dashed #dee2e6;
+            transition: var(--transition);
+        }
+
+        .receipt-no-display:hover {
+            border-color: var(--primary);
+            background-color: #f0f4ff;
+        }
+
+        .student-info-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 2px solid #bbdefb;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .student-info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .info-value {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Loading Spinner */
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .container-fluid {
+                max-width: 1140px;
+            }
+            
+            .card-body {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 1000;
+                height: 100vh;
+                top: 0;
+                left: 0;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 2rem;
+            }
+            
+            .card-header {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .card-header h3 {
+                font-size: 1.4rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 0.8rem;
+                font-size: 16px;
+            }
+            
+            .btn-generate, .btn-verify {
+                padding: 0.9rem;
+            }
+            
+            .sidebar-header .logo {
+                max-height: 60px;
+                max-width: 100px;
+            }
+            
+            .back-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .student-info-card {
+                padding: 1rem;
+            }
+
+            .info-item {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0.5rem;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .card-header {
+                padding: 1.2rem;
+            }
+            
+            .card-header h3 {
+                font-size: 1.2rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 0.7rem;
+            }
+            
+            .btn-generate, .btn-verify {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .amount-display {
+                font-size: 1.1rem;
+                padding: 0.8rem;
+            }
+            
+            .receipt-no-display {
+                font-size: 1rem;
+                padding: 0.6rem;
+            }
+            
+            .sidebar-header {
+                padding: 1rem;
+            }
+            
+            .sidebar-header h4 {
+                font-size: 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .main-content {
+                padding: 0.25rem;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 0.75rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .card-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 0.6rem;
+                font-size: 14px;
+            }
+            
+            .btn-generate, .btn-verify {
+                padding: 0.7rem;
+                font-size: 0.85rem;
+            }
+            
+            .back-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+                min-width: 100px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar,
+            .mobile-header,
+            .back-btn,
+            .btn-generate,
+            .btn-verify {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .receipt-card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .card-header {
+                background: #f8f9fa !important;
+                color: black !important;
+            }
+            
+            body {
+                background: white !important;
+            }
+        }
+
+        /* Loading state for buttons */
+        .btn-generate.loading, .btn-verify.loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-generate.loading::after, .btn-verify.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-right-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Form validation styling */
+        .text-danger.small {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Auto-fill fields styling */
+        .auto-filled {
+            background-color: #e8f5e8 !important;
+            border-color: var(--success) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo-container">
+            <span class="d-none d-sm-inline">Admin Panel</span>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="mb-0">Admin Panel</h4>
+        </div>
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('receipt_login') }}">
+                        <i class="fas fa-receipt"></i>
+                        <span>Receipt Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('message_center') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Message Center</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_homepage') }}">
+                        <i class="fas fa-home"></i>
+                        <span>Edit Homepage</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_excel_upload') }}">
+                        <i class="fas fa-upload me-2"></i>
+                        <span>SDM</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <br>          
+                <button onclick="window.location.href='/admin'" class="back-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink: 0;">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                    </svg>
+                    <span style="white-space: nowrap;">Back</span>
+                </button>
+ 
+                <div class="card receipt-card">
+                    <div class="card-header">
+                        <h3 class="text-white mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>Generate Payment Receipt</h3>
+                        <p class="text-white-50 mb-0">Verify roll number and fill details to generate payment receipt</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- Flash messages -->
+                        <div id="flash-messages">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <form method="POST" id="receiptForm">
+                            {{ form.hidden_tag() }}
+                            
+                            <!-- Roll Number Verification -->
+                            <div class="mb-4">
+                                <label for="roll_number" class="form-label"><i class="fas fa-id-card me-2"></i>Payer Roll Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" class="form-control" id="roll_number" name="roll_number" 
+                                           placeholder="Enter roll number (e.g., 22MH1A05A1)" 
+                                           oninput="this.value = this.value.toUpperCase()"
+                                           required>
+                                    <button type="button" class="btn btn-verify" id="verifyRollNumber">
+                                        <i class="fas fa-search me-1"></i>Verify
+                                    </button>
+                                </div>
+                                <div class="text-muted small mt-1">Enter the student's roll number and click Verify</div>
+                            </div>
+
+                            <!-- Student Information Display -->
+                            <div id="studentInfo" class="student-info-card d-none">
+                                <h5 class="mb-3"><i class="fas fa-user-graduate me-2"></i>Student Information</h5>
+                                <div class="info-item">
+                                    <span class="info-label">Name:</span>
+                                    <span class="info-value" id="studentName">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Year:</span>
+                                    <span class="info-value" id="studentYear">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Branch:</span>
+                                    <span class="info-value" id="studentBranch">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Section:</span>
+                                    <span class="info-value" id="studentSection">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Payer Name -->
+                            <div class="mb-4">
+                                <label for="viewer_name" class="form-label"><i class="fas fa-user me-2"></i>Payer Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    {{ form.viewer_name(class="form-control", placeholder="Enter payer's full name", oninput="this.value = this.value.toUpperCase()", readonly=true) }}
+                                </div>
+                                {% if form.viewer_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.viewer_name.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Payer Email -->
+                            <div class="mb-4">
+                                <label for="viewer_email" class="form-label"><i class="fas fa-envelope me-2"></i>Payer Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    {{ form.viewer_email(class="form-control", placeholder="Enter payer's email address", oninput="this.value = this.value.toLowerCase()", readonly=true) }}
+                                </div>
+                                {% if form.viewer_email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.viewer_email.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Year Selection (Auto-filled) -->
+                            <div class="mb-4">
+                                <label for="year" class="form-label"><i class="fas fa-calendar-alt me-2"></i>Year</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    {{ form.year(class="form-select", readonly=true) }}
+                                </div>
+                                {% if form.year.errors %}
+                                    <div class="text-danger small mt-1">{{ form.year.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Contact Number -->
+                            <div class="mb-4">
+                                <label for="contact_number" class="form-label"><i class="fas fa-phone me-2"></i>Contact Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    {{ form.contact_number(class="form-control", placeholder="Enter contact number", pattern="[0-9]{10}", title="Please enter exactly 10 digits", oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)", readonly=true) }}
+                                </div>
+                                {% if form.contact_number.errors %}
+                                    <div class="text-danger small mt-1">{{ form.contact_number.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Receiver Name -->
+                            <div class="mb-4">
+                                <label for="receiver_name" class="form-label"><i class="fas fa-user-tie me-2"></i>Receiver Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                                    {{ form.receiver_name(class="form-select", disabled=true) }}
+                                </div>
+                                <small class="text-muted">Select the team member who collected the payment</small>
+                                {% if form.receiver_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.receiver_name.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Amount Display -->
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-rupee-sign me-2"></i>Amount</label>
+                                <div class="amount-display" id="amount_display">₹0</div>
+                                {{ form.amount(type="hidden") }}
+                                {% if form.amount.errors %}
+                                    <div class="text-danger small mt-1">{{ form.amount.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Receipt Number Display -->
+                            <div class="mb-4">
+                                <label class="form-label"><i class="fas fa-receipt me-2"></i>Receipt Number</label>
+                                <div class="receipt-no-display" id="receipt_no_display">RC-XXXXX (will be generated)</div>
+                                {{ form.receipt_no(type="hidden") }}
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2 mt-4">
+                                {{ form.submit(class="btn btn-primary btn-generate", disabled=true, id="generateButton") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile sidebar toggle functionality
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        
+        // Toggle sidebar on hamburger click
+        hamburger.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+        });
+        
+        // Close sidebar when clicking on overlay
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            overlay.style.display = 'none';
+        });
+        
+        // Close sidebar when clicking on a nav link (for mobile)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('active');
+                    overlay.style.display = 'none';
+                }
+            });
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            }
+        });
+
+        // Roll number verification for receipt generation
+        document.getElementById('verifyRollNumber').addEventListener('click', function() {
+            const rollNumber = document.getElementById('roll_number').value.trim();
+            const verifyButton = this;
+            
+            if (!rollNumber) {
+                showAlert('Please enter a roll number', 'danger');
+                return;
+            }
+
+            // Show loading state
+            verifyButton.classList.add('loading');
+            verifyButton.disabled = true;
+
+            // First check if receipt already exists for this roll number
+            fetch('/api/check-existing-receipt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ roll_number: rollNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.receipt_exists) {
+                    showAlert('A receipt has already been generated for this roll number. Cannot generate another one.', 'danger');
+                    resetForm();
+                    verifyButton.classList.remove('loading');
+                    verifyButton.disabled = false;
+                    return;
+                }
+
+                // If no existing receipt, proceed with verification
+                return fetch('/api/verify-roll-number', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        roll_number: rollNumber,
+                        context: 'receipt'
+                    })
+                });
+            })
+            .then(response => {
+                if (!response) return; // Stop if receipt exists check failed
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success) {
+                    // Populate form fields with student data
+                    populateStudentData(data.student, data.is_registered, data.registration_info);
+                    
+                    if (data.is_registered) {
+                        showAlert('Student verified successfully! This student is already registered. You can still generate a receipt.', 'info');
+                    } else {
+                        showAlert('Student verified successfully!', 'success');
+                    }
+                } else if (data) {
+                    showAlert(data.message || 'Roll number not found in database', 'danger');
+                    resetForm();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Network error. Please try again.', 'danger');
+                resetForm();
+            })
+            .finally(() => {
+                verifyButton.classList.remove('loading');
+                verifyButton.disabled = false;
+            });
+        });
+
+        function populateStudentData(student, isRegistered = false, registrationInfo = null) {
+            // Show student info card
+            const studentInfo = document.getElementById('studentInfo');
+            studentInfo.classList.remove('d-none');
+            
+            // Populate student information
+            document.getElementById('studentName').textContent = student.name;
+            document.getElementById('studentYear').textContent = student.year;
+            document.getElementById('studentBranch').textContent = student.branch;
+            document.getElementById('studentSection').textContent = student.section || 'N/A';
+
+            // Add or update registration status
+            let registrationStatus = document.getElementById('registrationStatus');
+            if (!registrationStatus) {
+                registrationStatus = document.createElement('div');
+                registrationStatus.className = 'info-item';
+                registrationStatus.id = 'registrationStatus';
+                studentInfo.appendChild(registrationStatus);
+            }
+            
+            if (isRegistered) {
+                registrationStatus.innerHTML = `
+                    <span class="info-label">Registration Status:</span>
+                    <span class="info-value" style="color: #28a745;">
+                        Already Registered <i class="fas fa-check-circle"></i>
+                    </span>
+                `;
+                
+                // Pre-fill with registration data if available
+                if (registrationInfo) {
+                    document.getElementById('viewer_name').value = registrationInfo.name || student.name;
+                    if (registrationInfo.email) {
+                        document.getElementById('viewer_email').value = registrationInfo.email;
+                    }
+                    if (registrationInfo.contact) {
+                        document.getElementById('contact_number').value = registrationInfo.contact;
+                    }
+                } else {
+                    document.getElementById('viewer_name').value = student.name;
+                }
+            } else {
+                registrationStatus.innerHTML = `
+                    <span class="info-label">Registration Status:</span>
+                    <span class="info-value" style="color: #6c757d;">
+                        Not Registered <i class="fas fa-info-circle"></i>
+                    </span>
+                `;
+                document.getElementById('viewer_name').value = student.name;
+            }
+
+            // Set year and calculate amount (make year read-only)
+            const yearSelect = document.getElementById('year');
+            yearSelect.value = student.year;
+            yearSelect.setAttribute('readonly', 'true');
+            yearSelect.classList.add('bg-light', 'auto-filled');
+            calculateAmount();
+
+            // Populate name field (make it read-only)
+            const nameField = document.getElementById('viewer_name');
+            nameField.setAttribute('readonly', 'true');
+            nameField.classList.add('bg-light', 'auto-filled');
+
+            // Enable only editable fields
+            document.getElementById('viewer_email').readOnly = false;
+            document.getElementById('contact_number').readOnly = false;
+            document.getElementById('receiver_name').disabled = false;
+            document.getElementById('generateButton').disabled = false;
+
+            // Add auto-fill styling
+            document.getElementById('roll_number').classList.add('auto-filled');
+            
+            // Mark roll number as verified
+            document.getElementById('roll_number').setAttribute('data-verified', 'true');
+        }
+
+        function resetForm() {
+            // Hide student info card
+            document.getElementById('studentInfo').classList.add('d-none');
+            
+            // Remove registration status if it exists
+            const registrationStatus = document.getElementById('registrationStatus');
+            if (registrationStatus) {
+                registrationStatus.remove();
+            }
+            
+            // Reset form fields
+            document.getElementById('viewer_name').value = '';
+            document.getElementById('viewer_email').value = '';
+            document.getElementById('contact_number').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('amount_display').textContent = '₹0';
+            document.getElementById('amount').value = '0';
+            
+            // Remove readonly attributes and reset styling
+            document.getElementById('viewer_name').removeAttribute('readonly');
+            document.getElementById('year').removeAttribute('readonly');
+            
+            // Disable form fields
+            document.getElementById('viewer_email').readOnly = true;
+            document.getElementById('contact_number').readOnly = true;
+            document.getElementById('receiver_name').disabled = true;
+            document.getElementById('generateButton').disabled = true;
+
+            // Remove auto-fill styling and verification mark
+            document.getElementById('viewer_name').classList.remove('auto-filled', 'bg-light');
+            document.getElementById('roll_number').classList.remove('auto-filled');
+            document.getElementById('year').classList.remove('auto-filled', 'bg-light');
+            document.getElementById('roll_number').removeAttribute('data-verified');
+        }
+
+        // Calculate amount based on year selection
+        function calculateAmount() {
+            const year = document.getElementById('year').value;
+            let amount = 0;
+
+            if (year === '1st') {
+                amount = 500;
+            } else if (year === '2nd') {
+                amount = 600;
+            }
+
+            document.getElementById('amount_display').textContent = `₹${amount}`;
+            document.getElementById('amount').value = amount;
+            
+            // Make amount display non-editable
+            const amountDisplay = document.getElementById('amount_display');
+            amountDisplay.style.cursor = 'not-allowed';
+            amountDisplay.title = 'Amount is automatically calculated based on year';
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : 
+                                  type === 'success' ? 'check-circle' : 
+                                  type === 'info' ? 'info-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const flashMessages = document.getElementById('flash-messages');
+            // Clear existing alerts
+            const existingAlerts = flashMessages.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+            
+            // Add new alert after a brief delay
+            setTimeout(() => {
+                flashMessages.appendChild(alertDiv);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.style.transition = 'opacity 1s';
+                        alertDiv.style.opacity = '0';
+                        setTimeout(() => alertDiv.remove(), 1000);
+                    }
+                }, 5000);
+            }, 100);
+        }
+
+        // Handle flash messages auto-removal
+        const flashMessages = document.getElementById('flash-messages');
+        if (flashMessages && flashMessages.children.length > 0) {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    alert.style.transition = 'opacity 1s';
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 1000);
+                });
+            }, 5000);
+        }
+
+        // Form submission handling
+        document.getElementById('receiptForm').addEventListener('submit', function(e) {
+            const generateButton = document.getElementById('generateButton');
+            const rollNumber = document.getElementById('roll_number').value.trim();
+            
+            // Validate roll number verification
+            if (!document.getElementById('roll_number').getAttribute('data-verified')) {
+                e.preventDefault();
+                showAlert('Please verify the roll number before generating receipt', 'danger');
+                return;
+            }
+            
+            // Validate required fields
+            const requiredFields = ['viewer_name', 'viewer_email', 'contact_number', 'receiver_name'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                showAlert('Please fill all required fields', 'danger');
+                return;
+            }
+            
+            // Validate email format
+            const email = document.getElementById('viewer_email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                showAlert('Please enter a valid email address', 'danger');
+                document.getElementById('viewer_email').classList.add('is-invalid');
+                return;
+            }
+            
+            // Validate contact number
+            const contact = document.getElementById('contact_number').value;
+            const contactRegex = /^[0-9]{10}$/;
+            if (!contactRegex.test(contact)) {
+                e.preventDefault();
+                showAlert('Please enter a valid 10-digit contact number', 'danger');
+                document.getElementById('contact_number').classList.add('is-invalid');
+                return;
+            }
+
+            // Show loading state
+            generateButton.classList.add('loading');
+            generateButton.disabled = true;
+            
+            // Form will submit normally, loading state will be cleared on page reload
+        });
+
+        // Allow manual editing of roll number after verification
+        document.getElementById('roll_number').addEventListener('input', function() {
+            // If roll number is changed after verification, reset the form
+            if (this.getAttribute('data-verified') === 'true') {
+                resetForm();
+            }
+        });
+
+        // Real-time validation for contact number
+        document.getElementById('contact_number').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+            if (this.value.length === 10) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+
+        // Real-time validation for email
+        document.getElementById('viewer_email').addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(this.value)) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+
+        // Auto-capitalize name field (only if not read-only)
+        document.getElementById('viewer_name').addEventListener('input', function() {
+            if (!this.hasAttribute('readonly')) {
+                this.value = this.value.toUpperCase();
+            }
+        });
+
+        // Enable form when receiver name is selected
+        document.getElementById('receiver_name').addEventListener('change', function() {
+            if (this.value) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+
+        // Clear validation styles on focus
+        document.querySelectorAll('.form-control, .form-select').forEach(field => {
+            field.addEventListener('focus', function() {
+                this.classList.remove('is-invalid');
+            });
+        });
+
+        // Generate receipt number preview (optional enhancement)
+        function generateReceiptPreview() {
+            const timestamp = new Date().getTime();
+            const receiptNo = `RC-${timestamp.toString().slice(-5)}`;
+            document.getElementById('receipt_no_display').textContent = receiptNo;
+        }
+
+        // Initialize receipt preview
+        generateReceiptPreview();
+    });
+</script>
+    
+</body>
+</html>
