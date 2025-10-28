@@ -24,6 +24,29 @@
             "payment_status": "approved",
             "payment_review_date": "2025-10-28 12:05:31",
             "payment_review_by": "unknown"
+        },
+        {
+            "individual_id": "IND_0002",
+            "roll_number": "25N81A6601",
+            "name": "KAMISETTY CHARITHA",
+            "year": "1st",
+            "branch": "Freshman",
+            "section": "A-1",
+            "gender": "Female",
+            "email": "laxminivasmorishetty143@gmai.com",
+            "contact_number": "9059160423",
+            "registration_date": "2025-10-28 17:01:02",
+            "payment_verified": false,
+            "payment_method": "cash",
+            "payment_date": "2025-10-28 17:01:12",
+            "registration_fee": 500,
+            "college": "Sphoorthy Engineering College",
+            "payment_screenshot": null,
+            "cash_receipt_photo": null,
+            "payment_id": null,
+            "cash_receiver_name": "Laxmi Nivas",
+            "cash_received_at": "2025-10-28",
+            "receipt_number": null
         }
     ]
 }
