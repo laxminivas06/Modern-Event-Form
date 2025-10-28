@@ -659,6 +659,7 @@
         <button class="hamburger" id="hamburger">
             <i class="fas fa-bars"></i>
         </button>
+
         <div class="logo-container">
             <span class="d-none d-sm-inline">Admin Panel</span>
         </div>
@@ -675,8 +676,14 @@
         <div class="sidebar-menu">
             <ul class="nav flex-column">
                
+               <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('view_teams') }}">
+                        <i class="fas fa-user-shield me-2"></i>
+                        <span>View Users</span>
+                    </a>
+                </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('receipt_login') }}">
+                    <a class="nav-link active" href="{{ url_for('receipt_login') }}">
                         <i class="fas fa-receipt"></i>
                         <span>Receipt Management</span>
                     </a>
@@ -687,7 +694,6 @@
                         <span>Message Center</span>
                     </a>
                 </li>
-                
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('admin_homepage') }}">
                         <i class="fas fa-home"></i>
@@ -695,9 +701,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ url_for('admin_excel_upload') }}">
-                        <i class="fas fa-upload"></i>
-                        <span>Student Data Upload</span>
+                    <a class="nav-link" href="{{ url_for('admin_excel_upload') }}">
+                        <i class="fas fa-upload me-2"></i>
+                        <span>SDM</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('registration_control') }}">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <span>Registration Control</span>
                     </a>
                 </li>
             </ul>
@@ -708,6 +720,7 @@
     <div class="main-content">
         <div class="row justify-content-center">
             <div class="col-12">
+                <br> <br>
                 <!-- Back Button -->
                 <button onclick="window.location.href='{{ url_for('admin_dashboard') }}'" class="back-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink: 0;">

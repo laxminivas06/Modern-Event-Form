@@ -9,1877 +9,1316 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-:root {
-    --primary: #6C63FF;
-    --primary-dark: #5651d9;
-    --secondary: #FF6584;
-    --dark: #2A2D3E;
-    --light: #F8F9FA;
-    --gray: #6C757D;
-    --success: #28a745;
-    --warning: #ffc107;
-    --danger: #dc3545;
-    --info: #17a2b8;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --border-radius: 12px;
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--light);
-    color: var(--dark);
-    background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-    padding-bottom: 20px;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-/* Container */
-.container-fluid {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px 15px;
-}
-
-/* Buttons */
-.btn {
-    border: none;
-    border-radius: 50px;
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: var(--transition);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    color: white;
-}
-
-.btn-outline-primary {
-    color: var(--primary);
-    border: 2px solid var(--primary);
-    background: transparent;
-}
-
-.btn-outline-primary:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.btn-outline-success {
-    color: var(--success);
-    border: 2px solid var(--success);
-    background: transparent;
-}
-
-.btn-outline-success:hover {
-    background: var(--success);
-    color: white;
-}
-
-.btn-outline-warning {
-    color: var(--warning);
-    border: 2px solid var(--warning);
-    background: transparent;
-}
-
-.btn-outline-warning:hover {
-    background: var(--warning);
-    color: black;
-}
-
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 0.875rem;
-}
-
-/* Cards */
-.card {
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: var(--transition);
-    background: white;
-    margin-bottom: 1.5rem;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
-}
-
-.card-header {
-    background: white;
-    border-bottom: 1px solid #e9ecef;
-    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
-    padding: 1.25rem 1.5rem;
-}
-
-.card-body {
-    padding: 1.5rem;
-}
-
-/* Stats Cards */
-.stats-card {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 20px;
-    transition: var(--transition);
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.stats-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.amount-card {
-    background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
-    color: white;
-    border-radius: var(--border-radius);
-    padding: 20px;
-    text-align: center;
-    transition: var(--transition);
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.amount-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-.year-card {
-    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-    color: white;
-    border-radius: var(--border-radius);
-    padding: 20px;
-    text-align: center;
-    transition: var(--transition);
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.year-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-/* Payment Statistics Cards - UPDATED */
-.payment-stat-card {
-    background: white;
-    border-radius: var(--border-radius);
-    padding: 20px;
-    text-align: center;
-    transition: var(--transition);
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-left: 4px solid;
-    box-shadow: var(--shadow-sm);
-}
-
-.payment-stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-}
-
-.payment-stat-card.total {
-    border-left-color: var(--success);
-    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
-}
-
-.payment-stat-card.cash {
-    border-left-color: var(--info);
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-}
-
-.payment-stat-card.online {
-    border-left-color: var(--warning);
-    background: linear-gradient(135deg, #fff8e1 0%, #ffeaa7 100%);
-}
-
-.payment-stat-card.pending {
-    border-left-color: var(--secondary);
-    background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
-}
-
-.payment-stat-card .card-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--dark);
-}
-
-.payment-stat-card .card-text {
-    font-size: 0.9rem;
-    color: var(--gray);
-    margin-bottom: 0.5rem;
-}
-
-.payment-stat-card .card-small {
-    font-size: 0.8rem;
-    color: var(--gray);
-    opacity: 0.8;
-}
-
-/* Payment Statistics Grid - UPDATED */
-.payment-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-/* Tables */
-.table-responsive {
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-}
-
-.table {
-    margin-bottom: 0;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    color: var(--gray);
-    padding: 1rem;
-}
-
-.table td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.table tbody tr {
-    transition: var(--transition);
-}
-
-.table tbody tr:hover {
-    background-color: rgba(108, 99, 255, 0.05);
-    transform: translateX(2px);
-}
-
-/* Badges */
-.badge {
-    font-weight: 500;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-}
-
-.badge-individual {
-    background-color: var(--primary);
-    color: white;
-}
-
-.badge-team {
-    background-color: var(--secondary);
-    color: white;
-}
-
-.badge-secondary {
-    background-color: var(--gray);
-    color: white;
-}
-
-.badge-light {
-    background-color: #f8f9fa;
-    color: var(--dark);
-}
-
-.badge-info {
-    background-color: var(--info);
-    color: white;
-}
-
-.badge-success {
-    background-color: var(--success);
-    color: white;
-}
-
-.badge-warning {
-    background-color: var(--warning);
-    color: black;
-}
-
-/* Contact Buttons */
-.contact-btn {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-}
-
-.contact-buttons {
-    display: flex;
-    gap: 4px;
-}
-
-/* Payment Actions */
-.payment-actions {
-    display: flex;
-    gap: 5px;
-    margin-top: 8px;
-}
-
-.payment-actions .btn {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-}
-
-/* QR Button */
-.qr-btn {
-    font-size: 0.8rem;
-    border-radius: 6px;
-}
-
-/* Add this to your CSS */
-.qr-code-image {
-    transition: none !important;
-    animation: none !important;
-}
-
-#qrModal .modal-content {
-    transform: none !important;
-    transition: none !important;
-}
-
-#qrImageContainer {
-    transform: none !important;
-    transition: none !important;
-}
-
-/* Filter Buttons */
-.filter-btn.active {
-    background-color: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-/* Form Controls */
-.form-control {
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    transition: var(--transition);
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-}
-
-.form-control:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
-    outline: none;
-}
-
-/* No Results */
-#noResults {
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-}
-
-#noResults:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-/* Modal Styling */
-.modal-content {
-    border-radius: var(--border-radius);
-    border: none;
-    box-shadow: var(--shadow-lg);
-}
-
-.modal-header {
-    background-color: var(--primary);
-    color: white;
-    border-bottom: none;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-}
-
-.modal-header .btn-close {
-    filter: invert(1);
-}
-
-.qr-modal-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
-
-.document-modal-img {
-    max-width: 100%;
-    max-height: 70vh;
-    object-fit: contain;
-}
-
-.participant-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.detail-item {
-    margin-bottom: 10px;
-}
-
-.detail-label {
-    font-weight: 600;
-    color: var(--gray);
-}
-
-.detail-value {
-    color: var(--dark);
-}
-
-/* Document Preview Styles */
-.embed-responsive {
-    position: relative;
-    display: block;
-    width: 100%;
-    padding: 0;
-    overflow: hidden;
-}
-
-.embed-responsive-16by9::before {
-    padding-top: 56.25%;
-}
-
-.embed-responsive::before {
-    display: block;
-    content: "";
-}
-
-.embed-responsive .embed-responsive-item,
-.embed-responsive iframe,
-.embed-responsive embed,
-.embed-responsive object {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-
-.document-preview {
-    max-width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-}
-
-.file-icon {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-/* Responsive Styles */
-@media (max-width: 1200px) {
-    .container-fluid {
-        max-width: 1140px;
-    }
-    
-    .card-body {
-        padding: 1.25rem;
-    }
-    
-    .stats-card,
-    .amount-card,
-    .year-card {
-        padding: 15px;
-        min-height: 110px;
-    }
-    
-    .participant-details {
-        grid-template-columns: 1fr;
-    }
-    
-    /* Payment Statistics Grid - Medium screens */
-    .payment-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    
-    .payment-stat-card {
-        padding: 18px;
-        min-height: 130px;
-    }
-}
-
-@media (max-width: 992px) {
-    .container-fluid {
-        max-width: 960px;
-        padding: 15px;
-    }
-    
-    .card-body {
-        padding: 1rem;
-    }
-    
-    .table-responsive {
-        font-size: 0.875rem;
-    }
-    
-    .table th,
-    .table td {
-        padding: 0.75rem;
-    }
-    
-    .btn-sm {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .stats-card,
-    .amount-card,
-    .year-card {
-        padding: 12px;
-        min-height: 100px;
-    }
-    
-    .contact-info {
-        font-size: 0.8rem;
-    }
-    
-    .amount-display {
-        font-size: 0.9rem;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-    }
-    
-    .action-buttons .btn {
-        margin-bottom: 5px;
-    }
-    
-    /* Payment Statistics Grid - Tablet */
-    .payment-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .payment-stat-card {
-        padding: 15px;
-        min-height: 120px;
-    }
-    
-    .payment-stat-card .card-title {
-        font-size: 1.3rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .container-fluid {
-        max-width: 720px;
-        padding: 10px;
-    }
-    
-    .card {
-        margin-bottom: 1rem;
-    }
-    
-    .card-body {
-        padding: 0.75rem;
-    }
-    
-    .table th,
-    .table td {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-    }
-    
-    .btn {
-        padding: 8px 16px;
-        font-size: 0.9rem;
-    }
-    
-    .btn-sm {
-        padding: 0.2rem 0.4rem;
-        font-size: 0.7rem;
-    }
-    
-    .stats-row {
-        flex-direction: column;
-    }
-    
-    .payment-actions {
-        flex-direction: column;
-    }
-    
-    .payment-actions .btn {
-        width: 100%;
-    }
-    
-    .contact-buttons {
-        flex-direction: column;
-    }
-    
-    .contact-buttons .btn {
-        width: 100%;
-        margin-bottom: 2px;
-    }
-    
-    .modal-dialog {
-        margin: 0.5rem;
-    }
-    
-    /* Payment Statistics Grid - Mobile Large */
-    .payment-stats-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .payment-stat-card {
-        padding: 12px;
-        min-height: 110px;
-    }
-    
-    .payment-stat-card .card-title {
-        font-size: 1.2rem;
-    }
-    
-    .payment-stat-card .card-text {
-        font-size: 0.85rem;
-    }
-    
-    .payment-stat-card .card-small {
-        font-size: 0.75rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .container-fluid {
-        padding: 8px;
-    }
-    
-    .card-body {
-        padding: 0.5rem;
-    }
-    
-    .table th,
-    .table td {
-        padding: 0.4rem;
-        font-size: 0.75rem;
-    }
-    
-    .btn {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
-    
-    .btn-sm {
-        padding: 0.15rem 0.3rem;
-        font-size: 0.65rem;
-    }
-    
-    .badge {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.5rem;
-    }
-    
-    .stats-card,
-    .amount-card,
-    .year-card {
-        padding: 10px;
-        min-height: 90px;
-    }
-    
-    .contact-info {
-        font-size: 0.75rem;
-    }
-    
-    .amount-display {
-        font-size: 0.8rem;
-    }
-    
-    .d-none.d-md-inline {
-        display: none !important;
-    }
-    
-    .modal-dialog {
-        margin: 0.25rem;
-    }
-    
-    /* Payment Statistics Grid - Mobile Small */
-    .payment-stats-grid {
-        gap: 6px;
-    }
-    
-    .payment-stat-card {
-        padding: 10px;
-        min-height: 100px;
-    }
-    
-    .payment-stat-card .card-title {
-        font-size: 1.1rem;
-    }
-    
-    .payment-stat-card .card-text {
-        font-size: 0.8rem;
-    }
-    
-    .payment-stat-card .card-small {
-        font-size: 0.7rem;
-    }
-}
-
-@media (max-width: 400px) {
-    .container-fluid {
-        padding: 5px;
-    }
-    
-    .card-body {
-        padding: 0.4rem;
-    }
-    
-    .table th,
-    .table td {
-        padding: 0.3rem;
-        font-size: 0.7rem;
-    }
-    
-    .btn {
-        padding: 5px 10px;
-        font-size: 0.8rem;
-    }
-    
-    .form-control {
-        padding: 8px 10px;
-        font-size: 14px; /* Prevent zoom on iOS */
-    }
-    
-    /* Payment Statistics Grid - Extra Small */
-    .payment-stat-card {
-        padding: 8px;
-        min-height: 90px;
-    }
-    
-    .payment-stat-card .card-title {
-        font-size: 1rem;
-    }
-    
-    .payment-stat-card .card-text {
-        font-size: 0.75rem;
-    }
-    
-    .payment-stat-card .card-small {
-        font-size: 0.65rem;
-    }
-}
-
-/* Print Styles */
-@media print {
-    .btn,
-    .payment-actions,
-    .contact-buttons,
-    .filter-btn {
-        display: none !important;
-    }
-    
-    .card {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-    }
-    
-    .table {
-        border: 1px solid #ddd !important;
-    }
-    
-    body {
-        background: white !important;
-        padding: 10px !important;
-    }
-    
-    .stats-card,
-    .amount-card,
-    .year-card {
-        background: #f8f9fa !important;
-        color: black !important;
-    }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-    :root {
-        --primary: #000000;
-        --primary-dark: #333333;
-        --secondary: #666666;
-        --dark: #000000;
-        --light: #FFFFFF;
-        --gray: #444444;
-    }
-    
-    .card {
-        border: 2px solid black;
-    }
-    
-    .table th {
-        background: #f0f0f0;
-        border-bottom: 2px solid black;
-    }
-    
-    .table td {
-        border-bottom: 1px solid black;
-    }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-    
-    .card:hover,
-    .stats-card:hover,
-    .amount-card:hover,
-    .year-card:hover,
-    .table tbody tr:hover,
-    .btn:hover {
-        transform: none;
-    }
-}
-
-/* Focus states for accessibility */
-.form-control:focus,
-.btn:focus,
-.filter-btn:focus {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-/* Loading state for buttons */
-.btn.loading {
-    position: relative;
-    color: transparent;
-}
-
-.btn.loading::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    left: 50%;
-    margin-left: -8px;
-    margin-top: -8px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-right-color: transparent;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Gender badges specific styling */
-.badge.bg-secondary {
-    transition: var(--transition);
-}
-
-.badge.bg-secondary:hover {
-    transform: scale(1.05);
-}
-
-/* Amount display styling */
-.amount-display {
-    font-weight: 600;
-    color: var(--success);
-}
-
-/* Contact info styling */
-.contact-info div {
-    margin-bottom: 2px;
-}
-
-.contact-info i {
-    width: 16px;
-    text-align: center;
-}
-
-/* Action buttons styling */
-.action-buttons {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-}
-
-.action-buttons .btn {
-    flex: 1;
-    min-width: 80px;
-}
-
-/* Document card styling */
-.document-card {
-    transition: var(--transition);
-    border: 1px solid #e9ecef;
-}
-
-.document-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-/* Mobile-first responsive adjustments */
-@media (max-width: 768px) {
-    .table-responsive {
-        border: 1px solid #dee2e6;
-        border-radius: var(--border-radius);
-    }
-    
-    .stats-card h4,
-    .amount-card h5,
-    .year-card h5 {
-        font-size: 1.1rem;
-    }
-    
-    .filter-buttons {
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    
-    .filter-buttons .btn {
-        flex: 1;
-        min-width: 120px;
-    }
-}
-
-/* Extra small devices */
-@media (max-width: 375px) {
-    .container-fluid {
-        padding: 3px;
-    }
-    
-    .card-body {
-        padding: 0.3rem;
-    }
-    
-    .btn {
-        padding: 4px 8px;
-        font-size: 0.75rem;
-    }
-    
-    .table th,
-    .table td {
-        padding: 0.2rem;
-        font-size: 0.65rem;
-    }
-}
-
-/* Enhanced responsive stats */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.stats-card, .amount-card, .year-card {
-    padding: 15px;
-    border-radius: var(--border-radius);
-    color: white;
-    text-align: center;
-    transition: var(--transition);
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.stats-card:hover, .amount-card:hover, .year-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-}
-
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-    .stats-row {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    }
-}
-
-@media (max-width: 992px) {
-    .stats-row {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 12px;
-    }
-    
-    .stats-card, .amount-card, .year-card {
-        padding: 12px;
-        min-height: 90px;
-    }
-    
-    .stats-card h4, .amount-card h5, .year-card h5 {
-        font-size: 1.3rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .stats-row {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .stats-card, .amount-card, .year-card {
-        padding: 10px;
-        min-height: 80px;
-    }
-    
-    .stats-card h4, .amount-card h5, .year-card h5 {
-        font-size: 1.2rem;
-    }
-    
-    .stats-card p, .amount-card p, .year-card p {
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .stats-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .stats-card, .amount-card, .year-card {
-        padding: 8px;
-        min-height: 70px;
-    }
-    
-    .stats-card h4, .amount-card h5, .year-card h5 {
-        font-size: 1.1rem;
-    }
-    
-    .stats-card p, .amount-card p, .year-card p {
-        font-size: 0.75rem;
-    }
-}
-
-/* Branch and section cards specific styling */
-.branch-stats .col-md-4,
-.section-stats .col-md-3 {
-    margin-bottom: 15px;
-}
-
-/* Animation for stats cards */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.stats-card, .amount-card, .year-card {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-/* Stagger animation for multiple cards */
-.stats-row > *:nth-child(1) { animation-delay: 0.1s; }
-.stats-row > *:nth-child(2) { animation-delay: 0.2s; }
-.stats-row > *:nth-child(3) { animation-delay: 0.3s; }
-.stats-row > *:nth-child(4) { animation-delay: 0.4s; }
-.stats-row > *:nth-child(5) { animation-delay: 0.5s; }
-.stats-row > *:nth-child(6) { animation-delay: 0.6s; }
-
-/* Toast notifications */
-.toast-container {
-    z-index: 9999;
-}
-
-/* QR Code error styling */
-.qr-error {
-    padding: 20px;
-    text-align: center;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin: 10px 0;
-}
-
-.qr-error i {
-    font-size: 3rem;
-    color: var(--danger);
-    margin-bottom: 15px;
-}
-
-/* Enhanced table responsiveness */
-@media (max-width: 768px) {
-    .table-responsive {
-        border: 1px solid #dee2e6;
-    }
-    
-    .table thead {
-        display: none;
-    }
-    
-    .table tbody tr {
-        display: block;
-        margin-bottom: 1rem;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 1rem;
-    }
-    
-    .table tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem;
-        border: none;
-        border-bottom: 1px solid #f8f9fa;
-    }
-    
-    .table tbody td:before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: var(--gray);
-        text-transform: uppercase;
-        font-size: 0.75rem;
-    }
-    
-    .table tbody td:last-child {
-        border-bottom: none;
-    }
-}
-
-/* Custom scrollbar */
-.table-responsive::-webkit-scrollbar {
-    height: 8px;
-}
-
-.table-responsive::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-dark);
-}
-
-/* Button Navigation Styles */
-.nav-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white !important;
-    padding: 0.7rem 1.5rem;
-    margin: 0 0.3rem;
-    border-radius: 25px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    min-width: fit-content;
-    border: 2px solid transparent;
-}
-
-.nav-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-}
-
-.nav-button:hover::before {
-    left: 100%;
-}
-
-.nav-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-}
-
-.nav-button:active {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.nav-button.active {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-}
-
-.nav-button.active:hover {
-    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
-    box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
-}
-
-.nav-button i {
-    font-size: 1rem;
-    margin-right: 8px;
-    transition: transform 0.3s ease;
-}
-
-.nav-button:hover i {
-    transform: scale(1.2) rotate(5deg);
-}
-
-/* Button Variants */
-.nav-button.receipt-btn {
-    background: linear-gradient(135deg, #023b6d 0%, #00f2fe 100%);
-    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-}
-
-.nav-button.receipt-btn:hover {
-    background: linear-gradient(135deg, #ee08b4 0%, #4facfe 100%);
-    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
-}
-
-.nav-button.payment-btn {
-    background: linear-gradient(135deg, #db0ff6 0%, #38f9d7 100%);
-    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
-}
-
-.nav-button.payment-btn:hover {
-    background: linear-gradient(135deg, #3872f9 0%, #43e97b 100%);
-    box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
-}
-
-/* Button Badges */
-.button-badge {
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
-    border-radius: 50px;
-    min-width: 22px;
-    height: 22px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 8px;
-    padding: 0 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    animation: badgePulse 2s infinite;
-}
-
-@keyframes badgePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .nav-buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        width: 100%;
-        margin-top: 1rem;
-    }
-    
-    .nav-button {
-        margin: 0;
-        padding: 0.9rem 1.5rem;
-        width: 100%;
-        justify-content: flex-start;
-        border-radius: 15px;
-        font-size: 1rem;
-    }
-    
-    .nav-button i {
-        font-size: 1.1rem;
-        margin-right: 12px;
-        width: 20px;
-        text-align: center;
-    }
-    
-    .button-badge {
-        margin-left: auto;
-        margin-right: 5px;
-    }
-}
-
-@media (max-width: 576px) {
-    .nav-button {
-        padding: 0.8rem 1.2rem;
-        font-size: 0.95rem;
-    }
-    
-    .nav-button i {
-        font-size: 1rem;
-        margin-right: 10px;
-    }
-    
-    .button-badge {
-        min-width: 20px;
-        height: 20px;
-        font-size: 0.7rem;
-    }
-}
-
-/* Button Group Container */
-.nav-buttons-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* Animation for buttons */
-@keyframes buttonFadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.nav-button {
-    animation: buttonFadeInUp 0.6s ease-out forwards;
-}
-
-.nav-button:nth-child(1) { animation-delay: 0.1s; }
-.nav-button:nth-child(2) { animation-delay: 0.2s; }
-.nav-button:nth-child(3) { animation-delay: 0.3s; }
-
-/* Focus states for accessibility */
-.nav-button:focus {
-    outline: 3px solid rgba(255, 255, 255, 0.5);
-    outline-offset: 2px;
-}
-
-/* Loading state */
-.nav-button.loading {
-    pointer-events: none;
-    opacity: 0.7;
-}
-
-.nav-button.loading::after {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid white;
-}
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5651d9;
+            --secondary: #FF6584;
+            --dark: #2A2D3E;
+            --light: #F8F9FA;
+            --gray: #6C757D;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --sidebar-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            padding: 0;
+            display: flex;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .mobile-header .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .mobile-header .logo {
+            height: 35px;
+            width: auto;
+            margin-right: 10px;
+            filter: brightness(0) invert(1);
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .hamburger:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: var(--shadow-md);
+            height: 100vh;
+            position: fixed;
+            transition: var(--transition);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+            background-size: cover;
+        }
+
+        .sidebar-header h4 {
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 0;
+            border-left: 3px solid transparent;
+            transition: var(--transition);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(108, 99, 255, 0.1);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            transition: var(--transition);
+            margin-top: 0;
+            min-height: 100vh;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            transition: var(--transition);
+        }
+
+        /* Container */
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-success {
+            color: var(--success);
+            border: 2px solid var(--success);
+            background: transparent;
+        }
+
+        .btn-outline-success:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-outline-warning {
+            color: var(--warning);
+            border: 2px solid var(--warning);
+            background: transparent;
+        }
+
+        .btn-outline-warning:hover {
+            background: var(--warning);
+            color: black;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            background: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .amount-card {
+            background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .amount-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .year-card {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .year-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Tables */
+        .table-responsive {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table {
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--gray);
+            padding: 1rem;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(108, 99, 255, 0.05);
+            transform: translateX(2px);
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .badge-individual {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .badge-team {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .badge-secondary {
+            background-color: var(--gray);
+            color: white;
+        }
+
+        .badge-light {
+            background-color: #f8f9fa;
+            color: var(--dark);
+        }
+
+        .badge-info {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning);
+            color: black;
+        }
+
+        /* Contact Buttons */
+        .contact-btn {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* Payment Actions */
+        .payment-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .payment-actions .btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* QR Button */
+        .qr-btn {
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* Filter Buttons */
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Form Controls */
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+            outline: none;
+        }
+
+        /* No Results */
+        #noResults {
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        #noResults:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            background-color: var(--primary);
+            color: white;
+            border-bottom: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .qr-modal-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .document-modal-img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 1000;
+                height: 100vh;
+                top: 0;
+                left: 0;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .card-header {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .card-header h3 {
+                font-size: 1.4rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 0.8rem;
+                font-size: 16px;
+            }
+            
+            .sidebar-header .logo {
+                max-height: 60px;
+                max-width: 100px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0.5rem;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .card-header {
+                padding: 1.2rem;
+            }
+            
+            .card-header h3 {
+                font-size: 1.2rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 0.7rem;
+            }
+            
+            .sidebar-header {
+                padding: 1rem;
+            }
+            
+            .sidebar-header h4 {
+                font-size: 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Button Navigation Styles */
+        .nav-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white !important;
+            padding: 0.7rem 1.5rem;
+            margin: 0 0.3rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            min-width: fit-content;
+            border: 2px solid transparent;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .nav-button.active:hover {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+        }
+
+        .nav-button i {
+            font-size: 1rem;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-button:hover i {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        /* Button Variants */
+        .nav-button.receipt-btn {
+            background: linear-gradient(135deg, #023b6d 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .nav-button.receipt-btn:hover {
+            background: linear-gradient(135deg, #ee08b4 0%, #4facfe 100%);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .nav-button.payment-btn {
+            background: linear-gradient(135deg, #db0ff6 0%, #38f9d7 100%);
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+        }
+
+        .nav-button.payment-btn:hover {
+            background: linear-gradient(135deg, #3872f9 0%, #43e97b 100%);
+            box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
+        }
+
+        /* Button Group Container */
+        .nav-buttons-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Animation for buttons */
+        @keyframes buttonFadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-button {
+            animation: buttonFadeInUp 0.6s ease-out forwards;
+        }
+
+        .nav-button:nth-child(1) { animation-delay: 0.1s; }
+        .nav-button:nth-child(2) { animation-delay: 0.2s; }
+        .nav-button:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Focus states for accessibility */
+        .nav-button:focus {
+            outline: 3px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-buttons-container {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            .nav-button {
+                margin: 0;
+                padding: 0.9rem 1.5rem;
+                width: 100%;
+                justify-content: flex-start;
+                border-radius: 15px;
+                font-size: 1rem;
+            }
+            
+            .nav-button i {
+                font-size: 1.1rem;
+                margin-right: 12px;
+                width: 20px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .nav-button {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.95rem;
+            }
+            
+            .nav-button i {
+                font-size: 1rem;
+                margin-right: 10px;
+            }
+        }
     </style>
 </head>
 
-
 <body>
-    <div class="container-fluid py-3">
-        <!-- Back Button -->
-        <button onclick="window.location.href='/admin'" class="btn btn-primary mb-3">
-            <i class="fas fa-arrow-left me-2"></i>Back to Admin
+     <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
         </button>
 
-        <!-- Navbar Buttons -->
-        <div style="display: flex; flex-wrap: nowrap; gap: 12px; margin: 0 -3px; padding: 5px; overflow-x: auto;">
-            <button class="nav-button receipt-btn" onclick="window.location.href='{{ url_for('view_receipts') }}'">
-                <i class="fas fa-receipt"></i>
-                <span>View Receipts</span>
-            </button>
+        <span class="d-none d-sm-inline">Admin Panel</span>
+    </div>
 
-            <button class="nav-button payment-btn" onclick="window.location.href='{{ url_for('view_payment_screenshots') }}'">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>Payment Screenshots</span>
-            </button>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="mb-0">Admin Panel</h4>
         </div>
-        <br>
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                 <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('view_teams') }}">
+                        <i class="fas fa-user-shield me-2"></i>
+                        <span>View Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('receipt_login') }}">
+                        <i class="fas fa-receipt"></i>
+                        <span>Receipt Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('message_center') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Message Center</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_homepage') }}">
+                        <i class="fas fa-home"></i>
+                        <span>Edit Homepage</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_excel_upload') }}">
+                        <i class="fas fa-upload me-2"></i>
+                        <span>SDM</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('registration_control') }}">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <span>Registration Control</span>
+                    </a>
+                </li>
 
-        <!-- Header Stats -->
-        <div class="card">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h2 class="mb-0">
-                            <i class="fas fa-users text-primary me-2"></i>
-                            Registered Participants
-                        </h2>
-                        <p class="text-muted mb-0" id="currentDate">
-                            <!-- Date will be populated by JavaScript -->
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="stats-card">
-                            <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <div style="flex: 1;">
-                                    <div style="margin-bottom: 15px;">
-                                        <h4 style="font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 0.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);" id="totalParticipants">{{ participants|length }}</h4>
-                                        <p style="font-size: clamp(0.85rem, 1.5vw, 1rem); margin-bottom: 0; opacity: 0.9; font-weight: 500;">Total Participants</p>
-                                    </div>
-                                    
-                                    <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                            <span style="font-size: clamp(1rem, 2vw, 1.3rem); font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
-                                                {{ payment_stats.total_verified }}/{{ total_participants }}
-                                            </span>
-                                            <div>
-                                                <div style="font-size: clamp(0.7rem, 1.2vw, 0.8rem); opacity: 0.9; font-weight: 500;">Verified/Pending</div>
-                                                <div style="font-size: clamp(0.65rem, 1vw, 0.75rem); opacity: 0.8; font-weight: 500;">
-                                                    {{ payment_stats.total_pending }} pending verification
+            </ul>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid py-3">
+            <!-- Navbar Buttons -->
+            <div class="nav-buttons-container">
+                 <br> <br>
+                <!-- Back Button -->
+               <button 
+    onclick="window.location.href='{{ url_for('admin_dashboard') }}'" 
+    style="
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px; 
+        padding: 10px 18px; 
+        font-size: clamp(12px, 2vw, 16px); 
+        background: linear-gradient(135deg, #4A90E2, #007BFF); 
+        color: white; 
+        border: none; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+        width: auto; 
+        max-width: 100%; 
+    "
+    onmouseover="this.style.background='linear-gradient(135deg, #357ABD, #0056D2)'; this.style.transform='scale(1.03)';"
+    onmouseout="this.style.background='linear-gradient(135deg, #4A90E2, #007BFF)'; this.style.transform='scale(1)';"
+    ontouchstart="this.style.transform='scale(0.97)';"
+    ontouchend="this.style.transform='scale(1)';"
+>
+    <svg xmlns="http://www.w3.org/2000/svg" width="clamp(14px, 2vw, 16px)" height="clamp(14px, 2vw, 16px)" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink: 0;">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg>
+    <span style="white-space: nowrap;">Back to Dashboard</span>
+</button>
+                <button class="nav-button receipt-btn" onclick="window.location.href='{{ url_for('view_receipts') }}'">
+                    <i class="fas fa-receipt"></i>
+                    <span>View Receipts</span>
+                </button>
+
+                <button class="nav-button payment-btn" onclick="window.location.href='{{ url_for('view_payment_screenshots') }}'">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Payment Screenshots</span>
+                </button>
+            </div>
+            <br>
+
+            <!-- Header Stats -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h2 class="mb-0">
+                                <i class="fas fa-users text-primary me-2"></i>
+                                Registered Participants
+                            </h2>
+                            <p class="text-muted mb-0" id="currentDate">
+                                <!-- Date will be populated by JavaScript -->
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="flex: 1;">
+                                        <div style="margin-bottom: 15px;">
+                                            <h4 style="font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 0.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);" id="totalParticipants">{{ participants|length }}</h4>
+                                            <p style="font-size: clamp(0.85rem, 1.5vw, 1rem); margin-bottom: 0; opacity: 0.9; font-weight: 500;">Total Participants</p>
+                                        </div>
+                                        
+                                        <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px;">
+                                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                                <span style="font-size: clamp(1rem, 2vw, 1.3rem); font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                                                    {{ payment_stats.total_verified }}/{{ total_participants }}
+                                                </span>
+                                                <div>
+                                                    <div style="font-size: clamp(0.7rem, 1.2vw, 0.8rem); opacity: 0.9; font-weight: 500;">Verified/Pending</div>
+                                                    <div style="font-size: clamp(0.65rem, 1vw, 0.75rem); opacity: 0.8; font-weight: 500;">
+                                                        {{ payment_stats.total_pending }} pending verification
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div style="text-align: center; margin-left: 15px;">
-                                    <i class="fas fa-users" style="font-size: clamp(1.8rem, 4vw, 2.5rem); opacity: 0.5; margin-bottom: 10px; display: block;"></i>
-                                    <i class="fas fa-clipboard-check" style="font-size: clamp(1.2rem, 2.5vw, 1.6rem); opacity: 0.6;"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gender Distribution -->
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for gender, count in gender_counts.items() %}
-                            <span class="badge bg-light text-dark">
-                                <i class="fas fa-{{ 
-                                    'mars' if gender == 'Male' 
-                                    else 'venus' if gender == 'Female' 
-                                    else 'genderless' 
-                                }} me-1"></i>
-                                {{ gender }}: {{ count }}
-                            </span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Branch Statistics Section -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-sitemap me-2"></i>
-                    Branch-wise Distribution
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="branch-stats-scroll">
-                    {% set colors = ['#6C63FF', '#FF6584', '#28a745', '#ffc107', '#17a2b8', '#e74c3c', '#3498db', '#9b59b6'] %}
-                    {% set dark_colors = ['#5651d9', '#e0556d', '#1e7e34', '#e0a800', '#138496', '#c0392b', '#2980b9', '#8e44ad'] %}
-                    
-                    {% for branch, count in branch_counts.items() %}
-                    <div class="branch-card">
-                        <div class="stats-card" style="background: linear-gradient(135deg, {{ colors[loop.index0 % colors|length] }} 0%, {{ dark_colors[loop.index0 % dark_colors|length] }} 100%);">
-                            <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <div>
-                                    <h4>{{ count }}</h4>
-                                    <p>{{ branch }}</p>
-                                </div>
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Section Statistics (for Sphoorthy Students) -->
-        {% if section_counts %}
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-layer-group me-2"></i>
-                    Section-wise Distribution (Sphoorthy College)
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="section-stats-scroll">
-                    {% for section, count in section_counts.items() %}
-                    <div class="section-card">
-                        <div class="year-card">
-                            <h5>{{ count }}</h5>
-                            <p>Section {{ section }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Enhanced Stats Cards in Header -->
-        <div class="row mt-3 stats-row">
-            <div class="col-md-4">
-                <div class="amount-card">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4>₹<span id="totalAmount">{{ total_amount }}</span></h4>
-                            <p>Total Collected</p>
-                        </div>
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="year-card">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4>₹<span id="firstYearAmount">{{ first_year_amount }}</span></h4>
-                            <p>1st Year</p>
-                        </div>
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="year-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4>₹<span id="secondYearAmount">{{ second_year_amount }}</span></h4>
-                            <p>2nd Year</p>
-                        </div>
-                        <i class="fas fa-users"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment Statistics Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Cash Payments -->
-                            <div class="col-md-3 col-6 mb-3">
-                                <div class="card bg-info text-white text-center">
-                                    <div class="card-body">
-                                        <h4 class="card-title">₹{{ payment_stats.total_cash }}</h4>
-                                        <p class="card-text">Cash Payments</p>
-                                        <small>{{ payment_stats.payment_methods.cash }} payments</small>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Online Payments -->
-                            <div class="col-md-3 col-6 mb-3">
-                                <div class="card bg-warning text-white text-center">
-                                    <div class="card-body">
-                                        <h4 class="card-title">₹{{ payment_stats.total_online }}</h4>
-                                        <p class="card-text">Online Payments</p>
-                                        <small>{{ payment_stats.payment_methods.online }} payments</small>
+                                    <div style="text-align: center; margin-left: 15px;">
+                                        <i class="fas fa-users" style="font-size: clamp(1.8rem, 4vw, 2.5rem); opacity: 0.5; margin-bottom: 10px; display: block;"></i>
+                                        <i class="fas fa-clipboard-check" style="font-size: clamp(1.2rem, 2.5vw, 1.6rem); opacity: 0.6;"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Cash Receivers Breakdown -->
-                        {% if cash_receivers %}
-                        <div class="mt-4">
-                            <h6 class="text-primary mb-3">
-                                <i class="fas fa-users me-2"></i>Cash Collection by Receivers
-                            </h6>
-                            <div class="table-responsive">
-                                <table class="table table-sm table-striped">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Receiver Name</th>
-                                            <th>Number of Payments</th>
-                                            <th>Total Amount</th>
-                                            <th>Average per Payment</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for receiver, data in cash_receivers.items() %}
-                                        <tr>
-                                            <td>
-                                                <strong>{{ receiver }}</strong>
-                                            </td>
-                                            <td>{{ data.count }}</td>
-                                            <td>₹{{ data.amount }}</td>
-                                            <td>₹{{ (data.amount / data.count)|round|int if data.count > 0 else 0 }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                    <!-- Gender Distribution -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for gender, count in gender_counts.items() %}
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-{{ 
+                                        'mars' if gender == 'Male' 
+                                        else 'venus' if gender == 'Female' 
+                                        else 'genderless' 
+                                    }} me-1"></i>
+                                    {{ gender }}: {{ count }}
+                                </span>
+                                {% endfor %}
                             </div>
                         </div>
-                        {% else %}
-                        <div class="mt-4">
-                            <p class="text-muted">No cash payments recorded yet.</p>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Search and Filters -->
-        <div class="card">
-            <div class="card-body">
-                <div class="row g-2">
-                    <div class="col-md-4">
-                        <input type="text" id="participantSearch" class="form-control" 
-                               placeholder="Search by name, email, roll number, or college...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="d-flex flex-wrap gap-2 filter-buttons">
-                            <!-- Payment Status Filters -->
-                            <button class="btn btn-outline-success btn-sm filter-btn" data-status="verified">
-                                <i class="fas fa-check-circle me-1"></i>Verified
-                            </button>
-                            <button class="btn btn-outline-warning btn-sm filter-btn" data-status="pending">
-                                <i class="fas fa-clock me-1"></i>Pending
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm filter-btn active" data-status="all">
-                                <i class="fas fa-list me-1"></i>All
-                            </button>
-                        </div>
-                    </div>
+            <!-- Branch Statistics Section -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-sitemap me-2"></i>
+                        Branch-wise Distribution
+                    </h5>
                 </div>
-            </div>
-        </div>
-
-        <!-- Participants Table -->
-        <div class="card">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name & Details</th>
-                                <th>Branch</th>
-                                <th>Contact</th>
-                                <th>Registration Date</th>
-                                <th>Payment Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for participant in participants %}
-                            <tr data-verified="{{ participant.payment_verified|string|lower }}" 
-                                data-type="{{ participant.type }}"
-                                data-year="{{ participant.year }}"
-                                data-amount="{{ participant.registration_fee if participant.registration_fee else 0 }}"
-                                data-search="{{ (participant.name + ' ' + participant.email + ' ' + (participant.rollno or '') + ' ' + participant.college)|lower }}">
-                                <!-- ID Column -->
-                                <td class="align-middle" data-label="ID">
-                                    <small class="text-muted">{{ participant.id }}</small>
-                                    {% if participant.type == 'team_member' %}
-                                    <br><small class="text-muted">Team: {{ participant.team_id }}</small>
-                                    {% endif %}
-                                </td>
-                                
-                                <!-- Name & Details Column -->
-                                <td class="align-middle" data-label="Name & Details">
-                                    <strong>{{ participant.name }}</strong>
-                                    <div class="small text-muted">
-                                        <div>
-                                            <span class="badge bg-secondary">
-                                                <i class="fas fa-{{ 
-                                                    'mars' if participant.gender == 'Male' 
-                                                    else 'venus' if participant.gender == 'Female' 
-                                                    else 'genderless' 
-                                                }} me-1"></i>
-                                                {{ participant.gender }}
-                                            </span>
-                                            {% if participant.rollno %}
-                                            <span class="badge bg-light text-dark ms-1">
-                                                {{ participant.rollno }}
-                                            </span>
-                                            {% endif %}
-                                            <span class="badge bg-info ms-1">
-                                                {{ participant.year }}
-                                            </span>
-                                        </div>
-                                        {% if participant.section %}
-                                        <div>
-                                            Section: {{ participant.section }}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                
-                                <!-- College & Branch Column -->
-                                <td class="align-middle" data-label="College & Branch">
+                <div class="card-body">
+                    <div class="row branch-stats-scroll">
+                        {% set colors = ['#6C63FF', '#FF6584', '#28a745', '#ffc107', '#17a2b8', '#e74c3c', '#3498db', '#9b59b6'] %}
+                        {% set dark_colors = ['#5651d9', '#e0556d', '#1e7e34', '#e0a800', '#138496', '#c0392b', '#2980b9', '#8e44ad'] %}
+                        
+                        {% for branch, count in branch_counts.items() %}
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="stats-card" style="background: linear-gradient(135deg, {{ colors[loop.index0 % colors|length] }} 0%, {{ dark_colors[loop.index0 % dark_colors|length] }} 100%);">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
                                     <div>
-                                        <div class="small text-muted">
-                                            {{ participant.branch }}
-                                        </div>
+                                        <h4>{{ count }}</h4>
+                                        <p>{{ branch }}</p>
                                     </div>
-                                </td>
-                                
-                                <!-- Contact Column -->
-                                <td class="align-middle" data-label="Contact">
-                                    <div class="contact-buttons mt-2">
-                                        <a href="tel:{{ participant.contact }}" class="btn btn-sm btn-outline-primary contact-btn">
-                                            <i class="fas fa-phone"></i>
-                                        </a>
-                                        <a href="mailto:{{ participant.email }}" class="btn btn-sm btn-outline-secondary contact-btn">
-                                            <i class="fas fa-envelope"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                                
-                                <!-- Registration Date Column -->
-                                <td class="align-middle" data-label="Registration Date">
-                                    <small>{{ participant.registration_date }}</small>
-                                </td>
-                                
-                                <!-- Payment Status Column -->
-                                <td class="align-middle" data-label="Payment Status">
-                                    {% if participant.payment_verified %}
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle me-1"></i>Verified
-                                    </span>
-                                    {% else %}
-                                    <span class="badge bg-warning">
-                                        <i class="fas fa-clock me-1"></i>Pending
-                                    </span>
-                                    {% endif %}
-                                    
-                                    {% if participant.payment_method %}
-                                    <div class="small mt-1">
-                                        {% if participant.payment_method == 'online' %}
-                                        <span class="badge bg-info">Online</span>
-                                        {% if participant.payment_id %}
-                                        <div class="text-muted mt-1">
-                                            ID: {{ participant.payment_id|truncate(10) }}
-                                        </div>
-                                        {% endif %}
-                                        {% else %}
-                                        <span class="badge bg-success">Cash</span>
-                                        {% if participant.cash_receiver_name %}
-                                        <div class="text-muted mt-1">
-                                            {{ participant.cash_receiver_name }}
-                                        </div>
-                                        {% endif %}
-                                        {% endif %}
-                                    </div>
-                                    {% endif %}
-                                    
-                                    {% if not participant.payment_verified %}
-                                    <div class="payment-actions">
-                                        <button class="btn btn-sm btn-success approve-btn" 
-                                                data-participant-id="{{ participant.id }}"
-                                                data-participant-name="{{ participant.name }}">
-                                            <i class="fas fa-check"></i>
-                                            <span class="d-none d-md-inline">Approve</span>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger reject-btn" 
-                                                data-participant-id="{{ participant.id }}"
-                                                data-participant-name="{{ participant.name }}">
-                                            <i class="fas fa-times"></i>
-                                            <span class="d-none d-md-inline">Reject</span>
-                                        </button>
-                                    </div>
-                                    {% endif %}
-                                </td>
-                                
-                                <!-- Actions Column -->
-                                <td class="align-middle" data-label="Actions">
-                                    <div class="action-buttons">
-                                        <!-- QR Code Button -->
-                                        {% if participant.type == 'individual' %}
-                                        <button class="btn btn-sm btn-outline-primary view-qr-btn" 
-                                                data-participant-id="{{ participant.id }}"
-                                                data-participant-type="individual">
-                                            <i class="fas fa-qrcode"></i>
-                                            <span class="d-none d-md-inline">QR</span>
-                                        </button>
-                                        {% else %}
-                                        <button class="btn btn-sm btn-outline-primary view-qr-btn" 
-                                                data-participant-id="{{ participant.team_id }}"
-                                                data-participant-type="team">
-                                            <i class="fas fa-qrcode"></i>
-                                            <span class="d-none d-md-inline">QR</span>
-                                        </button>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- No Results Message -->
-        <div id="noResults" class="card text-center d-none">
-            <div class="card-body py-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No participants found</h5>
-                <p class="text-muted">Try adjusting your search or filters</p>
+            <!-- Section Statistics (for Sphoorthy Students) -->
+            {% if section_counts %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-layer-group me-2"></i>
+                        Section-wise Distribution (Sphoorthy College)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row section-stats-scroll">
+                        {% for section, count in section_counts.items() %}
+                        <div class="col-md-3 col-sm-4 mb-3">
+                            <div class="year-card">
+                                <h5>{{ count }}</h5>
+                                <p>Section {{ section }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Enhanced Stats Cards in Header -->
+            <div class="row mt-3 stats-row">
+                <div class="col-md-4">
+                    <div class="amount-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4>₹<span id="totalAmount">{{ total_amount }}</span></h4>
+                                <p>Total Collected</p>
+                            </div>
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="year-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4>₹<span id="firstYearAmount">{{ first_year_amount }}</span></h4>
+                                <p>1st Year</p>
+                            </div>
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="year-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4>₹<span id="secondYearAmount">{{ second_year_amount }}</span></h4>
+                                <p>2nd Year</p>
+                            </div>
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Statistics Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Cash Payments -->
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="card bg-info text-white text-center">
+                                        <div class="card-body">
+                                            <h4 class="card-title">₹{{ payment_stats.total_cash }}</h4>
+                                            <p class="card-text">Cash Payments</p>
+                                            <small>{{ payment_stats.payment_methods.cash }} payments</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Online Payments -->
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="card bg-warning text-white text-center">
+                                        <div class="card-body">
+                                            <h4 class="card-title">₹{{ payment_stats.total_online }}</h4>
+                                            <p class="card-text">Online Payments</p>
+                                            <small>{{ payment_stats.payment_methods.online }} payments</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cash Receivers Breakdown -->
+                            {% if cash_receivers %}
+                            <div class="mt-4">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-users me-2"></i>Cash Collection by Receivers
+                                </h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Receiver Name</th>
+                                                <th>Number of Payments</th>
+                                                <th>Total Amount</th>
+                                                <th>Average per Payment</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for receiver, data in cash_receivers.items() %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ receiver }}</strong>
+                                                </td>
+                                                <td>{{ data.count }}</td>
+                                                <td>₹{{ data.amount }}</td>
+                                                <td>₹{{ (data.amount / data.count)|round|int if data.count > 0 else 0 }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="mt-4">
+                                <p class="text-muted">No cash payments recorded yet.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text" id="participantSearch" class="form-control" 
+                                   placeholder="Search by name, email, roll number, or college...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="d-flex flex-wrap gap-2 filter-buttons">
+                                <!-- Payment Status Filters -->
+                                <button class="btn btn-outline-success btn-sm filter-btn" data-status="verified">
+                                    <i class="fas fa-check-circle me-1"></i>Verified
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm filter-btn" data-status="pending">
+                                    <i class="fas fa-clock me-1"></i>Pending
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm filter-btn active" data-status="all">
+                                    <i class="fas fa-list me-1"></i>All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participants Table -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name & Details</th>
+                                    <th>Branch</th>
+                                    <th>Contact</th>
+                                    <th>Registration Date</th>
+                                    <th>Payment Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for participant in participants %}
+                                <tr data-verified="{{ participant.payment_verified|string|lower }}" 
+                                    data-type="{{ participant.type }}"
+                                    data-year="{{ participant.year }}"
+                                    data-amount="{{ participant.registration_fee if participant.registration_fee else 0 }}"
+                                    data-search="{{ (participant.name + ' ' + participant.email + ' ' + (participant.rollno or '') + ' ' + participant.college)|lower }}">
+                                    <!-- ID Column -->
+                                    <td class="align-middle" data-label="ID">
+                                        <small class="text-muted">{{ participant.id }}</small>
+                                        {% if participant.type == 'team_member' %}
+                                        <br><small class="text-muted">Team: {{ participant.team_id }}</small>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- Name & Details Column -->
+                                    <td class="align-middle" data-label="Name & Details">
+                                        <strong>{{ participant.name }}</strong>
+                                        <div class="small text-muted">
+                                            <div>
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-{{ 
+                                                        'mars' if participant.gender == 'Male' 
+                                                        else 'venus' if participant.gender == 'Female' 
+                                                        else 'genderless' 
+                                                    }} me-1"></i>
+                                                    {{ participant.gender }}
+                                                </span>
+                                                {% if participant.rollno %}
+                                                <span class="badge bg-light text-dark ms-1">
+                                                    {{ participant.rollno }}
+                                                </span>
+                                                {% endif %}
+                                                <span class="badge bg-info ms-1">
+                                                    {{ participant.year }}
+                                                </span>
+                                            </div>
+                                            {% if participant.section %}
+                                            <div>
+                                                Section: {{ participant.section }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- College & Branch Column -->
+                                    <td class="align-middle" data-label="College & Branch">
+                                        <div>
+                                            <div class="small text-muted">
+                                                {{ participant.branch }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Contact Column -->
+                                    <td class="align-middle" data-label="Contact">
+                                        <div class="contact-buttons mt-2">
+                                            <a href="tel:{{ participant.contact }}" class="btn btn-sm btn-outline-primary contact-btn">
+                                                <i class="fas fa-phone"></i>
+                                            </a>
+                                            <a href="mailto:{{ participant.email }}" class="btn btn-sm btn-outline-secondary contact-btn">
+                                                <i class="fas fa-envelope"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Registration Date Column -->
+                                    <td class="align-middle" data-label="Registration Date">
+                                        <small>{{ participant.registration_date }}</small>
+                                    </td>
+                                    
+                                    <!-- Payment Status Column -->
+                                    <td class="align-middle" data-label="Payment Status">
+                                        {% if participant.payment_verified %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Verified
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>Pending
+                                        </span>
+                                        {% endif %}
+                                        
+                                        {% if participant.payment_method %}
+                                        <div class="small mt-1">
+                                            {% if participant.payment_method == 'online' %}
+                                            <span class="badge bg-info">Online</span>
+                                            {% if participant.payment_id %}
+                                            <div class="text-muted mt-1">
+                                                ID: {{ participant.payment_id|truncate(10) }}
+                                            </div>
+                                            {% endif %}
+                                            {% else %}
+                                            <span class="badge bg-success">Cash</span>
+                                            {% if participant.cash_receiver_name %}
+                                            <div class="text-muted mt-1">
+                                                {{ participant.cash_receiver_name }}
+                                            </div>
+                                            {% endif %}
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if not participant.payment_verified %}
+                                        <div class="payment-actions">
+                                            <button class="btn btn-sm btn-success approve-btn" 
+                                                    data-participant-id="{{ participant.id }}"
+                                                    data-participant-name="{{ participant.name }}">
+                                                <i class="fas fa-check"></i>
+                                                <span class="d-none d-md-inline">Approve</span>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger reject-btn" 
+                                                    data-participant-id="{{ participant.id }}"
+                                                    data-participant-name="{{ participant.name }}">
+                                                <i class="fas fa-times"></i>
+                                                <span class="d-none d-md-inline">Reject</span>
+                                            </button>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- Actions Column -->
+                                    <td class="align-middle" data-label="Actions">
+                                        <div class="action-buttons">
+                                            <!-- QR Code Button -->
+                                            {% if participant.type == 'individual' %}
+                                            <button class="btn btn-sm btn-outline-primary view-qr-btn" 
+                                                    data-participant-id="{{ participant.id }}"
+                                                    data-participant-type="individual">
+                                                <i class="fas fa-qrcode"></i>
+                                                <span class="d-none d-md-inline">QR</span>
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-sm btn-outline-primary view-qr-btn" 
+                                                    data-participant-id="{{ participant.team_id }}"
+                                                    data-participant-type="team">
+                                                <i class="fas fa-qrcode"></i>
+                                                <span class="d-none d-md-inline">QR</span>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="card text-center d-none">
+                <div class="card-body py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No participants found</h5>
+                    <p class="text-muted">Try adjusting your search or filters</p>
+                </div>
             </div>
         </div>
     </div>
@@ -1910,11 +1349,113 @@ h1, h2, h3, h4, h5, h6 {
             </div>
         </div>
     </div>
-
+ 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+
+          // Mobile sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            // Toggle sidebar on hamburger click
+            hamburger.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+            });
+            
+            // Close sidebar when clicking on overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            });
+            
+            // Close sidebar when clicking on a nav link (for mobile)
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.remove('active');
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    sidebar.classList.remove('active');
+                    overlay.style.display = 'none';
+                }
+            });
+
+            // Set current date
+            const currentDate = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', options);
+
+            // Search functionality
+            const searchInput = document.getElementById('participantSearch');
+            const noResults = document.getElementById('noResults');
+            
+            searchInput.addEventListener('input', function() {
+                const searchValue = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    const searchData = row.getAttribute('data-search');
+                    const matches = searchData.includes(searchValue);
+                    row.style.display = matches ? '' : 'none';
+                    if (matches) visibleCount++;
+                });
+
+                noResults.classList.toggle('d-none', visibleCount > 0);
+            });
+
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const status = this.getAttribute('data-status');
+                    
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const rows = document.querySelectorAll('tbody tr');
+                    let visibleCount = 0;
+
+                    rows.forEach(row => {
+                        const isVerified = row.getAttribute('data-verified');
+                        
+                        let statusMatch = true;
+                        
+                        if (status === 'verified') {
+                            statusMatch = isVerified === 'true';
+                        } else if (status === 'pending') {
+                            statusMatch = isVerified === 'false';
+                        }
+                        
+                        const shouldShow = statusMatch;
+                        row.style.display = shouldShow ? '' : 'none';
+                        if (shouldShow) visibleCount++;
+                    });
+
+                    noResults.classList.toggle('d-none', visibleCount > 0);
+                });
+            });
+
+            // Add keyboard shortcut for search
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+        });
         // View QR Code functionality
         document.querySelectorAll('.view-qr-btn').forEach(btn => {
             btn.addEventListener('click', function() {

@@ -109,22 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card stats-card bg-info text-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="card-title">Total Amount</h6>
-                                        <h3 class="mb-0">
-                                            ₹{{ payments|sum(attribute='amount') }}
-                                        </h3>
-                                    </div>
-                                    <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                   
 
                 <!-- Filter Buttons -->
                 <div class="row mb-4">
@@ -141,10 +126,7 @@
                                        class="btn {{ 'btn-success' if filter_type == 'verified' else 'btn-outline-success' }}">
                                         <i class="fas fa-check-circle me-1"></i>Verified Only
                                     </a>
-                                    <a href="{{ url_for('view_pending_screenshots') }}" 
-                                       class="btn {{ 'btn-warning' if filter_type == 'pending' else 'btn-outline-warning' }}">
-                                        <i class="fas fa-clock me-1"></i>Pending Only
-                                    </a>
+                                    
                                     <button class="btn btn-outline-info" onclick="window.print()">
                                         <i class="fas fa-print me-1"></i>Print
                                     </button>
@@ -172,9 +154,7 @@
                                             <i class="fas fa-check me-1"></i>Verified
                                         </span>
                                         {% else %}
-                                        <span class="badge badge-pending text-white">
-                                            <i class="fas fa-clock me-1"></i>Pending
-                                        </span>
+                                        
                                         {% endif %}
                                     </div>
                                 </div>
@@ -287,16 +267,8 @@
                                         </h4>
                                         <small class="text-muted">Verified</small>
                                     </div>
-                                    <div class="col-md-2">
-                                        <h4 class="text-warning">
-                                            {{ payments|rejectattr('payment_verified', 'equalto', true)|list|length }}
-                                        </h4>
-                                        <small class="text-muted">Pending</small>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <h4 class="text-info">₹{{ payments|sum(attribute='amount') }}</h4>
-                                        <small class="text-muted">Total Amount</small>
-                                    </div>
+                                   
+                                    
                                     <div class="col-md-2">
                                         <h4 class="text-secondary">
                                             {{ payments|selectattr('year', 'equalto', '1st')|list|length }}

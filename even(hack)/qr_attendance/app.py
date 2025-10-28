@@ -895,7 +895,83 @@ Smart N Light Innovations Team
     # Start the email sending in a background thread
     threading.Thread(target=send_email).start()
     return True
-   
+
+# Add registration control route
+@app.route('/admin/registration-control', methods=['GET', 'POST'])
+def registration_control():
+    """Admin page to control registration status"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    # Registration control file
+    REGISTRATION_CONTROL_FILE = 'data/registration_control.json'
+    
+    # Default settings
+    default_settings = {
+        'registration_open': True,
+        'registration_message': 'Registration is currently closed. Please check back later.',
+        'closed_title': 'Registration Closed',
+        'closed_subtitle': 'Thank you for your interest in Freshers Fiesta 2025',
+        'show_countdown': True,
+        'countdown_date': '2025-11-09 00:00:00'
+    }
+    
+    if request.method == 'POST':
+        try:
+            # Get form data
+            registration_open = request.form.get('registration_open') == 'on'
+            registration_message = request.form.get('registration_message', '').strip()
+            closed_title = request.form.get('closed_title', '').strip()
+            closed_subtitle = request.form.get('closed_subtitle', '').strip()
+            show_countdown = request.form.get('show_countdown') == 'on'
+            countdown_date = request.form.get('countdown_date', '').strip()
+            
+            # Update settings
+            settings = {
+                'registration_open': registration_open,
+                'registration_message': registration_message,
+                'closed_title': closed_title,
+                'closed_subtitle': closed_subtitle,
+                'show_countdown': show_countdown,
+                'countdown_date': countdown_date,
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'updated_by': session.get('admin_id', 'unknown')
+            }
+            
+            # Save settings
+            with open(REGISTRATION_CONTROL_FILE, 'w') as f:
+                json.dump(settings, f, indent=4)
+            
+            flash('Registration settings updated successfully!', 'success')
+            
+        except Exception as e:
+            flash(f'Error updating settings: {str(e)}', 'error')
+    
+    # Load current settings
+    try:
+        with open(REGISTRATION_CONTROL_FILE, 'r') as f:
+            settings = json.load(f)
+    except FileNotFoundError:
+        settings = default_settings
+        # Save default settings
+        with open(REGISTRATION_CONTROL_FILE, 'w') as f:
+            json.dump(settings, f, indent=4)
+    
+    return render_template('registration_control.html', settings=settings)
+
+# Add this function to check registration status
+def is_registration_open():
+    """Check if registration is currently open"""
+    REGISTRATION_CONTROL_FILE = 'data/registration_control.json'
+    
+    try:
+        with open(REGISTRATION_CONTROL_FILE, 'r') as f:
+            settings = json.load(f)
+        return settings.get('registration_open', True)
+    except FileNotFoundError:
+        return True  # Default to open if no settings file
+
+
 @app.route('/admin/receipts')
 def view_receipts():
     """View receipts organized by receiver"""
@@ -1231,11 +1307,32 @@ def get_student_stats():
             'last_upload': 'Error',
             'registered_count': 0
         })
+
+@app.route('/registration-closed')
+def registration_closed():
+    """Display registration closed page"""
+    REGISTRATION_CONTROL_FILE = 'data/registration_control.json'
     
+    try:
+        with open(REGISTRATION_CONTROL_FILE, 'r') as f:
+            settings = json.load(f)
+    except FileNotFoundError:
+        settings = {
+            'closed_title': 'Registration Closed',
+            'closed_subtitle': 'Thank you for your interest in Freshers Fiesta 2025',
+            'registration_message': 'Registration is currently closed. Please check back later.',
+            'show_countdown': True,
+            'countdown_date': '2025-11-09 00:00:00'
+        }
+    
+    return render_template('registration_closed.html', settings=settings)
+ 
 @app.route('/register-enhanced', methods=['GET', 'POST'])
 def register_enhanced():
     """Enhanced registration page with roll number verification"""
     # Load hackathon config
+    if not is_registration_open():
+        return redirect(url_for('registration_closed'))
     try:
         with open(HACKATHON_CONFIG_FILE, 'r') as f:
             config = json.load(f)
@@ -1248,6 +1345,7 @@ def register_enhanced():
         name = request.form.get('name', '').strip()
         year = request.form.get('year', '').strip()
         branch = request.form.get('branch', '').strip()
+        section = request.form.get('section', '').strip()  # Get section from form
         gender = request.form.get('gender', '').strip()
         email = request.form.get('email', '').strip().lower()
         contact = request.form.get('contact_number', '').strip()
@@ -1317,6 +1415,7 @@ def register_enhanced():
                             'name': name,
                             'year': year,
                             'branch': branch,
+                            'section': section,  # Include section
                             'gender': gender,
                             'email': email,
                             'contact_number': contact,
@@ -1328,7 +1427,6 @@ def register_enhanced():
                             'college': 'Sphoorthy Engineering College'  # Add default college
                         }
                         
-                      
                         data['individuals'].append(registration_data)
                         f.seek(0)
                         json.dump(data, f, indent=4)
@@ -1351,6 +1449,7 @@ def register_enhanced():
                             'name': name,
                             'year': year,
                             'branch': branch,
+                            'section': section,  # Include section
                             'gender': gender,
                             'email': email,
                             'contact_number': contact,
@@ -1376,8 +1475,6 @@ def register_enhanced():
                 return redirect(url_for('register_enhanced'))
     
     return render_template('register_enhanced.html')
-
-
 @app.route('/api/verify-roll-number', methods=['POST'])
 def verify_roll_number():
     """API endpoint to verify roll number - with context-specific behavior"""
@@ -1461,7 +1558,7 @@ def verify_roll_number():
                 'name': student['name'],
                 'year': student['year'],
                 'branch': student['branch'],
-                'section': student.get('section')
+                'section': student.get('section', 'N/A')  # Ensure section is included
             },
             'is_registered': is_registered,
             'registration_info': registration_info if is_registered else None
@@ -2927,7 +3024,7 @@ def get_sections():
     # Return sections based on branch - this should match your actual data structure
     sections = {
         'CSE': ['A', 'B', 'C'],
-        'ECE': ['A', 'B'],
+        'ECE': ['A', 'B'],  
         'EEE': ['A'],
         # Add other branches and their sections
     }
@@ -3952,9 +4049,7 @@ def check_existing_receipt():
 def generate_receipt():
     print("Form data received:", request.form)
     print("Files received:", request.files)
-    if not session.get('receipt_logged_in') and not session.get('admin_logged_in'):
-        return redirect(url_for('receipt_login'))
-
+    
     form = ReceiptForm()
 
     if form.validate_on_submit():
@@ -3991,16 +4086,29 @@ def generate_receipt():
             }
 
             # Generate PDF in receiver-specific folder
-            # After generating the receipt PDF in generate_receipt() function:
             pdf_path = create_receipt_pdf(receipt_data)
 
-# Store the relative path in the database, not just filename
+            # Store the relative path in the database, not just filename
             receipt_filename = os.path.basename(pdf_path)
             receiver_name = form.receiver_name.data.replace(' ', '_')
             relative_path = f"static/receipts/{receiver_name}/{receipt_filename}"
 
-# Update individual data with the correct path
-            individual_data['cash_receipt_photo'] = relative_path
+            # Update individual data with the correct path
+            # Find and update the individual in the database
+            with open(DATABASE_FILE, 'r') as f:
+                db_data = json.load(f)
+                
+            updated = False
+            for individual in db_data.get('individuals', []):
+                if individual.get('roll_number') == roll_number:
+                    individual['cash_receipt_photo'] = relative_path
+                    updated = True
+                    break
+            
+            # Save updated database
+            if updated:
+                with open(DATABASE_FILE, 'w') as f:
+                    json.dump(db_data, f, indent=4)
             
             if not os.path.exists(pdf_path):
                 raise Exception("Failed to create PDF file")

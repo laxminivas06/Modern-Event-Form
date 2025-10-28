@@ -713,6 +713,12 @@
         </div>
         <div class="sidebar-menu">
             <ul class="nav flex-column">
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('view_teams') }}">
+                        <i class="fas fa-user-shield me-2"></i>
+                        <span>View Users</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ url_for('receipt_login') }}">
                         <i class="fas fa-receipt"></i>
@@ -737,6 +743,13 @@
                         <span>SDM</span>
                     </a>
                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('registration_control') }}">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <span>Registration Control</span>
+                    </a>
+                </li>
+
             </ul>
         </div>
     </div>

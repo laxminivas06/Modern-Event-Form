@@ -684,12 +684,15 @@
                                 </label>
                                 <div class="input-group">
                                     <input type="text" 
-                                           class="form-control" 
-                                           id="roll_number" 
-                                           name="roll_number"
-                                           placeholder="Enter your roll number"
-                                           required
-                                           maxlength="20">
+       class="form-control" 
+       id="roll_number" 
+       name="roll_number"
+       placeholder="Enter your roll number"
+       required
+       maxlength="10"
+       pattern="[A-Za-z0-9]{1,10}"
+       oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');">
+
                                     <button type="button" class="btn btn-primary" onclick="verifyRollNumber()">
                                         <i class="fas fa-search me-1"></i>Verify
                                     </button>
@@ -733,6 +736,14 @@
                                     <input type="hidden" name="branch" id="branch">
                                 </div>
                             </div>
+                            <!-- Add Section Display -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label">Section</label>
+        <div class="auto-fill-field" id="display_section">-</div>
+        <input type="hidden" name="section" id="section">
+    </div>
+</div>
 
                             <!-- User Input Fields -->
                             <div class="row mb-3">
@@ -816,107 +827,109 @@
         let isRollNumberRegistered = false;
 
         function verifyRollNumber() {
-            const rollNumber = document.getElementById('roll_number').value.trim();
-            const rollNumberError = document.getElementById('rollNumberError');
+    const rollNumber = document.getElementById('roll_number').value.trim();
+    const rollNumberError = document.getElementById('rollNumberError');
+    
+    if (!rollNumber) {
+        rollNumberError.textContent = 'Please enter your roll number';
+        rollNumberError.classList.add('show');
+        document.getElementById('roll_number').classList.add('is-invalid');
+        return;
+    }
+
+    currentRollNumber = rollNumber;
+    rollNumberError.classList.remove('show');
+    document.getElementById('roll_number').classList.remove('is-invalid');
+
+    // Show loading state
+    const verifyBtn = document.querySelector('button[onclick="verifyRollNumber()"]');
+    const originalText = verifyBtn.innerHTML;
+    verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verifying...';
+    verifyBtn.disabled = true;
+
+    fetch('{{ url_for("verify_roll_number") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            roll_number: rollNumber,
+            context: 'registration'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Populate the auto-filled fields
+            document.getElementById('display_name').textContent = data.student.name;
+            document.getElementById('display_year').textContent = data.student.year;
+            document.getElementById('display_branch').textContent = data.student.branch;
+            document.getElementById('display_section').textContent = data.student.section || 'N/A'; // ADD THIS LINE
             
-            if (!rollNumber) {
-                rollNumberError.textContent = 'Please enter your roll number';
-                rollNumberError.classList.add('show');
-                document.getElementById('roll_number').classList.add('is-invalid');
-                return;
+            // Set hidden fields
+            document.getElementById('name').value = data.student.name;
+            document.getElementById('year').value = data.student.year;
+            document.getElementById('branch').value = data.student.branch;
+            document.getElementById('section').value = data.student.section || ''; // ADD THIS LINE
+            document.getElementById('verified_roll_number').value = rollNumber;
+
+            // Check if roll number is already registered
+            isRollNumberRegistered = data.is_registered;
+            
+            if (data.is_registered) {
+                // Show warning for already registered roll number
+                document.getElementById('successAlert').classList.add('d-none');
+                document.getElementById('rollNumberRegisteredAlert').classList.remove('d-none');
+                
+                // Add warning badge to name field
+                document.getElementById('display_name').innerHTML = 
+                    data.student.name + ' <span class="badge bg-warning registration-status">Already Registered</span>';
+                
+                // Disable form submission
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('submitBtn').innerHTML = 
+                    'Cannot Register - Roll Number Already Registered <i class="fas fa-ban ms-1"></i>';
+            } else {
+                // Show success message
+                document.getElementById('successAlert').classList.remove('d-none');
+                document.getElementById('rollNumberRegisteredAlert').classList.add('d-none');
+                
+                // Enable form submission
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').innerHTML = 
+                    'Complete Registration <i class="fas fa-arrow-right ms-1"></i>';
             }
 
-            currentRollNumber = rollNumber;
-            rollNumberError.classList.remove('show');
-            document.getElementById('roll_number').classList.remove('is-invalid');
+            // Move to step 2
+            document.getElementById('step1-content').classList.add('d-none');
+            document.getElementById('step2-content').classList.remove('d-none');
+            
+            // Update step indicator
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
 
-            // Show loading state
-            const verifyBtn = document.querySelector('button[onclick="verifyRollNumber()"]');
-            const originalText = verifyBtn.innerHTML;
-            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verifying...';
-            verifyBtn.disabled = true;
-
-            fetch('{{ url_for("verify_roll_number") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    roll_number: rollNumber,
-                    context: 'registration'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Populate the auto-filled fields
-                    document.getElementById('display_name').textContent = data.student.name;
-                    document.getElementById('display_year').textContent = data.student.year;
-                    document.getElementById('display_branch').textContent = data.student.branch;
-                    
-                    // Set hidden fields
-                    document.getElementById('name').value = data.student.name;
-                    document.getElementById('year').value = data.student.year;
-                    document.getElementById('branch').value = data.student.branch;
-                    document.getElementById('verified_roll_number').value = rollNumber;
-
-                    // Check if roll number is already registered
-                    isRollNumberRegistered = data.is_registered;
-                    
-                    if (data.is_registered) {
-                        // Show warning for already registered roll number
-                        document.getElementById('successAlert').classList.add('d-none');
-                        document.getElementById('rollNumberRegisteredAlert').classList.remove('d-none');
-                        
-                        // Add warning badge to name field
-                        document.getElementById('display_name').innerHTML = 
-                            data.student.name + ' <span class="badge bg-warning registration-status">Already Registered</span>';
-                        
-                        // Disable form submission
-                        document.getElementById('submitBtn').disabled = true;
-                        document.getElementById('submitBtn').innerHTML = 
-                            'Cannot Register - Roll Number Already Registered <i class="fas fa-ban ms-1"></i>';
-                    } else {
-                        // Show success message
-                        document.getElementById('successAlert').classList.remove('d-none');
-                        document.getElementById('rollNumberRegisteredAlert').classList.add('d-none');
-                        
-                        // Enable form submission
-                        document.getElementById('submitBtn').disabled = false;
-                        document.getElementById('submitBtn').innerHTML = 
-                            'Complete Registration <i class="fas fa-arrow-right ms-1"></i>';
-                    }
-
-                    // Move to step 2
-                    document.getElementById('step1-content').classList.add('d-none');
-                    document.getElementById('step2-content').classList.remove('d-none');
-                    
-                    // Update step indicator
-                    document.getElementById('step1').classList.remove('active');
-                    document.getElementById('step1').classList.add('completed');
-                    document.getElementById('step2').classList.add('active');
-
-                } else {
-                    if (data.is_registered) {
-                        rollNumberError.textContent = 'This roll number is already registered. Please try another roll number or contact the team.';
-                    } else {
-                        rollNumberError.textContent = data.message || 'Roll number not found in our database. Please contact administrator.';
-                    }
-                    rollNumberError.classList.add('show');
-                    document.getElementById('roll_number').classList.add('is-invalid');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                rollNumberError.textContent = 'An error occurred while verifying roll number. Please try again.';
-                rollNumberError.classList.add('show');
-                document.getElementById('roll_number').classList.add('is-invalid');
-            })
-            .finally(() => {
-                verifyBtn.innerHTML = originalText;
-                verifyBtn.disabled = false;
-            });
+        } else {
+            if (data.is_registered) {
+                rollNumberError.textContent = 'This roll number is already registered. Please try another roll number or contact the team.';
+            } else {
+                rollNumberError.textContent = data.message || 'Roll number not found in our database. Please contact administrator.';
+            }
+            rollNumberError.classList.add('show');
+            document.getElementById('roll_number').classList.add('is-invalid');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        rollNumberError.textContent = 'An error occurred while verifying roll number. Please try again.';
+        rollNumberError.classList.add('show');
+        document.getElementById('roll_number').classList.add('is-invalid');
+    })
+    .finally(() => {
+        verifyBtn.innerHTML = originalText;
+        verifyBtn.disabled = false;
+    });
+}
 
 
         // Validate contact number input (only digits, max 10)

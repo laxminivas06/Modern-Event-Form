@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Control - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 1rem;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobile-header .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .hamburger:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+            background-size: cover;
+        }
+
+        .sidebar-header h4 {
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 0;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(30, 60, 114, 0.1);
+            border-left: 3px solid var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            margin-top: 0;
+            min-height: 100vh;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+        
+        .status-open {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .status-closed {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .control-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .control-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #c82333);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+        }
+        
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .last-updated {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 1000;
+                height: 100vh;
+                top: 0;
+                left: 0;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .card-header {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+                padding-top: 70px;
+            }
+            
+            .admin-header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .admin-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .control-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo-container">
+            <span class="d-none d-sm-inline">Admin Panel</span>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="mb-0">Admin Panel</h4>
+        </div>
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('view_teams') }}">
+                        <i class="fas fa-user-shield me-2"></i>
+                        <span>View Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('receipt_login') }}">
+                        <i class="fas fa-receipt"></i>
+                        <span>Receipt Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('message_center') }}">
+                        <i class="fas fa-envelope"></i>
+                        <span>Message Center</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_homepage') }}">
+                        <i class="fas fa-home"></i>
+                        <span>Edit Homepage</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_excel_upload') }}">
+                        <i class="fas fa-upload me-2"></i>
+                        <span>SDM</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('registration_control') }}">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <span>Registration Control</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10 col-xl-8">
+                    <div class="admin-container">
+                        
+                        <!-- Header -->
+                        <div class="admin-header">
+                            
+                            <div class="row align-items-center">
+                                <div class="col-md-8 text-md-start text-center">
+<button 
+    onclick="window.location.href='{{ url_for('admin_dashboard') }}'" 
+    style="
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px; 
+        padding: 10px 18px; 
+        font-size: clamp(12px, 2vw, 16px); 
+        background: linear-gradient(135deg, #4A90E2, #007BFF); 
+        color: white; 
+        border: none; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+        width: auto; 
+        max-width: 100%; 
+    "
+    onmouseover="this.style.background='linear-gradient(135deg, #357ABD, #0056D2)'; this.style.transform='scale(1.03)';"
+    onmouseout="this.style.background='linear-gradient(135deg, #4A90E2, #007BFF)'; this.style.transform='scale(1)';"
+    ontouchstart="this.style.transform='scale(0.97)';"
+    ontouchend="this.style.transform='scale(1)';"
+>
+    <svg xmlns="http://www.w3.org/2000/svg" width="clamp(14px, 2vw, 16px)" height="clamp(14px, 2vw, 16px)" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink: 0;">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg>
+    <span style="white-space: nowrap;">Back to Dashboard</span>
+</button>
+<br>
+                                    
+                                    <h1 class="h3 mb-2">
+                                        <i class="fas fa-cogs me-2"></i>Registration Control Panel
+                                    </h1>
+                                    <p class="mb-0 opacity-75">Manage registration status and messages</p>
+                                </div>
+                                <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
+                                    <div class="status-indicator {% if settings.registration_open %}status-open{% else %}status-closed{% endif %}">
+                                        <i class="fas {% if settings.registration_open %}fa-lock-open{% else %}fa-lock{% endif %} me-2"></i>
+                                        {% if settings.registration_open %}Registration OPEN{% else %}Registration CLOSED{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content -->
+                        <div class="p-4">
+                            <!-- Flash Messages -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                            <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+
+                            <form method="POST" id="registrationForm">
+                                <!-- Registration Status Card -->
+                                <div class="control-card card">
+                                    <div class="card-header">
+                                        <i class="fas fa-toggle-on me-2"></i>Registration Status
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-8">
+                                                <h5 class="card-title mb-1">Registration System</h5>
+                                                <p class="card-text text-muted mb-0">
+                                                    Turn registration on or off for all users
+                                                </p>
+                                            </div>
+                                            <div class="col-md-4 text-end">
+                                                <label class="switch">
+                                                    <input type="checkbox" name="registration_open" 
+                                                           {% if settings.registration_open %}checked{% endif %}>
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Countdown Settings -->
+                                <div class="control-card card">
+                                    <div class="card-header">
+                                        <i class="fas fa-clock me-2"></i>Countdown Settings
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-8">
+                                                <label class="form-check-label fw-bold" for="show_countdown">
+                                                    Show Countdown Timer
+                                                </label>
+                                                <p class="text-muted small mb-0">
+                                                    Display a countdown timer on the closed registration page
+                                                </p>
+                                            </div>
+                                            <div class="col-md-4 text-end">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" name="show_countdown" 
+                                                           id="show_countdown" {% if settings.show_countdown %}checked{% endif %}>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <label for="countdown_date" class="form-label fw-bold">Countdown Target Date</label>
+                                                <input type="datetime-local" class="form-control" id="countdown_date" 
+                                                       name="countdown_date" value="{{ settings.countdown_date }}"
+                                                       placeholder="Select date and time for countdown">
+                                                <div class="form-text">
+                                                    Set the target date for the countdown timer
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Closed Registration Message -->
+                                <div class="control-card card">
+                                    <div class="card-header">
+                                        <i class="fas fa-comment-alt me-2"></i>Closed Registration Message
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="closed_title" class="form-label fw-bold">Page Title</label>
+                                            <input type="text" class="form-control" id="closed_title" 
+                                                   name="closed_title" value="{{ settings.closed_title }}"
+                                                   placeholder="Enter title for closed registration page">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="closed_subtitle" class="form-label fw-bold">Page Subtitle</label>
+                                            <input type="text" class="form-control" id="closed_subtitle" 
+                                                   name="closed_subtitle" value="{{ settings.closed_subtitle }}"
+                                                   placeholder="Enter subtitle for closed registration page">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="registration_message" class="form-label fw-bold">Main Message</label>
+                                            <textarea class="form-control" id="registration_message" 
+                                                      name="registration_message" rows="4"
+                                                      placeholder="Enter the message to display when registration is closed">{{ settings.registration_message }}</textarea>
+                                            <div class="form-text">
+                                                This message will be shown to users when they try to access registration while it's closed.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview Section -->
+                                <div class="preview-section mb-4">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fas fa-eye me-2"></i>Preview
+                                    </h5>
+                                    <div class="border rounded p-3 bg-white">
+                                        <h4 id="previewTitle" class="text-primary">{{ settings.closed_title }}</h4>
+                                        <h6 id="previewSubtitle" class="text-muted mb-3">{{ settings.closed_subtitle }}</h6>
+                                        <p id="previewMessage" class="mb-0">{{ settings.registration_message }}</p>
+                                        {% if settings.show_countdown %}
+                                        <div class="mt-3 p-3 bg-light rounded">
+                                            <div id="previewCountdown" class="text-center">
+                                                <div class="countdown-timer">
+                                                    <div class="d-flex justify-content-center gap-3">
+                                                        <div class="text-center">
+                                                            <div class="countdown-value bg-primary text-white rounded p-2">00</div>
+                                                            <div class="countdown-label small text-muted">Days</div>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <div class="countdown-value bg-primary text-white rounded p-2">00</div>
+                                                            <div class="countdown-label small text-muted">Hours</div>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <div class="countdown-value bg-primary text-white rounded p-2">00</div>
+                                                            <div class="countdown-label small text-muted">Minutes</div>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <div class="countdown-value bg-primary text-white rounded p-2">00</div>
+                                                            <div class="countdown-label small text-muted">Seconds</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary w-100">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save me-2"></i>Save Settings
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Last Updated -->
+                                {% if settings.last_updated %}
+                                <div class="text-center mt-3">
+                                    <span class="last-updated">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Last updated: {{ settings.last_updated }} by {{ settings.updated_by }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            // Toggle sidebar on hamburger click
+            hamburger.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+            });
+            
+            // Close sidebar when clicking on overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            });
+            
+            // Close sidebar when clicking on a nav link (for mobile)
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.remove('active');
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    sidebar.classList.remove('active');
+                    overlay.style.display = 'none';
+                }
+            });
+
+            // Real-time preview updates
+            document.getElementById('closed_title').addEventListener('input', function(e) {
+                document.getElementById('previewTitle').textContent = e.target.value || 'Registration Closed';
+            });
+            
+            document.getElementById('closed_subtitle').addEventListener('input', function(e) {
+                document.getElementById('previewSubtitle').textContent = e.target.value || 'Thank you for your interest';
+            });
+            
+            document.getElementById('registration_message').addEventListener('input', function(e) {
+                document.getElementById('previewMessage').textContent = e.target.value || 'Registration is currently closed. Please check back later.';
+            });
+            
+            document.getElementById('show_countdown').addEventListener('change', function(e) {
+                const countdownPreview = document.getElementById('previewCountdown');
+                if (e.target.checked) {
+                    countdownPreview.style.display = 'block';
+                } else {
+                    countdownPreview.style.display = 'none';
+                }
+            });
+
+            // Form submission confirmation
+            document.getElementById('registrationForm').addEventListener('submit', function(e) {
+                const isOpen = document.querySelector('input[name="registration_open"]').checked;
+                const action = isOpen ? 'OPEN' : 'CLOSE';
+                
+                if (!confirm(`Are you sure you want to ${action} registration? This will immediately affect all users.`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
