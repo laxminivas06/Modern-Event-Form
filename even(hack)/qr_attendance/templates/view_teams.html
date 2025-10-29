@@ -881,6 +881,11 @@
     <span style="white-space: nowrap;">Back to Dashboard</span>
 </button>
                 
+ 
+ <button class="nav-button payment-btn" onclick="window.location.href='{{ url_for('view_pdf_receipts') }}'">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Cash Receipts</span>
+                </button>
 
                 <button class="nav-button payment-btn" onclick="window.location.href='{{ url_for('view_payment_screenshots') }}'">
                     <i class="fas fa-file-invoice-dollar"></i>

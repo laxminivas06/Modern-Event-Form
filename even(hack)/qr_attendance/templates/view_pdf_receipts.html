@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Receipts - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            transition: transform 0.2s;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .status-badge {
+            font-size: 0.75rem;
+        }
+        .pdf-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .filter-buttons .btn {
+            margin: 2px;
+        }
+        .receipt-info {
+            font-size: 0.9rem;
+        }
+        .action-buttons .btn {
+            margin: 2px;
+        }
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1rem;
+            }
+            .action-buttons .btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="h3 mb-2">
+                    <i class="fas fa-file-pdf text-danger"></i> PDF Receipts Management
+                </h1>
+                <p class="text-muted">View and manage all uploaded PDF payment receipts</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ stats.total_receipts }}</h4>
+                        <p class="card-text">Total Receipts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ stats.verified_receipts }}</h4>
+                        <p class="card-text">Verified</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ stats.pending_receipts }}</h4>
+                        <p class="card-text">Pending</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">₹{{ stats.total_amount }}</h4>
+                        <p class="card-text">Total Amount</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ stats.first_year_count }}</h4>
+                        <p class="card-text">1st Year</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ stats.second_year_count }}</h4>
+                        <p class="card-text">2nd Year</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="row mb-3">
+            <div class="col">
+                <div class="filter-buttons">
+                    <a href="{{ url_for('view_pdf_receipts') }}" 
+                       class="btn btn-outline-primary {% if filter_type == 'all' %}active{% endif %}">
+                        <i class="fas fa-list"></i> All Receipts
+                    </a>
+                    <a href="{{ url_for('view_verified_pdf_receipts') }}" 
+                       class="btn btn-outline-success {% if filter_type == 'verified' %}active{% endif %}">
+                        <i class="fas fa-check-circle"></i> Verified
+                    </a>
+                    <a href="{{ url_for('view_pending_pdf_receipts') }}" 
+                       class="btn btn-outline-warning {% if filter_type == 'pending' %}active{% endif %}">
+                        <i class="fas fa-clock"></i> Pending
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receipts Grid -->
+        {% if receipts %}
+        <div class="row">
+            {% for receipt in receipts %}
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="card h-100">
+                    <!-- PDF Preview -->
+                    <div class="pdf-preview">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Status Badge -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge {% if receipt.receipt_verified %}bg-success{% else %}bg-warning{% endif %} status-badge">
+                                {% if receipt.receipt_verified %}
+                                <i class="fas fa-check"></i> Verified
+                                {% else %}
+                                <i class="fas fa-clock"></i> Pending
+                                {% endif %}
+                            </span>
+                            <small class="text-muted">#{{ receipt.receipt_id }}</small>
+                        </div>
+
+                        <!-- Participant Info -->
+                        <h6 class="card-title mb-2">{{ receipt.name }}</h6>
+                        <div class="receipt-info mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-envelope"></i> {{ receipt.email }}<br>
+                                <i class="fas fa-phone"></i> {{ receipt.contact }}<br>
+                                <i class="fas fa-university"></i> {{ receipt.college }}<br>
+                                <i class="fas fa-graduation-cap"></i> {{ receipt.branch }} - {{ receipt.year }} Year
+                            </small>
+                        </div>
+
+                        <!-- Payment Details -->
+                        <div class="receipt-info mb-3">
+                            <small>
+                                <strong>Amount:</strong> ₹{{ receipt.amount }}<br>
+                                <strong>Receiver:</strong> {{ receipt.receiver_name }}<br>
+                                <strong>Date:</strong> {{ receipt.receipt_date }}<br>
+                                <strong>ID:</strong> {{ receipt.individual_id }}
+                            </small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <a href="/view-pdf/{{ receipt.receipt_file.split('/')[-1] }}" 
+                               target="_blank" 
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> View PDF
+                            </a>
+                            <a href="/view-pdf/{{ receipt.receipt_file.split('/')[-1] }}" 
+                               download 
+                               class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            {% if not receipt.receipt_verified %}
+                            <button class="btn btn-success btn-sm verify-btn" 
+                                    data-receipt-id="{{ receipt.individual_id }}">
+                                <i class="fas fa-check"></i> Verify
+                            </button>
+                            {% else %}
+                            <button class="btn btn-warning btn-sm unverify-btn" 
+                                    data-receipt-id="{{ receipt.individual_id }}">
+                                <i class="fas fa-times"></i> Unverify
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> No PDF receipts found for the selected filter.
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add verification functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verify receipt
+            document.querySelectorAll('.verify-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const receiptId = this.getAttribute('data-receipt-id');
+                    verifyReceipt(receiptId, true);
+                });
+            });
+
+            // Unverify receipt
+            document.querySelectorAll('.unverify-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const receiptId = this.getAttribute('data-receipt-id');
+                    verifyReceipt(receiptId, false);
+                });
+            });
+
+            function verifyReceipt(receiptId, verify) {
+                if (!confirm(`Are you sure you want to ${verify ? 'verify' : 'unverify'} this receipt?`)) {
+                    return;
+                }
+
+                fetch('/update_receipt_status/' + receiptId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: verify ? 'approve' : 'reject'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the receipt status.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -839,8 +839,6 @@
         }
     </style>
 </head>
-
-
 <body>
     
 <nav class="navbar navbar-expand-lg navbar-light">
@@ -923,32 +921,31 @@
                                 </div>
                             </div>
 
-                           <div class="payment-options-container mb-4 d-lg-none">
-    <h6 class="text-center mb-3">Pay with:</h6>
-    <div class="row g-3 justify-content-center">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            {% if individual.registration_fee == 500 %}
-            <a href="phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration" 
-               class="payment-option animate__animated animate__fadeIn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
-                     alt="Pay with PhonePe" class="img-fluid payment-logo">
-            </a>
-            {% else %}
-            <a href="phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&am=600&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration" 
-               class="payment-option animate__animated animate__fadeIn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
-                     alt="Pay with PhonePe" class="img-fluid payment-logo">
-            </a>
-            {% endif %}
-        </div>
-    </div>
-</div>
-                                
-                                <div class="text-center mt-3">
-                                    <a href="#" class="text-primary" id="noUpiLink" data-bs-toggle="modal" data-bs-target="#noUpiModal">
-                                        <i class="fas fa-question-circle me-1"></i> Don't have these apps?
-                                    </a>
+                            <div class="payment-options-container mb-4 d-lg-none">
+                                <h6 class="text-center mb-3">Pay with:</h6>
+                                <div class="row g-3 justify-content-center">
+                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                        {% if individual.registration_fee == 500 %}
+                                        <a href="phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration" 
+                                           class="payment-option animate__animated animate__fadeIn">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
+                                                 alt="Pay with PhonePe" class="img-fluid payment-logo">
+                                        </a>
+                                        {% else %}
+                                        <a href="phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&am=600&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration" 
+                                           class="payment-option animate__animated animate__fadeIn">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
+                                                 alt="Pay with PhonePe" class="img-fluid payment-logo">
+                                        </a>
+                                        {% endif %}
+                                    </div>
                                 </div>
+                            </div>
+                                
+                            <div class="text-center mt-3">
+                                <a href="#" class="text-primary" id="noUpiLink" data-bs-toggle="modal" data-bs-target="#noUpiModal">
+                                    <i class="fas fa-question-circle me-1"></i> Don't have these apps?
+                                </a>
                             </div>
 
                             <div class="mb-4">
@@ -986,53 +983,81 @@
                                 </button>
                             </div>
                         </div>
+<!-- Cash Payment Content -->
+<div id="cash-payment" class="payment-method-content">
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i> Please provide details about the person who received your cash payment and upload the receipt in PDF format (max 10KB).
+    </div>
 
-                        <!-- Cash Payment Content -->
-                        <div id="cash-payment" class="payment-method-content">
-                            <div class="alert alert-info mb-4">
-                                <i class="fas fa-info-circle me-2"></i> Please provide details about the person who received your cash payment.
-                            </div>
+    <div class="mb-4">
+        <label for="cash_receiver_name" class="form-label">
+            <i class="fas fa-user-tie me-2"></i>Name of Receiver
+        </label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <select class="form-select" id="cash_receiver_name" name="cash_receiver_name" required>
+                <option value="" selected disabled>Select receiver</option>
+                <option value="B.Rahul (CSE) 24N81A05M0">B.Rahul (CSE) 24N81A05M0</option>
+                <option value="Sathish (Civil) 24N81A0104">Sathish (Civil) 24N81A0104</option>
+                <option value="Sravan (AIML) 24N81A66P7">Sravan (AIML) 24N81A66P7</option>
+                <option value="Rakesh (DS) 24N81A67C7">Rakesh (DS) 24N81A67C7</option>
+                <option value="Sreekar (CS) 24N81A6235">Sreekar (CS) 24N81A6235</option>
+            </select>
+        </div>
+        <div class="invalid-feedback">Please select the receiver's name</div>
+        <small class="text-muted">Select the Creators Club member who received your payment</small>
+    </div>
 
-                            <div class="mb-4">
-                                <label for="cash_receiver_name" class="form-label">
-                                    <i class="fas fa-user-tie me-2"></i>Name of Receiver
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <select class="form-select" id="cash_receiver_name" name="cash_receiver_name" required>
-                                        <option value="" selected disabled>Select receiver</option>
-                                       <option value="B.Rahul (CSE) 24N81A05M0">B.Rahul (CSE) 24N81A05M0</option>
-<option value="Sathish (Civil) 24N81A0104">Sathish (Civil) 24N81A0104</option>
-<option value="Sravan (AIML) 24N81A66P7">Sravan (AIML) 24N81A66P7</option>
-<option value="Rakesh (DS) 24N81A67C7">Rakesh (DS) 24N81A67C7</option>
-<option value="Sreekar (CS) 24N81A6235">Sreekar (CS) 24N81A6235</option>
-                                    </select>
-                                </div>
-                                <div class="invalid-feedback">Please select the receiver's name</div>
-                                <small class="text-muted">Select the Creators Club member who received your payment</small>
-                            </div>
+    <div class="mb-4">
+        <label class="form-label">
+            <i class="fas fa-calendar-alt me-2"></i>Date of Payment
+        </label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-clock"></i></span>
+            <input type="date" class="form-control" id="cash_received_at" name="cash_received_at" required>
+        </div>
+        <div class="mt-2">
+            <span class="badge bg-primary" id="current-date-display"></span>
+        </div>
+        <small class="text-muted">Automatically set to today's date</small>
+    </div>
 
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    <i class="fas fa-calendar-alt me-2"></i>Date of Payment
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                    <input type="date" class="form-control" id="cash_received_at" name="cash_received_at" required>
-                                </div>
-                                <div class="mt-2">
-                                    <span class="badge bg-primary" id="current-date-display"></span>
-                                </div>
-                                <small class="text-muted">Automatically set to today's date</small>
-                            </div>
+    <!-- PDF RECEIPT UPLOAD SECTION FOR CASH PAYMENT -->
+    <div class="mb-4">
+        <label class="form-label">
+            <i class="fas fa-file-pdf me-2"></i>Receipt PDF Upload
+        </label>
+        <div class="file-upload">
+            <label class="file-upload-button btn btn-outline-secondary">
+                <i class="fas fa-upload me-2"></i>Upload Receipt PDF
+                <input type="file" class="file-upload-input" id="cash_receipt_photo" name="cash_receipt_photo" accept=".pdf" required>
+            </label>
+            <span class="file-upload-name" id="cash-receipt-file-name">No file chosen</span>
+        </div>
+        <div class="invalid-feedback">Please upload a PDF receipt file (max 10KB)</div>
+        <small class="text-muted">Upload your payment receipt in PDF format only. Maximum file size: 10KB</small>
+        
+        <!-- PDF icon instead of image preview -->
+        <div class="preview-container mt-2" id="cash-receipt-preview-container" style="display: none;">
+            <p class="small mb-1">File ready for upload:</p>
+            <div class="pdf-preview d-flex align-items-center p-2 border rounded bg-light">
+                <i class="fas fa-file-pdf text-danger me-2" style="font-size: 24px;"></i>
+                <div>
+                    <strong id="cash-receipt-preview-filename"></strong>
+                    <br>
+                    <small class="text-muted" id="cash-receipt-preview-size"></small>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                            <!-- SUBMIT BUTTON FOR CASH PAYMENT -->
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-pay">
-                                    <span><i class="fas fa-check-circle me-2"></i>Complete Registration</span>
-                                </button>
-                            </div>
-                        </div>
+    <!-- SUBMIT BUTTON FOR CASH PAYMENT -->
+    <div class="d-grid gap-2 mt-4">
+        <button type="submit" class="btn btn-pay">
+            <span><i class="fas fa-check-circle me-2"></i>Complete Registration</span>
+        </button>
+    </div>
+</div>
                     </form>
                 </div>
             </div>
@@ -1110,9 +1135,6 @@
         </div>
     </div>
 </footer>
-
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -1211,12 +1233,91 @@
         });
     }
 
+    // File upload handling for online payment (images)
+    function handleImageUpload(event, inputElement, fileNameElement, previewContainerElement, previewImageElement) {
+        const file = event.target.files[0];
+        if (file) {
+            fileNameElement.textContent = file.name;
+
+            // Validate file type - images only for online payment
+            const isValidType = file.type.startsWith('image/');
+            if (!isValidType) {
+                inputElement.classList.add('is-invalid');
+                fileNameElement.textContent = 'Only image files are allowed (PNG, JPG, JPEG)';
+                if (previewContainerElement) previewContainerElement.style.display = 'none';
+                return;
+            }
+
+            // Validate file size - 100KB limit for online payment screenshots
+            const maxSize = 100 * 1024; // 100KB in bytes
+            if (file.size > maxSize) {
+                inputElement.classList.add('is-invalid');
+                fileNameElement.textContent = `File too large (max 100KB). Current: ${(file.size/1024).toFixed(0)}KB`;
+                if (previewContainerElement) previewContainerElement.style.display = 'none';
+                return;
+            }
+
+            inputElement.classList.remove('is-invalid');
+
+            // Show image preview for online payment screenshots
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImageElement.src = e.target.result;
+                previewContainerElement.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            fileNameElement.textContent = 'No file chosen';
+            if (previewContainerElement) previewContainerElement.style.display = 'none';
+        }
+    }
+
+    // PDF file upload handling for cash payments
+    function handlePDFUpload(event, inputElement, fileNameElement, previewContainerElement, previewFilenameElement, previewSizeElement) {
+        const file = event.target.files[0];
+        if (file) {
+            fileNameElement.textContent = file.name;
+
+            // Validate file type - PDF only for cash receipts
+            const isValidType = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            if (!isValidType) {
+                inputElement.classList.add('is-invalid');
+                fileNameElement.textContent = 'Only PDF files are allowed for receipts';
+                if (previewContainerElement) previewContainerElement.style.display = 'none';
+                return;
+            }
+
+            // Validate file size - 10KB limit for PDF receipts
+            const maxSize = 10 * 1024; // 10KB in bytes
+            
+            if (file.size > maxSize) {
+                inputElement.classList.add('is-invalid');
+                fileNameElement.textContent = `File too large (max 10KB). Current: ${(file.size/1024).toFixed(1)}KB`;
+                if (previewContainerElement) previewContainerElement.style.display = 'none';
+                return;
+            }
+
+            inputElement.classList.remove('is-invalid');
+
+            // Show PDF preview (icon + info, not image)
+            if (previewContainerElement && previewFilenameElement && previewSizeElement) {
+                previewFilenameElement.textContent = file.name;
+                previewSizeElement.textContent = `Size: ${(file.size/1024).toFixed(1)}KB`;
+                previewContainerElement.style.display = 'block';
+            }
+        } else {
+            fileNameElement.textContent = 'No file chosen';
+            if (previewContainerElement) previewContainerElement.style.display = 'none';
+        }
+    }
+
     // Enhanced form validation for cash payment
     function validateCashPayment() {
         let isValid = true;
         
         const receiverName = document.getElementById('cash_receiver_name');
         const receivedDate = document.getElementById('cash_received_at');
+        const cashReceipt = document.getElementById('cash_receipt_photo');
         
         // Validate receiver name
         if (!receiverName.value) {
@@ -1234,47 +1335,72 @@
             receivedDate.classList.remove('is-invalid');
         }
         
+        // Validate PDF receipt upload
+        const file = cashReceipt.files[0];
+        if (!file) {
+            cashReceipt.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            // Double-check file type and size on form submission
+            const isValidType = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            const maxSize = 10 * 1024; // 10KB
+            
+            if (!isValidType) {
+                cashReceipt.classList.add('is-invalid');
+                document.getElementById('cash-receipt-file-name').textContent = 'Only PDF files are allowed';
+                isValid = false;
+            } else if (file.size > maxSize) {
+                cashReceipt.classList.add('is-invalid');
+                document.getElementById('cash-receipt-file-name').textContent = `File too large (max 10KB). Current: ${(file.size/1024).toFixed(1)}KB`;
+                isValid = false;
+            } else {
+                cashReceipt.classList.remove('is-invalid');
+            }
+        }
+        
         return isValid;
     }
 
-    // File upload handling
-    function handleFileUpload(event, inputElement, fileNameElement, previewContainerElement, previewImageElement, type) {
-        const file = event.target.files[0];
-        if (file) {
-            fileNameElement.textContent = file.name;
-
-            // Validate file type
-            const isValidType = (type === 'image' && file.type.startsWith('image/'));
-            if (!isValidType) {
-                inputElement.classList.add('is-invalid');
-                fileNameElement.textContent = 'Only image files are allowed (PNG, JPG, JPEG)';
-                if (previewContainerElement) previewContainerElement.style.display = 'none';
-                return;
-            }
-
-            // Validate file size - 100KB limit
-            const maxSize = 100 * 1024; // 100KB in bytes
-            if (file.size > maxSize) {
-                inputElement.classList.add('is-invalid');
-                fileNameElement.textContent = `File too large (max 100KB). Current: ${(file.size/1024).toFixed(0)}KB`;
-                if (previewContainerElement) previewContainerElement.style.display = 'none';
-                return;
-            }
-
-            inputElement.classList.remove('is-invalid');
-
-            if (type === 'image') {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImageElement.src = e.target.result;
-                    previewContainerElement.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
+    // Enhanced form validation for online payment
+    function validateOnlinePayment() {
+        let isValid = true;
+        
+        const paymentIdInput = document.getElementById('payment_id');
+        const fileUpload = document.getElementById('payment_screenshot');
+        
+        // Validate payment ID
+        const paymentIdValue = paymentIdInput.value.trim();
+        if (!paymentIdValue) {
+            paymentIdInput.classList.add('is-invalid');
+            isValid = false;
         } else {
-            fileNameElement.textContent = 'No file chosen';
-            if (previewContainerElement) previewContainerElement.style.display = 'none';
+            paymentIdInput.classList.remove('is-invalid');
         }
+
+        // Validate file upload
+        const file = fileUpload.files[0];
+        if (!file) {
+            fileUpload.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            // Double-check file type and size on form submission
+            const isValidType = file.type.startsWith('image/');
+            const maxSize = 100 * 1024;
+            
+            if (!isValidType) {
+                fileUpload.classList.add('is-invalid');
+                document.getElementById('file-name').textContent = 'Only image files are allowed';
+                isValid = false;
+            } else if (file.size > maxSize) {
+                fileUpload.classList.add('is-invalid');
+                document.getElementById('file-name').textContent = `File too large (max 100KB). Current: ${(file.size/1024).toFixed(0)}KB`;
+                isValid = false;
+            } else {
+                fileUpload.classList.remove('is-invalid');
+            }
+        }
+        
+        return isValid;
     }
 
     // Reset validation
@@ -1290,32 +1416,26 @@
     document.addEventListener('DOMContentLoaded', function() {
         initializePaymentTabs();
         setCurrentDate();
-        
-
 
         const year = "{{ individual.year }}";
-    const amountField = document.getElementById('amount-display');
-    const hiddenAmountField = document.getElementById('registration_fee');
-    
-    if (year === '1st') {
-        amountField.textContent = '₹500';
-        hiddenAmountField.value = '500';
-    } else if (year === '2nd') {
-        amountField.textContent = '₹600';
-        hiddenAmountField.value = '600';
-    }
-    
-    // Update PhonePe payment link dynamically
-    const phonepeLink = document.querySelector('a[href*="phonepe://pay"]');
-    if (phonepeLink) {
-        const baseUrl = 'phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&';
-        const amount = year === '1st' ? '500' : '600';
-        const newUrl = `${baseUrl}am=${amount}&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration`;
-        phonepeLink.setAttribute('href', newUrl);
-    }
-});
+        const amountField = document.getElementById('feeAmount');
+        
+        if (year === '1st') {
+            amountField.textContent = '₹500';
+        } else if (year === '2nd') {
+            amountField.textContent = '₹600';
+        }
+        
+        // Update PhonePe payment link dynamically
+        const phonepeLink = document.querySelector('a[href*="phonepe://pay"]');
+        if (phonepeLink) {
+            const baseUrl = 'phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&';
+            const amount = year === '1st' ? '500' : '600';
+            const newUrl = `${baseUrl}am=${amount}&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration`;
+            phonepeLink.setAttribute('href', newUrl);
+        }
 
-        // File upload handling for online payment
+        // File upload handling for online payment (images)
         const fileUpload = document.getElementById('payment_screenshot');
         const fileName = document.getElementById('file-name');
         const previewContainer = document.getElementById('preview-container');
@@ -1323,11 +1443,22 @@
 
         if (fileUpload) {
             fileUpload.addEventListener('change', function(e) {
-                handleFileUpload(e, this, fileName, previewContainer, previewImage, 'image');
+                handleImageUpload(e, this, fileName, previewContainer, previewImage);
             });
         }
 
-      
+        // File upload handling for cash payment (PDF)
+        const cashReceiptUpload = document.getElementById('cash_receipt_photo');
+        const cashReceiptFileName = document.getElementById('cash-receipt-file-name');
+        const cashReceiptPreviewContainer = document.getElementById('cash-receipt-preview-container');
+        const cashReceiptPreviewFilename = document.getElementById('cash-receipt-preview-filename');
+        const cashReceiptPreviewSize = document.getElementById('cash-receipt-preview-size');
+
+        if (cashReceiptUpload) {
+            cashReceiptUpload.addEventListener('change', function(e) {
+                handlePDFUpload(e, this, cashReceiptFileName, cashReceiptPreviewContainer, cashReceiptPreviewFilename, cashReceiptPreviewSize);
+            });
+        }
         
         // Form validation
         const form = document.getElementById('paymentForm');
@@ -1349,29 +1480,10 @@
 
                 if (activeMethod === 'online-payment') {
                     // Online payment validation
-                    const paymentIdValue = paymentIdInput.value.trim();
-                    if (!paymentIdValue) {
-                        paymentIdInput.classList.add('is-invalid');
-                        isValid = false;
-                    }
-
-                    const file = fileUpload.files[0];
-                    if (!file) {
-                        fileUpload.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        // Double-check file size on form submission
-                        const maxSize = 100 * 1024;
-                        if (file.size > maxSize) {
-                            fileUpload.classList.add('is-invalid');
-                            fileName.textContent = `File too large (max 100KB). Current: ${(file.size/1024).toFixed(0)}KB`;
-                            isValid = false;
-                        }
-                    }
+                    isValid = validateOnlinePayment();
                 } else {
                     // Cash payment validation
                     isValid = validateCashPayment();
-                    
                 }
 
                 if (!isValid) {
@@ -1390,6 +1502,5 @@
         }
     });
 </script>
-
 </body>
 </html>

@@ -363,247 +363,53 @@ def view_pending_screenshots():
     
     return render_template('view_payment_screenshots.html', payments=pending_payments, filter_type='pending')
 
-@app.route('/admin/receipts/verified')
-def view_verified_receipts():
-    """View only verified receipts"""
-    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
-        return redirect(url_for('admin_login'))
-    
-    verified_receipts = []
-    
-    try:
-        with open(DATABASE_FILE, 'r') as f:
-            data = json.load(f)
-            
-        for individual in data.get('individuals', []):
-            if (individual.get('payment_method') == 'cash' and 
-                individual.get('cash_receipt_photo') and 
-                individual.get('payment_verified')):
-                
-                # Build the correct file path for receipts
-                receipt_filename = individual['cash_receipt_photo']
-                
-                # Check if file exists in any of the receipt locations
-                file_found = False
-                receipt_file_path = None
-                
-                # Check uploads folder first
-                uploads_path = os.path.join(app.config['UPLOAD_FOLDER'], receipt_filename)
-                if os.path.exists(uploads_path):
-                    file_found = True
-                    receipt_file_path = receipt_filename
-                else:
-                    # Check receipts folder and subfolders
-                    receipts_base_dir = os.path.join('static', 'receipts')
-                    if os.path.exists(receipts_base_dir):
-                        # Check root receipts folder
-                        root_receipt_path = os.path.join(receipts_base_dir, receipt_filename)
-                        if os.path.exists(root_receipt_path):
-                            file_found = True
-                            receipt_file_path = root_receipt_path
-                        else:
-                            # Check receiver subfolders
-                            for receiver_folder in os.listdir(receipts_base_dir):
-                                receiver_path = os.path.join(receipts_base_dir, receiver_folder, receipt_filename)
-                                if os.path.exists(receiver_path):
-                                    file_found = True
-                                    receipt_file_path = receiver_path
-                                    break
-                
-                if file_found and receipt_file_path:
-                    verified_receipts.append({
-                        'individual_id': individual['individual_id'],
-                        'name': individual['name'],
-                        'email': individual['email'],
-                        'receipt_id': individual.get('receipt_number', 'N/A'),
-                        'receipt_file': receipt_file_path,  # Use the correct path
-                        'receipt_date': individual.get('payment_date', 'N/A'),
-                        'amount': individual.get('registration_fee', 'N/A'),
-                        'year': individual.get('year', 'N/A'),
-                        'branch': individual.get('branch', 'N/A'),
-                        'contact': individual.get('contact_number', 'N/A'),
-                        'college': individual.get('college', 'N/A'),
-                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
-                        'receipt_verified': True  # Always True for verified receipts
-                    })
-                else:
-                    print(f"⚠️ Receipt file not found: {receipt_filename}")
-                
-        # Sort by receiver name first, then by receipt date
-        verified_receipts.sort(key=lambda x: (x['receiver_name'], x['receipt_date']), reverse=False)
-                
-    except Exception as e:
-        print(f"Error reading verified receipts: {str(e)}")
-        flash('Error loading verified receipts', 'error')
-    
-    return render_template('view_receipts.html', receipts=verified_receipts, filter_type='verified')
-
-@app.route('/admin/receipts/pending')
-def view_pending_receipts():
-    """View only pending receipts"""
-    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
-        return redirect(url_for('admin_login'))
-    
-    pending_receipts = []
-    
-    try:
-        with open(DATABASE_FILE, 'r') as f:
-            data = json.load(f)
-            
-        for individual in data.get('individuals', []):
-            if (individual.get('payment_method') == 'cash' and 
-                individual.get('cash_receipt_photo') and 
-                not individual.get('payment_verified')):
-                
-                # Build the correct file path for receipts
-                receipt_filename = individual['cash_receipt_photo']
-                
-                # Check if file exists in any of the receipt locations
-                file_found = False
-                receipt_file_path = None
-                
-                # Check uploads folder first
-                uploads_path = os.path.join(app.config['UPLOAD_FOLDER'], receipt_filename)
-                if os.path.exists(uploads_path):
-                    file_found = True
-                    receipt_file_path = receipt_filename
-                else:
-                    # Check receipts folder and subfolders
-                    receipts_base_dir = os.path.join('static', 'receipts')
-                    if os.path.exists(receipts_base_dir):
-                        # Check root receipts folder
-                        root_receipt_path = os.path.join(receipts_base_dir, receipt_filename)
-                        if os.path.exists(root_receipt_path):
-                            file_found = True
-                            receipt_file_path = root_receipt_path
-                        else:
-                            # Check receiver subfolders
-                            for receiver_folder in os.listdir(receipts_base_dir):
-                                receiver_path = os.path.join(receipts_base_dir, receiver_folder, receipt_filename)
-                                if os.path.exists(receiver_path):
-                                    file_found = True
-                                    receipt_file_path = receiver_path
-                                    break
-                
-                if file_found and receipt_file_path:
-                    pending_receipts.append({
-                        'individual_id': individual['individual_id'],
-                        'name': individual['name'],
-                        'email': individual['email'],
-                        'receipt_id': individual.get('receipt_number', 'N/A'),
-                        'receipt_file': receipt_file_path,  # Use the correct path
-                        'receipt_date': individual.get('payment_date', 'N/A'),
-                        'amount': individual.get('registration_fee', 'N/A'),
-                        'year': individual.get('year', 'N/A'),
-                        'branch': individual.get('branch', 'N/A'),
-                        'contact': individual.get('contact_number', 'N/A'),
-                        'college': individual.get('college', 'N/A'),
-                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
-                        'receipt_verified': individual.get('payment_verified', False)
-                    })
-                else:
-                    print(f"⚠️ Receipt file not found: {receipt_filename}")
-                
-        # Sort by receiver name
-        pending_receipts.sort(key=lambda x: x['receiver_name'])
-                
-    except Exception as e:
-        print(f"Error reading pending receipts: {str(e)}")
-        flash('Error loading pending receipts', 'error')
-    
-    return render_template('view_receipts.html', receipts=pending_receipts, filter_type='pending')
 
 @app.route('/update_receipt_status/<individual_id>', methods=['POST'])
 def update_receipt_status(individual_id):
-    """Update receipt verification status"""
-    print(f"DEBUG: update_receipt_status called with individual_id: {individual_id}")
-    
+    """Update receipt verification status for PDF receipts"""
     if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
         return jsonify({'success': False, 'message': 'Unauthorized'}), 401
 
     try:
         data = request.get_json()
-        print(f"DEBUG: Request JSON data: {data}")
-        
-        if not data:
-            return jsonify({'success': False, 'message': 'No JSON data received'}), 400
-            
         action = data.get('action')
-        print(f"DEBUG: Action received: {action}")
         
         if action not in ['approve', 'reject']:
             return jsonify({'success': False, 'message': 'Invalid action'}), 400
             
         # Load database
         with open(DATABASE_FILE, 'r+') as f:
-            try:
-                db_data = json.load(f)
-                individual_found = False
-                individual_data = None
-                
-                print(f"DEBUG: Looking for individual: {individual_id}")
-                print(f"DEBUG: Total individuals: {len(db_data.get('individuals', []))}")
-                
-                # Find individual by individual_id
-                for i, individual in enumerate(db_data.get('individuals', [])):
-                    if individual.get('individual_id') == individual_id:
-                        individual_found = True
-                        individual_data = individual.copy()
-                        print(f"DEBUG: Found individual at index {i}: {individual.get('individual_id')}")
-                        
-                        # Update payment verification status
-                        db_data['individuals'][i]['payment_verified'] = (action == 'approve')
-                        db_data['individuals'][i]['payment_status'] = 'approved' if action == 'approve' else 'rejected'
-                        db_data['individuals'][i]['payment_review_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        db_data['individuals'][i]['payment_review_by'] = session.get('admin_id', 'unknown')
-                        break
-                
-                if not individual_found:
-                    print(f"DEBUG: Individual not found: {individual_id}")
-                    return jsonify({
-                        'success': False, 
-                        'message': f'Individual not found: {individual_id}'
-                    }), 404
-                
-                print(f"DEBUG: Successfully updated individual: {individual_id}")
-                
-                # Save changes
-                f.seek(0)
-                json.dump(db_data, f, indent=4)
-                f.truncate()
-                
-                # Send verification email if payment was approved
-                if action == 'approve' and individual_data and individual_data.get('email'):
-                    try:
-                        threading.Thread(
-                            target=send_payment_verification_email_individual,
-                            args=(individual_data['email'], individual_data)
-                        ).start()
-                        print(f"✅ Payment verification email queued for: {individual_data['email']}")
-                    except Exception as email_error:
-                        print(f"❌ Failed to queue verification email: {email_error}")
-                
-                return jsonify({
-                    'success': True,
-                    'message': f'Receipt {action}d successfully',
-                    'new_status': action == 'approve'
-                })
-                
-            except json.JSONDecodeError as e:
-                print(f"DEBUG: JSON decode error: {e}")
-                return jsonify({
-                    'success': False,
-                    'message': 'Database error',
-                    'error': str(e)
-                }), 500
+            db_data = json.load(f)
+            
+            # Find individual by individual_id
+            for i, individual in enumerate(db_data.get('individuals', [])):
+                if individual.get('individual_id') == individual_id:
+                    # Update payment verification status
+                    db_data['individuals'][i]['payment_verified'] = (action == 'approve')
+                    db_data['individuals'][i]['payment_status'] = 'approved' if action == 'approve' else 'rejected'
+                    db_data['individuals'][i]['payment_review_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    db_data['individuals'][i]['payment_review_by'] = session.get('admin_id', 'unknown')
+                    break
+            
+            # Save changes
+            f.seek(0)
+            json.dump(db_data, f, indent=4)
+            f.truncate()
+            
+            return jsonify({
+                'success': True,
+                'message': f'Receipt {action}d successfully',
+                'new_status': action == 'approve'
+            })
                 
     except Exception as e:
-        print(f"DEBUG: General error: {e}")
+        print(f"Error updating receipt status: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'Server error',
             'error': str(e)
         }), 500
+    
 def send_payment_verification_email_individual(recipient_email, individual_data):
     """
     Send payment verification email to individual participant
@@ -970,95 +776,415 @@ def is_registration_open():
         return settings.get('registration_open', True)
     except FileNotFoundError:
         return True  # Default to open if no settings file
-
-
 @app.route('/admin/receipts')
 def view_receipts():
-    """View receipts organized by receiver"""
+    """View all cash receipts"""
     if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
         return redirect(url_for('admin_login'))
     
-    receivers = {}
+    receipts = []
     
     try:
-        # Define receiver information
-        receiver_info = {
-            'B_Rahul': {'display_name': 'B.Rahul (CSE) 24N81A05M0', 'folder_name': 'B_Rahul'},
-            'Sathish': {'display_name': 'Sathish (Civil) 24N81A0104', 'folder_name': 'Sathish'},
-            'Sravan': {'display_name': 'Sravan (AIML) 24N81A66P7', 'folder_name': 'Sravan'},
-            'Rakesh': {'display_name': 'Rakesh (DS) 24N81A67C7', 'folder_name': 'Rakesh'},
-            'Sreekar': {'display_name': 'Sreekar (CS) 24N81A6235', 'folder_name': 'Sreekar'}
-        }
-        
-        # Scan receipts directory for each receiver
-        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
-        
-        for receiver_key, info in receiver_info.items():
-            receiver_folder = info['folder_name']
-            receiver_dir = os.path.join(receipts_base_dir, receiver_folder)
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
             
-            receipt_count = 0
-            latest_receipt = None
-            
-            if os.path.exists(receiver_dir):
-                # Count PDF files in the receiver's directory
-                pdf_files = [f for f in os.listdir(receiver_dir) if f.endswith('.pdf')]
-                receipt_count = len(pdf_files)
+        for individual in data.get('individuals', []):
+            if individual.get('payment_method') == 'cash' and individual.get('cash_receipt_photo'):
+                receipt_filename = individual['cash_receipt_photo']
                 
-                # Get the latest receipt by modification time
-                if pdf_files:
-                    pdf_files_with_time = []
-                    for pdf_file in pdf_files:
-                        file_path = os.path.join(receiver_dir, pdf_file)
-                        mod_time = os.path.getmtime(file_path)
-                        pdf_files_with_time.append((pdf_file, mod_time))
-                    
-                    # Sort by modification time (newest first)
-                    pdf_files_with_time.sort(key=lambda x: x[1], reverse=True)
-                    latest_receipt = pdf_files_with_time[0][0] if pdf_files_with_time else None
-            
-            # Also count receipts from database for this receiver
-            with open(DATABASE_FILE, 'r') as f:
-                data = json.load(f)
+                # Get the proper file path
+                file_path = get_receipt_file_path(receipt_filename)
                 
-            db_receipt_count = 0
-            for individual in data.get('individuals', []):
-                if (individual.get('payment_method') == 'cash' and 
-                    individual.get('cash_receiver_name') == info['display_name'].split(' (')[0] and
-                    individual.get('cash_receipt_photo')):
-                    db_receipt_count += 1
-            
-            # Use the higher count between file system and database
-            total_receipts = max(receipt_count, db_receipt_count)
-            
-            receivers[receiver_key] = {
-                'display_name': info['display_name'],
-                'folder_name': info['folder_name'],
-                'receipt_count': total_receipts,
-                'latest_receipt': latest_receipt
-            }
+                if file_path:
+                    # Check if file actually exists
+                    full_path = os.path.join(app.root_path, file_path)
+                    if os.path.exists(full_path):
+                        receipts.append({
+                            'individual_id': individual['individual_id'],
+                            'name': individual['name'],
+                            'email': individual['email'],
+                            'receipt_id': individual.get('receipt_number', individual.get('individual_id', 'N/A')),
+                            'receipt_file': file_path,
+                            'receipt_date': individual.get('payment_date', 'N/A'),
+                            'amount': individual.get('registration_fee', 'N/A'),
+                            'year': individual.get('year', 'N/A'),
+                            'branch': individual.get('branch', 'N/A'),
+                            'contact': individual.get('contact_number', 'N/A'),
+                            'college': individual.get('college', 'N/A'),
+                            'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                            'receipt_verified': individual.get('payment_verified', False)
+                        })
+                    else:
+                        print(f"⚠️ Receipt file not found at: {full_path}")
+                else:
+                    print(f"⚠️ Could not resolve receipt file path: {receipt_filename}")
         
-        # Sort receivers by receipt count (highest first)
-        receivers = dict(sorted(receivers.items(), key=lambda x: x[1]['receipt_count'], reverse=True))
-        
-        # Calculate statistics
-        total_receipts = sum(data['receipt_count'] for data in receivers.values())
-        max_receipts = max(data['receipt_count'] for data in receivers.values()) if receivers else 0
-        avg_receipts = round(total_receipts / len(receivers)) if receivers else 0
+        # Sort by receiver name first, then by receipt date
+        receipts.sort(key=lambda x: (x['receiver_name'], x['receipt_date']), reverse=False)
                 
     except Exception as e:
         print(f"Error reading receipts: {str(e)}")
         flash('Error loading receipts', 'error')
-        receivers = {}
-        total_receipts = 0
-        max_receipts = 0
-        avg_receipts = 0
     
-    return render_template('view_receipts.html', 
-                         receivers=receivers,
-                         total_receipts=total_receipts,
-                         max_receipts=max_receipts,
-                         avg_receipts=avg_receipts)
+    return render_template('view_receipts.html', receipts=receipts, filter_type='all')
+
+@app.route('/admin/receipts/verified')
+def view_verified_receipts():
+    """View only verified receipts"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    verified_receipts = []
+    
+    try:
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            
+        for individual in data.get('individuals', []):
+            if (individual.get('payment_method') == 'cash' and 
+                individual.get('cash_receipt_photo') and 
+                individual.get('payment_verified')):
+                
+                receipt_filename = individual['cash_receipt_photo']
+                file_path = get_receipt_file_path(receipt_filename)
+                
+                if file_path and os.path.exists(os.path.join(app.root_path, file_path)):
+                    verified_receipts.append({
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'receipt_id': individual.get('receipt_number', individual.get('individual_id', 'N/A')),
+                        'receipt_file': file_path,
+                        'receipt_date': individual.get('payment_date', 'N/A'),
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'contact': individual.get('contact_number', 'N/A'),
+                        'college': individual.get('college', 'N/A'),
+                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                        'receipt_verified': True
+                    })
+                
+        # Sort by receiver name first, then by receipt date
+        verified_receipts.sort(key=lambda x: (x['receiver_name'], x['receipt_date']), reverse=False)
+                
+    except Exception as e:
+        print(f"Error reading verified receipts: {str(e)}")
+        flash('Error loading verified receipts', 'error')
+    
+    return render_template('view_receipts.html', receipts=verified_receipts, filter_type='verified')
+
+@app.route('/admin/receipts/pending')
+def view_pending_receipts():
+    """View only pending receipts"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    pending_receipts = []
+    
+    try:
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            
+        for individual in data.get('individuals', []):
+            if (individual.get('payment_method') == 'cash' and 
+                individual.get('cash_receipt_photo') and 
+                not individual.get('payment_verified')):
+                
+                receipt_filename = individual['cash_receipt_photo']
+                file_path = get_receipt_file_path(receipt_filename)
+                
+                if file_path and os.path.exists(os.path.join(app.root_path, file_path)):
+                    pending_receipts.append({
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'receipt_id': individual.get('receipt_number', individual.get('individual_id', 'N/A')),
+                        'receipt_file': file_path,
+                        'receipt_date': individual.get('payment_date', 'N/A'),
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'contact': individual.get('contact_number', 'N/A'),
+                        'college': individual.get('college', 'N/A'),
+                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                        'receipt_verified': False
+                    })
+                
+        # Sort by receiver name
+        pending_receipts.sort(key=lambda x: x['receiver_name'])
+                
+    except Exception as e:
+        print(f"Error reading pending receipts: {str(e)}")
+        flash('Error loading pending receipts', 'error')
+    
+    return render_template('view_receipts.html', receipts=pending_receipts, filter_type='pending')
+
+# Also make sure you have the get_receipt_file_path function defined:
+def get_receipt_file_path(filename):
+    """Find receipt file in various locations with proper path resolution"""
+    if not filename:
+        return None
+        
+    # Check uploads folder first
+    uploads_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(uploads_path):
+        return filename  # Return just filename for uploads folder
+    
+    # Check receipts folder and subfolders
+    receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+    if os.path.exists(receipts_base_dir):
+        # Check root receipts folder
+        root_receipt_path = os.path.join(receipts_base_dir, filename)
+        if os.path.exists(root_receipt_path):
+            return f"static/receipts/{filename}"
+        
+        # Check receiver subfolders
+        for receiver_folder in os.listdir(receipts_base_dir):
+            receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
+            if os.path.exists(receiver_path):
+                return f"static/receipts/{receiver_folder}/{filename}"
+    
+    return None
+
+
+# Add this route after the existing payment screenshot routes
+@app.route('/admin/pdf-receipts')
+def view_pdf_receipts():
+    """View all PDF receipts uploaded for cash payments"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    pdf_receipts = []
+    
+    try:
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            
+        for individual in data.get('individuals', []):
+            if individual.get('payment_method') == 'cash' and individual.get('cash_receipt_photo'):
+                receipt_filename = individual['cash_receipt_photo']
+                
+                # Get the proper file path for PDF receipts
+                file_path = get_receipt_file_path(receipt_filename)
+                
+                if file_path and file_path.lower().endswith('.pdf'):
+                    # Check if file actually exists
+                    full_path = os.path.join(app.root_path, file_path)
+                    if os.path.exists(full_path):
+                        pdf_receipts.append({
+                            'individual_id': individual['individual_id'],
+                            'name': individual['name'],
+                            'email': individual['email'],
+                            'receipt_id': individual.get('receipt_number', individual.get('individual_id', 'N/A')),
+                            'receipt_file': file_path,
+                            'receipt_date': individual.get('payment_date', 'N/A'),
+                            'amount': individual.get('registration_fee', 'N/A'),
+                            'year': individual.get('year', 'N/A'),
+                            'branch': individual.get('branch', 'N/A'),
+                            'contact': individual.get('contact_number', 'N/A'),
+                            'college': individual.get('college', 'N/A'),
+                            'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                            'receipt_verified': individual.get('payment_verified', False),
+                            'file_type': 'pdf'
+                        })
+                    else:
+                        print(f"⚠️ PDF receipt file not found at: {full_path}")
+                else:
+                    print(f"⚠️ Could not resolve PDF receipt file path: {receipt_filename}")
+        
+        # Sort by receiver name first, then by receipt date
+        pdf_receipts.sort(key=lambda x: (x['receiver_name'], x['receipt_date']), reverse=False)
+        
+        # Calculate statistics
+        stats = {
+            'total_receipts': len(pdf_receipts),
+            'verified_receipts': len([p for p in pdf_receipts if p['receipt_verified']]),
+            'pending_receipts': len([p for p in pdf_receipts if not p['receipt_verified']]),
+            'total_amount': sum([int(p['amount']) for p in pdf_receipts if str(p['amount']).isdigit()]),
+            'first_year_count': len([p for p in pdf_receipts if p.get('year') == '1st']),
+            'second_year_count': len([p for p in pdf_receipts if p.get('year') == '2nd'])
+        }
+                
+    except Exception as e:
+        print(f"Error reading PDF receipts: {str(e)}")
+        flash('Error loading PDF receipts', 'error')
+        pdf_receipts = []
+        stats = {
+            'total_receipts': 0,
+            'verified_receipts': 0,
+            'pending_receipts': 0,
+            'total_amount': 0,
+            'first_year_count': 0,
+            'second_year_count': 0
+        }
+    
+    return render_template('view_pdf_receipts.html', 
+                         receipts=pdf_receipts, 
+                         stats=stats,
+                         filter_type='all')
+
+@app.route('/admin/pdf-receipts/verified')
+def view_verified_pdf_receipts():
+    """View only verified PDF receipts"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    verified_receipts = []
+    
+    try:
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            
+        for individual in data.get('individuals', []):
+            if (individual.get('payment_method') == 'cash' and 
+                individual.get('cash_receipt_photo') and 
+                individual.get('payment_verified')):
+                
+                receipt_filename = individual['cash_receipt_photo']
+                file_path = get_receipt_file_path(receipt_filename)
+                
+                if file_path and file_path.lower().endswith('.pdf') and os.path.exists(os.path.join(app.root_path, file_path)):
+                    verified_receipts.append({
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'receipt_id': individual.get('receipt_number', individual.get('individual_id', 'N/A')),
+                        'receipt_file': file_path,
+                        'receipt_date': individual.get('payment_date', 'N/A'),
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'contact': individual.get('contact_number', 'N/A'),
+                        'college': individual.get('college', 'N/A'),
+                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                        'receipt_verified': True,
+                        'file_type': 'pdf'
+                    })
+                
+        # Sort by receiver name first, then by receipt date
+        verified_receipts.sort(key=lambda x: (x['receiver_name'], x['receipt_date']), reverse=False)
+                
+    except Exception as e:
+        print(f"Error reading verified PDF receipts: {str(e)}")
+        flash('Error loading verified PDF receipts', 'error')
+    
+    return render_template('view_pdf_receipts.html', receipts=verified_receipts, filter_type='verified')
+
+@app.route('/admin/pdf-receipts/pending')
+def view_pending_pdf_receipts():
+    """View only pending PDF receipts"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    pending_receipts = []
+    
+    try:
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            
+        for individual in data.get('individuals', []):
+            if (individual.get('payment_method') == 'cash' and 
+                individual.get('cash_receipt_photo') and 
+                not individual.get('payment_verified')):
+                
+                receipt_filename = individual['cash_receipt_photo']
+                file_path = get_receipt_file_path(receipt_filename)
+                
+                if file_path and file_path.lower().endswith('.pdf') and os.path.exists(os.path.join(app.root_path, file_path)):
+                    pending_receipts.append({
+                        'individual_id': individual['individual_id'],
+                        'name': individual['name'],
+                        'email': individual['email'],
+                        'receipt_id': individual.get('receipt_number', individual.get('individual_id', 'N/A')),
+                        'receipt_file': file_path,
+                        'receipt_date': individual.get('payment_date', 'N/A'),
+                        'amount': individual.get('registration_fee', 'N/A'),
+                        'year': individual.get('year', 'N/A'),
+                        'branch': individual.get('branch', 'N/A'),
+                        'contact': individual.get('contact_number', 'N/A'),
+                        'college': individual.get('college', 'N/A'),
+                        'receiver_name': individual.get('cash_receiver_name', 'N/A'),
+                        'receipt_verified': False,
+                        'file_type': 'pdf'
+                    })
+                
+        # Sort by receiver name
+        pending_receipts.sort(key=lambda x: x['receiver_name'])
+                
+    except Exception as e:
+        print(f"Error reading pending PDF receipts: {str(e)}")
+        flash('Error loading pending PDF receipts', 'error')
+    
+    return render_template('view_pdf_receipts.html', receipts=pending_receipts, filter_type='pending')
+
+@app.route('/view-pdf/<path:filename>')
+def view_pdf(filename):
+    """Serve PDF files for viewing in browser"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Security check
+        filename = secure_filename(filename)
+        if not filename:
+            return "Invalid filename", 400
+        
+        # Build file path
+        file_path = os.path.join(app.root_path, 'static', 'receipts', filename)
+        
+        # Check if file exists directly in receipts folder
+        if not os.path.exists(file_path):
+            # Check in receiver subfolders
+            receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+            for receiver_folder in os.listdir(receipts_base_dir):
+                receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
+                if os.path.exists(receiver_path):
+                    file_path = receiver_path
+                    break
+            else:
+                return "PDF file not found", 404
+        
+        # Serve PDF with appropriate headers for browser viewing
+        response = send_file(file_path, as_attachment=False)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
+    
+    except Exception as e:
+        print(f"Error serving PDF file: {str(e)}")
+        return f"Server error: {str(e)}", 500
+
+# Update the get_receipt_file_path function to better handle PDF files
+def get_receipt_file_path(filename):
+    """Find receipt file in various locations with proper path resolution"""
+    if not filename:
+        return None
+        
+    # Check if it's already a full path
+    if filename.startswith('static/receipts/'):
+        return filename
+    
+    # Check uploads folder first
+    uploads_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(uploads_path):
+        return f"uploads/{filename}"  # Return path for uploads folder
+    
+    # Check receipts folder and subfolders
+    receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+    if os.path.exists(receipts_base_dir):
+        # Check root receipts folder
+        root_receipt_path = os.path.join(receipts_base_dir, filename)
+        if os.path.exists(root_receipt_path):
+            return f"static/receipts/{filename}"
+        
+        # Check receiver subfolders
+        for receiver_folder in os.listdir(receipts_base_dir):
+            receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
+            if os.path.exists(receiver_path):
+                return f"static/receipts/{receiver_folder}/{filename}"
+    
+    return None
 
 @app.route('/admin/receipts/<receiver_name>')
 def view_receiver_receipts(receiver_name):
@@ -1719,218 +1845,6 @@ def save_team(team):
         print(f"Error in save_team: {e}")
         return False
 
-
-def create_receipt_pdf(data):
-    """Generate a professional PDF receipt with clean styling and save in receiver-specific folder."""
-    try:
-        # Create receiver-specific folder path
-        receiver_name = data['receiver_name'].replace(' ', '_')
-        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
-        receiver_dir = os.path.join(receipts_base_dir, receiver_name)
-        
-        # Ensure directories exist
-        os.makedirs(receiver_dir, exist_ok=True)
-
-        # Create safe filename
-        filename = f"receipt_{data['receipt_no']}.pdf"
-        pdf_path = os.path.join(receiver_dir, filename)
-
-        # Create PDF document with smaller margins
-        doc = SimpleDocTemplate(pdf_path, pagesize=letter,
-                              rightMargin=36, leftMargin=36,
-                              topMargin=36, bottomMargin=36)
-        # Get default styles
-        styles = getSampleStyleSheet()
-        
-        # Custom styles
-        styles.add(ParagraphStyle(name='ReceiptTitle', 
-                                fontSize=16, 
-                                leading=18,
-                                alignment=TA_CENTER,
-                                spaceAfter=12,
-                                fontName='Helvetica-Bold'))
-        
-        styles.add(ParagraphStyle(name='ReceiptHeader', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=6))
-        
-        styles.add(ParagraphStyle(name='ReceiptBold', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=6,
-                                fontName='Helvetica-Bold'))
-        
-        styles.add(ParagraphStyle(name='SectionHeader', 
-                                fontSize=12, 
-                                leading=14,
-                                alignment=TA_LEFT,
-                                spaceAfter=8,
-                                fontName='Helvetica-Bold',
-                                textColor=colors.HexColor('#333333')))
-        
-        styles.add(ParagraphStyle(name='ItemLabel', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=2))
-        
-        styles.add(ParagraphStyle(name='ItemValue', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_RIGHT,
-                                spaceAfter=2))
-        
-        styles.add(ParagraphStyle(name='TotalLabel', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=2,
-                                fontName='Helvetica-Bold'))
-        
-        styles.add(ParagraphStyle(name='TotalValue', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_RIGHT,
-                                spaceAfter=2,
-                                fontName='Helvetica-Bold'))
-        
-        styles.add(ParagraphStyle(name='FooterText', 
-                                fontSize=8, 
-                                leading=10,
-                                alignment=TA_CENTER,
-                                spaceAfter=6,
-                                textColor=colors.HexColor('#666666')))
-        
-        # Story (content elements)
-        story = []
-        
-        # Title
-        story.append(Paragraph("PAYMENT RECEIPT", styles['ReceiptTitle']))
-        
-        # Receipt number and date
-        receipt_info = [
-            Paragraph(f"<b>Receipt Number #</b> {data['receipt_no']}", styles['ReceiptHeader']),
-            Paragraph(f"<b>Date:</b> {data['timestamp']}", styles['ReceiptHeader'])
-        ]
-        story.extend(receipt_info)
-        story.append(Spacer(1, 12))
-        
-        # Horizontal line
-        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
-        story.append(Spacer(1, 12))
-        
-        # Billed By section
-        story.append(Paragraph("BILLED BY", styles['SectionHeader']))
-        billed_by = [
-            Paragraph("<b>SmartnLight Innovations</b>", styles['ReceiptBold']),
-            Paragraph("Freshers Fiesta 2025", styles['ReceiptHeader']),
-            Paragraph("Email: smartnlightinnovations@gmail.com", styles['ReceiptHeader']),
-            Paragraph("Phone: +91 9059160424", styles['ReceiptHeader'])
-        ]
-        story.extend(billed_by)
-        story.append(Spacer(1, 12))
-        
-        # Horizontal line
-        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
-        story.append(Spacer(1, 12))
-        
-        # Payer Information
-        story.append(Paragraph("PAYER INFORMATION", styles['SectionHeader']))
-        payer_info = [
-            Paragraph(f"<b>Name:</b> {data['viewer_name']}", styles['ReceiptHeader']),
-            Paragraph(f"<b>Email:</b> {data['viewer_email']}", styles['ReceiptHeader']),
-            Paragraph(f"<b>Contact:</b> {data['contact_number']}", styles['ReceiptHeader'])
-        ]
-        story.extend(payer_info)
-        story.append(Spacer(1, 12))
-        
-        # Payment Details
-        story.append(Paragraph("PAYMENT DETAILS", styles['SectionHeader']))
-        
-        # Create payment table
-        payment_data = [
-            ["1.", "Event Registration Fee", f"Rs. {data['amount']}.00"],
-            ["", "Total", f"Rs. {data['amount']}.00"]
-        ]
-        
-        # Calculate column widths (10%, 60%, 30%)
-        col_widths = [doc.width*0.1, doc.width*0.6, doc.width*0.3]
-        
-        payment_table = Table(payment_data, colWidths=col_widths)
-        
-        # Style the table
-        payment_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-            ('TOPPADDING', (0, 0), (-1, -1), 4),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
-            ('LINEABOVE', (1, -1), (-1, -1), 1, colors.HexColor('#333333')),
-            ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
-        ]))
-        
-        story.append(payment_table)
-        story.append(Spacer(1, 8))
-        
-        # Total in words
-        amount_in_words = num2words(float(data['amount']), lang='en_IN').upper()
-        story.append(Paragraph(f"<b>Total (in words):</b> {amount_in_words} RUPEES ONLY", styles['ReceiptHeader']))
-        story.append(Spacer(1, 12))
-        
-        # Tax information
-        tax_data = [
-            ["", "Amount", f"Rs. {data['amount']}.00"],
-            ["", "CGST", "Rs. 0.00"],
-            ["", "SGST", "Rs. 0.00"]
-        ]
-        
-        tax_table = Table(tax_data, colWidths=col_widths)
-        tax_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-            ('TOPPADDING', (0, 0), (-1, -1), 4),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('ALIGN', (0, 0), (1, -1), 'LEFT'),
-            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
-        ]))
-        
-        story.append(tax_table)
-        story.append(Spacer(1, 12))
-        
-        # Payment method and receiver's name
-        payment_method = [
-            Paragraph("<b>Payment Method:</b> Cash", styles['ReceiptHeader']),
-            Paragraph(f"<b>Received by:</b> {data['receiver_name']}", styles['ReceiptHeader']),
-            Paragraph("<b>Date of Payment:</b> " + data['timestamp'], styles['ReceiptHeader'])
-        ]
-        story.extend(payment_method)
-        story.append(Spacer(1, 20))
-        
-        # Thank you message
-        story.append(Paragraph("Thank you for your payment!", styles['ReceiptBold']))
-        story.append(Spacer(1, 8))
-        
-        # Footer contact
-        footer_contact = Paragraph("For any queries, email at <b>smartnlightinnovations@gmail.com</b>, call on <b>+91 9059160424</b>", 
-                                 styles['FooterText'])
-        story.append(footer_contact)
-        
-        # Build the PDF
-        doc.build(story)
-
-        print(f"✅ Receipt saved to: {pdf_path}")
-        return pdf_path
-
-    except Exception as e:
-        app.logger.error(f"Error in create_receipt_pdf: {str(e)}")
-        raise
 
 
 def generate_qr_code(data, filename):
@@ -3093,59 +3007,6 @@ def get_participant_documents(participant_id):
             'error': str(e)
         }), 500
 
-@app.route('/view_document/<filename>')
-def view_document(filename):
-    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
-        return "Unauthorized", 401
-    
-    try:
-        # Security check
-        filename = secure_filename(filename)
-        if not filename:
-            return "Invalid filename", 400
-        
-        # First, check in uploads folder (for payment screenshots)
-        uploads_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
-        
-        # Second, check in receipts folder (for generated receipts)
-        receipts_path = os.path.join(app.root_path, 'static', 'receipts', filename)
-        
-        # Third, check if it's a receiver-specific receipt
-        file_path = None
-        if os.path.exists(uploads_path):
-            file_path = uploads_path
-        elif os.path.exists(receipts_path):
-            file_path = receipts_path
-        else:
-            # Check in receiver-specific subfolders
-            receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
-            if os.path.exists(receipts_base_dir):
-                for receiver_folder in os.listdir(receipts_base_dir):
-                    receiver_path = os.path.join(receipts_base_dir, receiver_folder, filename)
-                    if os.path.exists(receiver_path):
-                        file_path = receiver_path
-                        break
-        
-        if not file_path:
-            return "File not found", 404
-        
-        # Determine MIME type
-        file_extension = filename.lower().split('.')[-1]
-        mime_types = {
-            'png': 'image/png',
-            'jpg': 'image/jpeg', 
-            'jpeg': 'image/jpeg',
-            'gif': 'image/gif',
-            'pdf': 'application/pdf'
-        }
-        
-        mimetype = mime_types.get(file_extension, 'application/octet-stream')
-        
-        return send_file(file_path, mimetype=mimetype)
-    
-    except Exception as e:
-        print(f"Error in view_document: {str(e)}")
-        return f"Server error: {str(e)}", 500
 
 
 @app.route('/admin/export/<export_type>')
@@ -4831,9 +4692,226 @@ def success():
                          individual=individual_data, 
                          qr_img=qr_img_base64,
                          ticket_image_data=ticket_image_data)
+
+def create_receipt_pdf(data):
+    """Generate a professional PDF receipt with clean styling and save in receiver-specific folder."""
+    try:
+        # Create receiver-specific folder path
+        receiver_name = data['receiver_name'].replace(' ', '_')
+        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+        receiver_dir = os.path.join(receipts_base_dir, receiver_name)
+        
+        # Ensure directories exist
+        os.makedirs(receiver_dir, exist_ok=True)
+
+        # Create safe filename - use consistent naming
+        filename = f"receipt_{data['receipt_no']}.pdf"
+        pdf_path = os.path.join(receiver_dir, filename)
+
+        # Create PDF document with smaller margins
+        doc = SimpleDocTemplate(pdf_path, pagesize=letter,
+                              rightMargin=36, leftMargin=36,
+                              topMargin=36, bottomMargin=36)
+        # Get default styles
+        styles = getSampleStyleSheet()
+        
+        # Custom styles
+        styles.add(ParagraphStyle(name='ReceiptTitle', 
+                                fontSize=16, 
+                                leading=18,
+                                alignment=TA_CENTER,
+                                spaceAfter=12,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='ReceiptHeader', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=6))
+        
+        styles.add(ParagraphStyle(name='ReceiptBold', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=6,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='SectionHeader', 
+                                fontSize=12, 
+                                leading=14,
+                                alignment=TA_LEFT,
+                                spaceAfter=8,
+                                fontName='Helvetica-Bold',
+                                textColor=colors.HexColor('#333333')))
+        
+        styles.add(ParagraphStyle(name='ItemLabel', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=2))
+        
+        styles.add(ParagraphStyle(name='ItemValue', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_RIGHT,
+                                spaceAfter=2))
+        
+        styles.add(ParagraphStyle(name='TotalLabel', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=2,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='TotalValue', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_RIGHT,
+                                spaceAfter=2,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='FooterText', 
+                                fontSize=8, 
+                                leading=10,
+                                alignment=TA_CENTER,
+                                spaceAfter=6,
+                                textColor=colors.HexColor('#666666')))
+        
+        # Story (content elements)
+        story = []
+        
+        # Title
+        story.append(Paragraph("PAYMENT RECEIPT", styles['ReceiptTitle']))
+        
+        # Receipt number and date
+        receipt_info = [
+            Paragraph(f"<b>Receipt Number #</b> {data['receipt_no']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Date:</b> {data['timestamp']}", styles['ReceiptHeader'])
+        ]
+        story.extend(receipt_info)
+        story.append(Spacer(1, 12))
+        
+        # Horizontal line
+        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
+        story.append(Spacer(1, 12))
+        
+        # Billed By section
+        story.append(Paragraph("BILLED BY", styles['SectionHeader']))
+        billed_by = [
+            Paragraph("<b>SmartnLight Innovations</b>", styles['ReceiptBold']),
+            Paragraph("Freshers Fiesta 2025", styles['ReceiptHeader']),
+            Paragraph("Email: smartnlightinnovations@gmail.com", styles['ReceiptHeader']),
+            Paragraph("Phone: +91 9059160424", styles['ReceiptHeader'])
+        ]
+        story.extend(billed_by)
+        story.append(Spacer(1, 12))
+        
+        # Horizontal line
+        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
+        story.append(Spacer(1, 12))
+        
+        # Payer Information
+        story.append(Paragraph("PAYER INFORMATION", styles['SectionHeader']))
+        payer_info = [
+            Paragraph(f"<b>Name:</b> {data['viewer_name']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Email:</b> {data['viewer_email']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Contact:</b> {data['contact_number']}", styles['ReceiptHeader'])
+        ]
+        story.extend(payer_info)
+        story.append(Spacer(1, 12))
+        
+        # Payment Details
+        story.append(Paragraph("PAYMENT DETAILS", styles['SectionHeader']))
+        
+        # Create payment table
+        payment_data = [
+            ["1.", "Event Registration Fee", f"Rs. {data['amount']}.00"],
+            ["", "Total", f"Rs. {data['amount']}.00"]
+        ]
+        
+        # Calculate column widths (10%, 60%, 30%)
+        col_widths = [doc.width*0.1, doc.width*0.6, doc.width*0.3]
+        
+        payment_table = Table(payment_data, colWidths=col_widths)
+        
+        # Style the table
+        payment_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+            ('LINEABOVE', (1, -1), (-1, -1), 1, colors.HexColor('#333333')),
+            ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
+        ]))
+        
+        story.append(payment_table)
+        story.append(Spacer(1, 8))
+        
+        # Total in words
+        amount_in_words = num2words(float(data['amount']), lang='en_IN').upper()
+        story.append(Paragraph(f"<b>Total (in words):</b> {amount_in_words} RUPEES ONLY", styles['ReceiptHeader']))
+        story.append(Spacer(1, 12))
+        
+        # Tax information
+        tax_data = [
+            ["", "Amount", f"Rs. {data['amount']}.00"],
+            ["", "CGST", "Rs. 0.00"],
+            ["", "SGST", "Rs. 0.00"]
+        ]
+        
+        tax_table = Table(tax_data, colWidths=col_widths)
+        tax_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+        ]))
+        
+        story.append(tax_table)
+        story.append(Spacer(1, 12))
+        
+        # Payment method and receiver's name
+        payment_method = [
+            Paragraph("<b>Payment Method:</b> Cash", styles['ReceiptHeader']),
+            Paragraph(f"<b>Received by:</b> {data['receiver_name']}", styles['ReceiptHeader']),
+            Paragraph("<b>Date of Payment:</b> " + data['timestamp'], styles['ReceiptHeader'])
+        ]
+        story.extend(payment_method)
+        story.append(Spacer(1, 20))
+        
+        # Thank you message
+        story.append(Paragraph("Thank you for your payment!", styles['ReceiptBold']))
+        story.append(Spacer(1, 8))
+        
+        # Footer contact
+        footer_contact = Paragraph("For any queries, email at <b>smartnlightinnovations@gmail.com</b>, call on <b>+91 9059160424</b>", 
+                                 styles['FooterText'])
+        story.append(footer_contact)
+        
+        # Build the PDF
+        doc.build(story)
+
+        print(f"✅ Receipt saved to: {pdf_path}")
+        
+        # Return the relative path for database storage
+        relative_path = f"static/receipts/{receiver_name}/{filename}"
+        return relative_path
+
+    except Exception as e:
+        app.logger.error(f"Error in create_receipt_pdf: {str(e)}")
+        raise
+
+
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
-    """Payment processing route"""
+    """Payment processing route with PDF receipt upload for cash payments"""
     # Load hackathon config
     try:
         with open(HACKATHON_CONFIG_FILE, 'r') as f:
@@ -4886,7 +4964,7 @@ def payment():
                 flash('Please enter your payment ID', 'error')
                 return redirect(url_for('payment'))
             
-            # Handle file upload for online payments only
+            # Handle file upload for online payments
             payment_screenshot = None
             if 'payment_screenshot' in request.files:
                 file = request.files['payment_screenshot']
@@ -4917,7 +4995,7 @@ def payment():
             individual_data['payment_screenshot'] = payment_screenshot
             individual_data['cash_receipt_photo'] = None  # Clear cash receipt if any
         
-        else:  # Cash payment - REMOVED FILE UPLOAD FUNCTIONALITY
+        else:  # Cash payment - WITH PDF RECEIPT UPLOAD FUNCTIONALITY
             cash_receiver_name = request.form.get('cash_receiver_name')
             cash_received_at = request.form.get('cash_received_at')
             
@@ -4925,15 +5003,50 @@ def payment():
                 flash('Please fill all required fields for cash payment', 'error')
                 return redirect(url_for('payment'))
             
-            # NO FILE UPLOAD FOR CASH PAYMENTS - REMOVED THE FILE UPLOAD LOGIC
+            # Handle PDF receipt upload for cash payments
+            cash_receipt_photo = None
+            if 'cash_receipt_photo' in request.files:
+                file = request.files['cash_receipt_photo']
+                if file and file.filename != '':
+                    # Check if file is PDF
+                    if not file.filename.lower().endswith('.pdf'):
+                        flash('Only PDF files are allowed for receipts', 'error')
+                        return redirect(url_for('payment'))
+                    
+                    # Remove file size limit for PDF receipts (they can be larger)
+                    # Ensure receipts directory exists
+                    receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+                    os.makedirs(receipts_base_dir, exist_ok=True)
+                    
+                    # Create receiver-specific folder
+                    receiver_folder = cash_receiver_name.replace(' ', '_').split('(')[0].strip()
+                    receiver_dir = os.path.join(receipts_base_dir, receiver_folder)
+                    os.makedirs(receiver_dir, exist_ok=True)
+                    
+                    # Generate secure filename - use individual_id for consistency
+                    filename = f"receipt_{individual_data['individual_id']}.pdf"
+                    file_path = os.path.join(receiver_dir, filename)
+                    
+                    # Save file
+                    file.save(file_path)
+                    print(f"DEBUG: Saved cash receipt to: {file_path}")
+                    print(f"DEBUG: File exists: {os.path.exists(file_path)}")
+                    print(f"DEBUG: File size: {os.path.getsize(file_path)} bytes")
+                    
+                    # Store relative path for database - use consistent format
+                    cash_receipt_photo = f"static/receipts/{receiver_folder}/{filename}"
+                else:
+                    flash('Please upload a PDF receipt', 'error')
+                    return redirect(url_for('payment'))
+            
             # Update individual data with cash payment info
             individual_data['payment_method'] = 'cash'
             individual_data['payment_verified'] = False
             individual_data['cash_receiver_name'] = cash_receiver_name
             individual_data['cash_received_at'] = cash_received_at
-            individual_data['cash_receipt_photo'] = None  # No file upload for cash payments
-            individual_data['payment_screenshot'] = None  # Clear payment screenshot if any
-            individual_data['payment_id'] = None  # Clear payment ID for cash payments
+            individual_data['cash_receipt_photo'] = cash_receipt_photo
+            individual_data['payment_screenshot'] = None
+            individual_data['payment_id'] = None
         
         # Common fields for both payment methods
         individual_data['payment_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -4991,11 +5104,11 @@ def payment():
                 print(f"Error in payment processing: {str(e)}")
                 return redirect(url_for('payment'))
         
-        # Generate QR code for individual - FIXED: Handle both 'rollno' and 'roll_number'
+        # Generate QR code for individual
         qr_data = {
             'individual_id': individual_data['individual_id'],
             'name': individual_data['name'],
-            'rollno': individual_data.get('rollno') or individual_data.get('roll_number', ''),  # Handle both keys
+            'rollno': individual_data.get('rollno') or individual_data.get('roll_number', ''),
             'year': individual_data['year'],
             'branch': individual_data['branch'],
             'fee_paid': registration_fee
@@ -5026,6 +5139,7 @@ def payment():
                          individual=individual_data, 
                          phonepe_qr=PHONEPE_QR_CODE,
                          registration_fee=registration_fee)
+
 
 def generate_ticket_image(individual_data, qr_img_base64):
     """Generate ticket image using HTML2Canvas via JavaScript"""
