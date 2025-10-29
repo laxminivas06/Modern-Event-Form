@@ -871,9 +871,9 @@
                 <div class="card-body">
                     <div class="fee-display animate__animated animate__fadeInUp">
                         <div class="fee-label">Registration Fee</div>
-                        <div class="fee-amount" id="feeAmount">₹500</div>
+                        <div class="fee-amount" id="feeAmount">₹{{ registration_fee }}</div>
                         <div class="fee-label" id="feeDescription">
-                            For 1st Year Students
+                            
                         </div>
                     </div>
 
@@ -907,9 +907,9 @@
 
                             <div class="text-center my-4">
                                 <div class="qr-code-container">
-                                    <img src="https://res.cloudinary.com/dvfqvqbkn/image/upload/v1753275054/pp_o0ilmb.jpg" 
+                                    <img src="https://i.postimg.cc/MGxvngWH/ppp.jpg" 
                                          alt="UPI QR Code" class="img-fluid qr-code">
-                                    <p class="small mt-2"><strong>Amount: ₹500</strong></p>
+                                    <p class="small mt-2"><strong>Amount: ₹{{ registration_fee }}</strong></p>
                                 </div>
                                 
                                 <div class="payment-instructions">
@@ -923,33 +923,26 @@
                                 </div>
                             </div>
 
-                            <div class="payment-options-container mb-4 d-lg-none">
-                                <h6 class="text-center mb-3">Pay with:</h6>
-                                <div class="row g-3 justify-content-center">
-                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                        <a href="phonepe://pay?pa=7095643408@ybl&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20IND_0001%20Registration" 
-                                           class="payment-option animate__animated animate__fadeIn">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
-                                                 alt="Pay with PhonePe" class="img-fluid payment-logo">
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                        <a href="tez://upi/pay?pa=tinkukrishna1101@oksbi&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20IND_0001%20Registration" 
-                                           class="payment-option animate__animated animate__fadeIn animate__delay-1s">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/1024px-Google_Pay_Logo.svg.png" 
-                                                 alt="Pay with Google Pay" class="img-fluid payment-logo">
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                        <a href="paytmmp://pay?pa=7095643408@ptyes&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20IND_0001%20Registration" 
-                                           class="payment-option animate__animated animate__fadeIn animate__delay-2s">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Paytm_logo.png/1200px-Paytm_logo.png" 
-                                                 alt="Pay with Paytm" class="img-fluid payment-logo">
-                                        </a>
-                                    </div>
-                                </div>
+                           <div class="payment-options-container mb-4 d-lg-none">
+    <h6 class="text-center mb-3">Pay with:</h6>
+    <div class="row g-3 justify-content-center">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            {% if individual.registration_fee == 500 %}
+            <a href="phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&am=500&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration" 
+               class="payment-option animate__animated animate__fadeIn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
+                     alt="Pay with PhonePe" class="img-fluid payment-logo">
+            </a>
+            {% else %}
+            <a href="phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&am=600&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration" 
+               class="payment-option animate__animated animate__fadeIn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/PhonePe_Logo.svg/1200px-PhonePe_Logo.svg.png" 
+                     alt="Pay with PhonePe" class="img-fluid payment-logo">
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
                                 
                                 <div class="text-center mt-3">
                                     <a href="#" class="text-primary" id="noUpiLink" data-bs-toggle="modal" data-bs-target="#noUpiModal">
@@ -1008,10 +1001,11 @@
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                                     <select class="form-select" id="cash_receiver_name" name="cash_receiver_name" required>
                                         <option value="" selected disabled>Select receiver</option>
-                                        <option value="Laxmi Nivas">Laxmi Nivas</option>
-                                        <option value="Sheshank">Sheshank</option>
-                                        <option value="Govardhini Reddy">Govardhini Reddy</option>
-                                        <option value="Raghava">Raghava</option>
+                                       <option value="B.Rahul (CSE) 24N81A05M0">B.Rahul (CSE) 24N81A05M0</option>
+<option value="Sathish (Civil) 24N81A0104">Sathish (Civil) 24N81A0104</option>
+<option value="Sravan (AIML) 24N81A66P7">Sravan (AIML) 24N81A66P7</option>
+<option value="Rakesh (DS) 24N81A67C7">Rakesh (DS) 24N81A67C7</option>
+<option value="Sreekar (CS) 24N81A6235">Sreekar (CS) 24N81A6235</option>
                                     </select>
                                 </div>
                                 <div class="invalid-feedback">Please select the receiver's name</div>
@@ -1050,16 +1044,16 @@
                     <h3 class="mb-4 text-center"><i class="fas fa-user me-2"></i>Registration Information</h3>
                 </div>
                 <div class="card-body">
-                    <p><strong>Registration ID:</strong> <span class="badge bg-primary">IND_0001</span></p>
-                    <p><strong>Name:</strong> John Doe</p>
-                    <p><strong>Payment Amount:</strong> <span class="badge bg-success">₹500</span></p>
+                    <p><strong>Registration ID:</strong> <span class="badge bg-primary">{{ individual.individual_id }}</span></p>
+                    <p><strong>Name:</strong> {{ individual.name }}</p>
+                    <p><strong>Payment Amount:</strong> <span class="badge bg-success">₹{{ registration_fee }}</span></p>
                     <p><strong>College:</strong> Sphoorthy Engineering College</p>
-                    <p><strong>Branch:</strong> CSE</p>
-                    <p><strong>Year:</strong> 1st</p>
-                    <p><strong>Section:</strong> A</p>
-                    <p><strong>Roll Number:</strong> 21CSE001</p>
-                    <p><strong>Email:</strong> john.doe@example.com</p>
-                    <p><strong>Contact:</strong> 9876543210</p>
+                    <p><strong>Branch:</strong>{{ individual.branch }}</p>
+                    <p><strong>Year:</strong>{{ individual.year }}</p>
+                    
+                    <p><strong>Roll Number:</strong>{{ individual.roll_number }}</p>
+                    <p><strong>Email:</strong>{{ individual.email }}</p>
+                    <p><strong>Contact:</strong>{{ individual.contact_number }}</p>
                 </div>
             </div>
         </div>
@@ -1088,10 +1082,10 @@
                     <h6><i class="fas fa-mobile-alt me-2 text-primary"></i>Option 2: Manual UPI Payment</h6>
                     <p>Open any banking app and send money to:</p>
                     <div class="card bg-light p-3">
-                        <p class="mb-1"><strong>UPI ID:</strong> 7095643408@ybl</p>
-                        <p class="mb-1"><strong>Name:</strong> Creators Club</p>
-                        <p class="mb-1"><strong>Amount:</strong> ₹500</p>
-                        <p class="mb-0"><strong>Note:</strong> Individual IND_0001 Registration</p>
+                        <p class="mb-1"><strong>UPI ID:</strong>8333092244@ibl </p>
+                        <p class="mb-1"><strong>Name:</strong>{{ individual.name }} </p>
+                        <p class="mb-1"><strong>Amount:</strong>{{ registration_fee }} </p>
+                        <p class="mb-0"><strong>Note:</strong> Individual {{ individual.individual_id }} Registration</p>
                     </div>
                 </div>
                 
@@ -1297,6 +1291,30 @@
         initializePaymentTabs();
         setCurrentDate();
         
+
+
+        const year = "{{ individual.year }}";
+    const amountField = document.getElementById('amount-display');
+    const hiddenAmountField = document.getElementById('registration_fee');
+    
+    if (year === '1st') {
+        amountField.textContent = '₹500';
+        hiddenAmountField.value = '500';
+    } else if (year === '2nd') {
+        amountField.textContent = '₹600';
+        hiddenAmountField.value = '600';
+    }
+    
+    // Update PhonePe payment link dynamically
+    const phonepeLink = document.querySelector('a[href*="phonepe://pay"]');
+    if (phonepeLink) {
+        const baseUrl = 'phonepe://pay?pa=8333092244@ibl&pn=Creators%20Club&';
+        const amount = year === '1st' ? '500' : '600';
+        const newUrl = `${baseUrl}am=${amount}&cu=INR&tn=Individual%20{{ individual.individual_id }}%20Registration`;
+        phonepeLink.setAttribute('href', newUrl);
+    }
+});
+
         // File upload handling for online payment
         const fileUpload = document.getElementById('payment_screenshot');
         const fileName = document.getElementById('file-name');

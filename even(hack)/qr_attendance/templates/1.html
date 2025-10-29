@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freshers Fiesta Ticket</title>
+</head>
+<body style="font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f0f0f0; margin: 0;">
+    <div class="ticket-container" style="width: 900px; height: 350px; background-color: #f8e7e7; display: flex; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); position: relative;">
+        <div class="ticket-left" style="flex: 3; background-image: url('https://i.postimg.cc/WbDJTfrY/p.png'); background-size: cover; background-position: center; position: relative; padding: 20px; color: white; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
+            <div class="ticket-content" style="position: relative; z-index: 2;">
+                <div class="ticket-title" style="font-size: 5em; font-weight: bold; line-height: 0.9; margin-bottom: 10px;">Freshers<br>Fiesta</div>
+                <div class="ticket-date" style="font-size: 2.5em; margin-bottom: 5px;">NOV 9</div>
+                <div class="ticket-location" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 20px;">SPHN GROUNDS</div>
+            </div>
+            <div class="name-box" style="background-color: white; padding: 8px; width: 250px; font-size: 0.9em; margin-top: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); position: relative; z-index: 2;">
+                <span style="color: #333; opacity: 0.8;">NAME:{{ individual.name }}</span>
+            </div>
+        </div>
+        <div class="ticket-right" style="flex: 1; background-color: #f8e7e7; border-left: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; position: relative;">
+            <div style="position: absolute; width: 30px; height: 30px; background-color: #f0f0f0; border-radius: 50%; left: -17px; top: -15px; z-index: 1;"></div>
+            <div style="position: absolute; width: 30px; height: 30px; background-color: #f0f0f0; border-radius: 50%; left: -17px; bottom: -15px; z-index: 1;"></div>
+            <div class="qr-code" style="width: 120px; height: 120px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; background-color: white; padding: 5px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <!-- QR code would go here -->
+            </div>
+            <div class="ticket-number" style="font-size: 0.8em; color: #555; text-align: center; margin-bottom: 10px; z-index: 2;">{{ individual.individual_id }}</div>
+            <div class="price-box" style="border: 2px solid #333; padding: 8px; width: 80%; text-align: center; font-size: 1em; font-weight: bold; color: #333; z-index: 2; margin-top: 5px;">₹{{ individual.registration_fee }}</div>
+        </div>
+    </div>
+</body>
+</html>

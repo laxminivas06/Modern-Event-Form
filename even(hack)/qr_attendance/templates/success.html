@@ -872,57 +872,41 @@
                             <i class="fas fa-print me-1"></i> Print Ticket
                         </button>
                     </div>
-
                     <!-- Ticket Design -->
-                    <div class="card my-4" id="individual-card">
-                        <div class="card-header bg-dark text-white">
-                            <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Your Event Ticket</h4>
-                        </div>
-                      <div class="card-body">
-    <div class="ticket" id="ticket-to-download">
-        <!-- Left side content -->
-        <div class="ticket-left">
-            <div class="header-section">
-
-                <h1 style="color: #FFFFFF; font-size: clamp(1.2rem, 4vw, 1.8rem); margin: 8px 0; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.6), 2px 2px 4px rgba(0, 0, 0, 0.3); font-weight: 900; letter-spacing: 1px;">Freshers Fiesta</h1>
-                <div class="details">
-                    <div>November 09th, 2025</div>
+<div class="card my-4" id="individual-card">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Your Event Ticket</h4>
+    </div>
+    <div class="card-body">
+        <!-- ADD ID HERE -->
+        <div class="ticket-container" id="ticket-to-download" style="width: 100%; max-width: 550px; aspect-ratio: 5.5 / 2; background-color: #f8e7e7; display: flex; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); position: relative; margin: 0 auto;">
+            <div class="ticket-left" style="flex: 3; background-image: url('https://i.postimg.cc/WbDJTfrY/p.png'); background-size: cover; background-position: center; position: relative; padding: 15px; color: white; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
+                <div class="ticket-content" style="position: relative; z-index: 2;">
+                    <div class="ticket-title" style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: bold; line-height: 0.9; margin-bottom: 8px;">Freshers<br>Fiesta</div>
+                    
+                    <div class="ticket-location" style="font-size: clamp(0.5rem, 2vw, 0.8rem); opacity: 0.8;">NOV 08 @SPHN GROUNDS</div>
+                     <span style="color: #ffffff; font-size: clamp(0.5rem, 2vw, 0.8rem);">NAME: {{ individual.name }}</span>
                 </div>
-                 <div class="info-fields">
-                                        <div class="info-field" >
-                                            <span style="font-weight: 600; color: #fbfbfb; font-size: 0.7rem; min-width: 50px;">NAME: {{ individual.name }}</span>
-                                        </div>
-                                    </div>
+               
+                   
+                
             </div>
+            <div class="ticket-right" style="flex: 1; background-color: #f8e7e7; border-left: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; position: relative;">
+                <div style="position: absolute; width: 20px; height: 20px; background-color: #f0f0f0; border-radius: 50%; left: -12px; top: -10px; z-index: 1;"></div>
+                <div style="position: absolute; width: 20px; height: 20px; background-color: #f0f0f0; border-radius: 50%; left: -12px; bottom: -10px; z-index: 1;"></div>
+               
+                <div class="qr-code" style="width: clamp(70px, 15vw, 90px); height: clamp(70px, 15vw, 90px); margin-bottom: 2px; display: flex; justify-content: center; align-items: center; background-color: white; padding: 3px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+    <img src="data:image/png;base64,{{ qr_img }}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;">
+</div>
+<div class="ticket-number" style="font-size: clamp(0.6rem, 1.5vw, 0.7em); color: #555; text-align: center; margin-bottom: 8px; z-index: 2; word-break: break-all; padding: 0 5px; margin-top: -2px;">{{ individual.individual_id }}</div>
 
-                                    
-                                    
-                                    <!-- Updated info fields with inline styles -->
-                                   
-                                </div>
+                  </div>
+        </div>
+    </div>
+</div>
 
-                                <!-- Right side with QR code -->
-                                <div class="ticket-right">
-                                    <div class="ticket-stub">
-                                         <div class="info-field" style="display: flex; align-items: center;">
-                                          
-                                           
-                                        </div>
-                                        <div class="qr-container">
-                                            <div class="qr-placeholder">
-                                                <img src="data:image/png;base64,{{ qr_img }}" alt="Registration QR Code">
-                                            </div>
-                                            
-                                            <p style="font-size: 10px;">{{ individual.individual_id }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="alert alert-info mx-auto" style="max-width: 600px;">
+                  <div class="alert alert-info mx-auto" style="max-width: 600px;">
                         <h5><i class="fas fa-info-circle me-2"></i>Important Instructions</h5>
                         <ul class="text-start" type="none">
                             <li><i class="fas fa-check-circle me-2"></i>Save this ticket - you'll need it for event entry</li>

@@ -166,6 +166,16 @@
             width: 16px;
         }
 
+        .receipt-count {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
         .latest-receipt {
             background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border-radius: 8px;
@@ -204,6 +214,35 @@
             box-shadow: var(--shadow-md);
             color: white;
             text-decoration: none;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
         }
 
         /* Empty State */
@@ -509,18 +548,44 @@
                     <p class="text-muted" style="color: #efefef;">View receipts organized by team members</p>
                 </div>
 
+                <!-- Statistics Summary -->
+                {% if receivers %}
+                <div class="stats-summary">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ total_receipts }}</div>
+                        <div class="stat-label">Total Receipts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ receivers|length }}</div>
+                        <div class="stat-label">Receivers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ max_receipts }}</div>
+                        <div class="stat-label">Most by One Receiver</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ avg_receipts }}</div>
+                        <div class="stat-label">Average per Receiver</div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Receivers Grid -->
                 <div class="receivers-grid">
                     {% for receiver_name, data in receivers.items() %}
                     <div class="receiver-card">
                         <div class="card-body">
                             <h5 class="card-title">{{ data.display_name }}</h5>
-                            <p class="card-text">
-                                <i class="fas fa-receipt"></i>
-                                {{ data.receipt_count }} receipt(s)
-                            </p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <p class="card-text mb-0">
+                                    <i class="fas fa-receipt"></i>
+                                    Receipts Collected:
+                                </p>
+                                <span class="receipt-count">{{ data.receipt_count }}</span>
+                            </div>
                             {% if data.latest_receipt %}
                             <div class="latest-receipt">
+                                <i class="fas fa-clock me-1"></i>
                                 Latest: {{ data.latest_receipt.replace('receipt_', '').replace('.pdf', '') }}
                             </div>
                             {% endif %}

@@ -131,11 +131,11 @@ class ReceiptForm(FlaskForm):
     receiver_name = SelectField('Receiver Name',
                               choices=[('', 'Select receiver'),
                                       
-                                      ('Laxmi Nivas', 'Laxmi Nivas'),
-                                        ('Sheshank', 'Sheshank'),
-                                      ('Govardhini Reddy', 'Govardhini Reddy'),
-                                      
-                                      ('Raghava', 'Raghava')],
+                                      ('B.Rahul (CSE) 24N81A05M0', 'B.Rahul (CSE) 24N81A05M0'),
+                                        ('Sathish (Civil) 24N81A0104', 'Sathish (Civil) 24N81A0104'),
+                                      ('Sravan (AIML) 24N81A66P7', ' Sravan (AIML) 24N81A66P7'),
+                                       ('Rakesh (DS) 24N81A67C7', 'Rakesh (DS) 24N81A67C7'),
+                                      (' Sreekar (CS) 24N81A6235', 'Sreekar (CS) 24N81A6235')],
                               validators=[DataRequired()])
     amount = HiddenField('Amount', validators=[DataRequired()])
     receipt_no = HiddenField('Receipt Number')
@@ -618,7 +618,7 @@ def send_payment_verification_email_individual(recipient_email, individual_data)
                 except:
                     homepage_config = {
                         'hero_title': 'Freshers Fiesta 2025',
-                        'event_date': 'November 09, 2025',
+                        'event_date': 'November 08, 2025',
                         'event_location': 'SPHN GROUNDS'
                     }
 
@@ -860,7 +860,7 @@ NEXT STEPS:
 
 EVENT DETAILS:
 Event: Freshers Fiesta 2025
-Date: November 09, 2025
+Date: November 08, 2025
 Location: SPHN GROUNDS
 
 TECHNICAL SUPPORT:
@@ -983,12 +983,11 @@ def view_receipts():
     try:
         # Define receiver information
         receiver_info = {
-            
-            'Laxmi_Nivas': {'display_name': 'Laxmi Nivas', 'folder_name': 'Laxmi_Nivas'},
-            
-            'Govardhini_Reddy': {'display_name': 'Govardhini Reddy', 'folder_name': 'Govardhini_Reddy'},
-            'Sheshank': {'display_name': 'Sheshank', 'folder_name': 'Sheshank'},
-            'Raghava': {'display_name': 'Raghava', 'folder_name': 'Raghava'}
+            'B_Rahul': {'display_name': 'B.Rahul (CSE) 24N81A05M0', 'folder_name': 'B_Rahul'},
+            'Sathish': {'display_name': 'Sathish (Civil) 24N81A0104', 'folder_name': 'Sathish'},
+            'Sravan': {'display_name': 'Sravan (AIML) 24N81A66P7', 'folder_name': 'Sravan'},
+            'Rakesh': {'display_name': 'Rakesh (DS) 24N81A67C7', 'folder_name': 'Rakesh'},
+            'Sreekar': {'display_name': 'Sreekar (CS) 24N81A6235', 'folder_name': 'Sreekar'}
         }
         
         # Scan receipts directory for each receiver
@@ -1041,13 +1040,25 @@ def view_receipts():
         
         # Sort receivers by receipt count (highest first)
         receivers = dict(sorted(receivers.items(), key=lambda x: x[1]['receipt_count'], reverse=True))
+        
+        # Calculate statistics
+        total_receipts = sum(data['receipt_count'] for data in receivers.values())
+        max_receipts = max(data['receipt_count'] for data in receivers.values()) if receivers else 0
+        avg_receipts = round(total_receipts / len(receivers)) if receivers else 0
                 
     except Exception as e:
         print(f"Error reading receipts: {str(e)}")
         flash('Error loading receipts', 'error')
         receivers = {}
+        total_receipts = 0
+        max_receipts = 0
+        avg_receipts = 0
     
-    return render_template('view_receipts.html', receivers=receivers)
+    return render_template('view_receipts.html', 
+                         receivers=receivers,
+                         total_receipts=total_receipts,
+                         max_receipts=max_receipts,
+                         avg_receipts=avg_receipts)
 
 @app.route('/admin/receipts/<receiver_name>')
 def view_receiver_receipts(receiver_name):
@@ -1061,11 +1072,12 @@ def view_receiver_receipts(receiver_name):
         # Map folder names to display names
         receiver_display_names = {
             
-            'Laxmi_Nivas': 'Laxmi Nivas',
+            'B_Rahul': 'B.Rahul (CSE) 24N81A05M0',
             
-            'Govardhini_Reddy': 'Govardhini Reddy',
-            'Sheshank': 'Sheshank',
-            'Raghava': 'Raghava'
+            'Sathish': 'Sathish (Civil) 24N81A0104',
+            'Sravan': 'Sravan (AIML) 24N81A66P7',
+            'Rakesh': 'Rakesh (DS) 24N81A67C7',
+            'Sreekar': 'Sreekar (CS) 24N81A6235'
             
         }
         
@@ -2183,7 +2195,7 @@ def send_receipt_email(recipient_email, receipt_data, pdf_path):
                 </div>
                 <div class="info-item">
                     <strong>Date:</strong>
-                    <span class="info-value">November 09, 2025</span>
+                    <span class="info-value">November 08, 2025</span>
                 </div>
                 <div class="info-item">
                     <strong>Location:</strong>
@@ -2290,7 +2302,7 @@ Please find your payment details below and the attached receipt for your records
 EVENT DETAILS
 -------------
 Event: Freshers Fiesta 2025
-Date: November 09, 2025
+Date: November 08, 2025
 Location: SPHN GROUNDS
 
 PAYER INFORMATION
@@ -3787,7 +3799,7 @@ def create_ticket_pdf(individual_data, qr_img_base64):
         
         # Event details
         event_data = [
-            ["Date:", "November 09, 2025"],
+            ["Date:", "November 08, 2025"],
             ["Location:", "SPHN GROUNDS"],
             ["Registration ID:", individual_data['individual_id']]
         ]
@@ -4512,7 +4524,7 @@ def message_center():
         <div class="email-body">
             <div class="event-highlight">
                 <h3 style="margin: 0 0 10px 0;">🎉 Freshers Fiesta 2025</h3>
-                <p style="margin: 0; opacity: 0.9;">November 09, 2025 | SPHN GROUNDS</p>
+                <p style="margin: 0; opacity: 0.9;">November 08, 2025 | SPHN GROUNDS</p>
             </div>
             
             <div class="message-content">
@@ -4588,7 +4600,7 @@ Email: smartnlightinnovations@gmail.com
 EVENT DETAILS:
 -------------
 Freshers Fiesta 2025
-Date: November 09, 2025
+Date: November 08, 2025
 Location: SPHN GROUNDS
 
 © {datetime.now().year} Smart N Light Innovations. All rights reserved.
@@ -4839,7 +4851,18 @@ def payment():
         return redirect(url_for('register_enhanced'))
     
     individual_data = session['individual_data']
-    registration_fee = session.get('registration_fee', 500)
+    
+    # AUTOMATICALLY SET REGISTRATION FEE BASED ON YEAR
+    if individual_data.get('year') == '1st':
+        registration_fee = 500
+        fee_description = "For 1st Year Students"
+    else:
+        registration_fee = 600
+        fee_description = "For 2nd Year Students"
+    
+    # Update session with correct fee
+    session['registration_fee'] = registration_fee
+    individual_data['registration_fee'] = registration_fee
     
     # Verify the individual hasn't already completed payment
     with open(DATABASE_FILE, 'r') as f:
@@ -5204,7 +5227,7 @@ def send_thank_you_email_individual(recipient_email, individual_data, qr_img_bas
                 except:
                     homepage_config = {
                         'hero_title': 'Freshers Fiesta 2025',
-                        'event_date': 'November 09, 2025',
+                        'event_date': 'November 08, 2025',
                         'event_location': 'SPHN GROUNDS'
                     }
 
@@ -5440,7 +5463,7 @@ Registration Date: {individual_data['registration_date']}
 
 EVENT DETAILS:
 Event: Freshers Fiesta 2025
-Date: November 09, 2025
+Date: November 08, 2025
 Location: SPHN GROUNDS
 
 DEVELOPER INFORMATION:
