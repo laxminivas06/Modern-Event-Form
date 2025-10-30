@@ -1464,13 +1464,14 @@ def registration_closed():
         }
     
     return render_template('registration_closed.html', settings=settings)
- 
+
 @app.route('/register-enhanced', methods=['GET', 'POST'])
 def register_enhanced():
-    """Enhanced registration page with roll number verification"""
+    """Enhanced registration page with roll number verification and incomplete payment detection"""
     # Load hackathon config
     if not is_registration_open():
         return redirect(url_for('registration_closed'))
+    
     try:
         with open(HACKATHON_CONFIG_FILE, 'r') as f:
             config = json.load(f)
@@ -1483,7 +1484,7 @@ def register_enhanced():
         name = request.form.get('name', '').strip()
         year = request.form.get('year', '').strip()
         branch = request.form.get('branch', '').strip()
-        section = request.form.get('section', '').strip()  # Get section from form
+        section = request.form.get('section', '').strip()
         gender = request.form.get('gender', '').strip()
         email = request.form.get('email', '').strip().lower()
         contact = request.form.get('contact_number', '').strip()
@@ -1510,6 +1511,7 @@ def register_enhanced():
         if not contact:
             errors['contact'] = 'Contact number is required'
 
+        # Check for existing registrations
         if os.path.exists(DATABASE_FILE):
             with open(DATABASE_FILE, 'r') as f:
                 main_data = json.load(f)
@@ -1553,7 +1555,7 @@ def register_enhanced():
                             'name': name,
                             'year': year,
                             'branch': branch,
-                            'section': section,  # Include section
+                            'section': section,
                             'gender': gender,
                             'email': email,
                             'contact_number': contact,
@@ -1562,7 +1564,7 @@ def register_enhanced():
                             'payment_method': None,
                             'payment_date': None,
                             'registration_fee': 500 if year == '1st' else 600,
-                            'college': 'Sphoorthy Engineering College'  # Add default college
+                            'college': 'Sphoorthy Engineering College'
                         }
                         
                         data['individuals'].append(registration_data)
@@ -1587,7 +1589,7 @@ def register_enhanced():
                             'name': name,
                             'year': year,
                             'branch': branch,
-                            'section': section,  # Include section
+                            'section': section,
                             'gender': gender,
                             'email': email,
                             'contact_number': contact,
@@ -1612,10 +1614,41 @@ def register_enhanced():
                 print(f"Error in enhanced registration: {str(e)}")
                 return redirect(url_for('register_enhanced'))
     
+    # Check if there's an incomplete payment for this session
+    if 'individual_data' in session and session['individual_data'].get('payment_method') is None:
+        # User has registered but hasn't completed payment
+        individual_data = session['individual_data']
+        return render_template('register_enhanced.html', 
+                            has_incomplete_payment=True,
+                            individual_data=individual_data)
+    
+    # Check if user is coming back with incomplete payment via URL parameter
+    if request.method == 'GET' and request.args.get('roll_number'):
+        roll_number = request.args.get('roll_number').strip().upper()
+        # Check if this roll number has incomplete payment
+        try:
+            with open(DATABASE_FILE, 'r') as f:
+                data = json.load(f)
+                incomplete_individual = next((ind for ind in data.get('individuals', []) 
+                                           if ind.get('roll_number') == roll_number and 
+                                           ind.get('payment_method') is None and 
+                                           not ind.get('payment_verified')), None)
+                
+                if incomplete_individual:
+                    session['individual_data'] = incomplete_individual
+                    session['registration_fee'] = incomplete_individual['registration_fee']
+                    return render_template('register_enhanced.html',
+                                        has_incomplete_payment=True,
+                                        individual_data=incomplete_individual,
+                                        auto_redirect=True)
+        except Exception as e:
+            print(f"Error checking incomplete payment: {str(e)}")
+    
     return render_template('register_enhanced.html')
+
 @app.route('/api/verify-roll-number', methods=['POST'])
 def verify_roll_number():
-    """API endpoint to verify roll number - with context-specific behavior"""
+    """API endpoint to verify roll number - with context-specific behavior and incomplete payment detection"""
     try:
         data = request.get_json()
         roll_number = data.get('roll_number', '').strip().upper()
@@ -1640,7 +1673,9 @@ def verify_roll_number():
         
         # Check if this roll number is already registered
         is_registered = False
+        has_incomplete_payment = False
         registration_info = {}
+        individual_data = None
         
         if os.path.exists(DATABASE_FILE):
             with open(DATABASE_FILE, 'r') as f:
@@ -1669,8 +1704,19 @@ def verify_roll_number():
                             'name': existing_individual.get('name'),
                             'email': existing_individual.get('email'),
                             'contact': existing_individual.get('contact_number'),
-                            'payment_status': 'verified' if existing_individual.get('payment_verified') else 'pending'
+                            'payment_status': 'verified' if existing_individual.get('payment_verified') else 'pending',
+                            'payment_method': existing_individual.get('payment_method'),
+                            'individual_id': existing_individual.get('individual_id'),
+                            'year': existing_individual.get('year'),
+                            'branch': existing_individual.get('branch')
                         }
+                        
+                        # Check if payment is incomplete (registered but no payment method selected)
+                        if (existing_individual.get('payment_method') is None and 
+                            not existing_individual.get('payment_verified')):
+                            has_incomplete_payment = True
+                            individual_data = existing_individual
+                    
                     elif existing_team_member:
                         registration_info = {
                             'type': 'team_member',
@@ -1681,13 +1727,31 @@ def verify_roll_number():
                         }
         
         # Different behavior based on context
-        # For receipt generation, allow both registered and unregistered students
-        if context == 'registration' and is_registered:
-            return jsonify({
-                'success': False, 
-                'message': 'This roll number is already registered. Please use a different roll number.',
-                'is_registered': True
-            }), 400
+        # For registration context, allow continuing incomplete payments
+        if context == 'registration':
+            if is_registered and not has_incomplete_payment and existing_individual:
+                return jsonify({
+                    'success': False, 
+                    'message': 'This roll number is already registered with completed payment. Please use a different roll number.',
+                    'is_registered': True,
+                    'has_incomplete_payment': False,
+                    'payment_status': 'completed'
+                }), 400
+            elif has_incomplete_payment:
+                return jsonify({
+                    'success': True,
+                    'has_incomplete_payment': True,
+                    'registration_info': registration_info,
+                    'individual_data': individual_data,
+                    'message': 'You have an incomplete payment. Redirecting to payment page...',
+                    'redirect_url': url_for('payment'),
+                    'student': {
+                        'name': student['name'],
+                        'year': student['year'],
+                        'branch': student['branch'],
+                        'section': student.get('section', 'N/A')
+                    }
+                })
         
         # For receipt context, allow both registered and unregistered students
         return jsonify({
@@ -1696,9 +1760,10 @@ def verify_roll_number():
                 'name': student['name'],
                 'year': student['year'],
                 'branch': student['branch'],
-                'section': student.get('section', 'N/A')  # Ensure section is included
+                'section': student.get('section', 'N/A')
             },
             'is_registered': is_registered,
+            'has_incomplete_payment': has_incomplete_payment,
             'registration_info': registration_info if is_registered else None
         })
         
@@ -1864,23 +1929,43 @@ def generate_qr_code(data, filename):
 
 def send_receipt_email(recipient_email, receipt_data, pdf_path):
     """
-    Send a responsive email with the PDF receipt attached.
+    Send a responsive email with the PDF receipt attached with proper error handling
     """
-    with app.app_context():
-        try:
-            subject = f"Payment Receipt {receipt_data['receipt_no']} - Freshers Fiesta 2025"
-            
-            # HTML email content
-            html = f"""
+    def send_email():
+        with app.app_context():
+            try:
+                print(f"📧 Attempting to send email to: {recipient_email}")
+                print(f"📎 PDF path: {pdf_path}")
+                
+                # Check if mail is properly initialized
+                if not mail:
+                    print("❌ Flask-Mail not initialized")
+                    return False
+                
+                # Ensure we have the absolute path
+                if not os.path.isabs(pdf_path):
+                    pdf_path_abs = os.path.join(app.root_path, pdf_path)
+                else:
+                    pdf_path_abs = pdf_path
+                
+                print(f"📎 Absolute PDF path: {pdf_path_abs}")
+                print(f"📎 PDF exists: {os.path.exists(pdf_path_abs)}")
+                
+                if not os.path.exists(pdf_path_abs):
+                    print(f"❌ PDF file not found: {pdf_path_abs}")
+                    return False
+                
+                subject = f"Payment Receipt {receipt_data['receipt_no']} - Freshers Fiesta 2025"
+                
+                # HTML email content
+                html = f"""
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        /* Base styles */
         body {{
             font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
@@ -2204,10 +2289,12 @@ def send_receipt_email(recipient_email, receipt_data, pdf_path):
     </div>
 </body>
 </html>
-            """
-            
-            # Plain text version
-            text = f"""
+                """
+                
+                # Plain text version
+                text = f"""
+PAYMENT RECEIPT - FRESHERS FIESTA 2025
+
 Dear {receipt_data['viewer_name']},
 
 Thank you for your payment for Freshers Fiesta 2025. 
@@ -2244,33 +2331,50 @@ This is an official receipt for payment received. Please keep this receipt for y
 
 Best regards,
 SmartnLight Innovations Team
-            """
-            
-            # Create message
-            msg = Message(subject, recipients=[recipient_email])
-            msg.body = text
-            msg.html = html
-            
-            # Attach PDF
-            with open(pdf_path, 'rb') as pdf_file:
-                msg.attach(
-                    filename=f"Receipt_{receipt_data['receipt_no']}.pdf",
-                    content_type='application/pdf',
-                    data=pdf_file.read()
-                )
-            
-            # Send email
-            mail = app.extensions.get('mail')
-            if mail:
-                mail.send(msg)
-                print(f"✅ Email sent with receipt from: {receipt_data['receiver_name']}")
-            else:
-                print("Flask-Mail extension not initialized!")
+                """
                 
-        except Exception as e:
-            print(f"Failed to send receipt email to {recipient_email}: {e}")
-            raise
-
+                # Create message
+                msg = Message(
+                    subject=subject, 
+                    recipients=[recipient_email],
+                    body=text,
+                    html=html
+                )
+                
+                # Attach PDF
+                try:
+                    with open(pdf_path_abs, 'rb') as pdf_file:
+                        msg.attach(
+                            filename=f"Receipt_{receipt_data['receipt_no']}.pdf",
+                            content_type='application/pdf',
+                            data=pdf_file.read()
+                        )
+                    print(f"✅ PDF attached successfully")
+                except Exception as e:
+                    print(f"❌ Failed to attach PDF: {e}")
+                    return False
+                
+                # Send email
+                mail.send(msg)
+                print(f"✅ Email sent successfully to: {recipient_email}")
+                return True
+                
+            except Exception as e:
+                print(f"❌ Failed to send receipt email to {recipient_email}: {e}")
+                import traceback
+                print(f"📋 Full error traceback: {traceback.format_exc()}")
+                return False
+    
+    # Start the email sending in a background thread
+    try:
+        email_thread = threading.Thread(target=send_email)
+        email_thread.daemon = True
+        email_thread.start()
+        return True
+    except Exception as e:
+        print(f"❌ Failed to start email thread: {e}")
+        return False
+    
 def log_email(team_id, action, recipient_email, success=True, error=None):
     """Log email sending attempts"""
     try:
@@ -3917,11 +4021,9 @@ def check_existing_receipt():
         print(f"Error checking existing receipt: {str(e)}")
         return jsonify({'success': False, 'message': 'Server error'}), 500
     
-
 @app.route('/admin/generate_receipt', methods=['GET', 'POST'])
 def generate_receipt():
     print("Form data received:", request.form)
-    print("Files received:", request.files)
     
     form = ReceiptForm()
 
@@ -3958,23 +4060,52 @@ def generate_receipt():
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
 
-            # Generate PDF in receiver-specific folder
-            pdf_path = create_receipt_pdf(receipt_data)
+            print(f"📋 Generating PDF with data: {receipt_data}")
 
-            # Store the relative path in the database, not just filename
+            # Generate PDF
+            pdf_path = create_receipt_pdf(receipt_data)
+            
+            # FIXED: Better PDF existence check
+            if not pdf_path:
+                flash('Failed to create PDF receipt. Please try again.', 'error')
+                return redirect(url_for('generate_receipt'))
+            
+            # Convert relative path to absolute path for existence check
+            absolute_pdf_path = os.path.join(app.root_path, pdf_path)
+            
+            if not os.path.exists(absolute_pdf_path):
+                print(f"❌ PDF file not found at: {absolute_pdf_path}")
+                # Try to find the PDF in the expected location
+                receiver_name = form.receiver_name.data.replace(' ', '_')
+                expected_filename = f"receipt_{receipt_no}.pdf"
+                expected_path = os.path.join(app.root_path, 'static', 'receipts', receiver_name, expected_filename)
+                
+                if os.path.exists(expected_path):
+                    print(f"✅ Found PDF at expected location: {expected_path}")
+                    pdf_path = f"static/receipts/{receiver_name}/{expected_filename}"
+                else:
+                    flash('PDF receipt was created but cannot be located. Please check the receipts folder.', 'warning')
+                    # Continue anyway since the PDF was created
+
+            print(f"✅ PDF generated at: {pdf_path}")
+
+            # Store the relative path in the database
             receipt_filename = os.path.basename(pdf_path)
             receiver_name = form.receiver_name.data.replace(' ', '_')
             relative_path = f"static/receipts/{receiver_name}/{receipt_filename}"
 
             # Update individual data with the correct path
-            # Find and update the individual in the database
-            with open(DATABASE_FILE, 'r') as f:
+            with open(DATABASE_FILE, 'r+') as f:
                 db_data = json.load(f)
                 
             updated = False
             for individual in db_data.get('individuals', []):
                 if individual.get('roll_number') == roll_number:
                     individual['cash_receipt_photo'] = relative_path
+                    individual['receipt_number'] = receipt_no
+                    individual['cash_receiver_name'] = form.receiver_name.data
+                    individual['payment_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    individual['payment_method'] = 'cash'  # Ensure payment method is set
                     updated = True
                     break
             
@@ -3982,22 +4113,62 @@ def generate_receipt():
             if updated:
                 with open(DATABASE_FILE, 'w') as f:
                     json.dump(db_data, f, indent=4)
-            
-            if not os.path.exists(pdf_path):
-                raise Exception("Failed to create PDF file")
-            
+                print(f"✅ Database updated for roll number: {roll_number}")
+            else:
+                print(f"⚠️ No individual found with roll number: {roll_number}")
+                # Create a new individual entry if not found
+                individual_data = {
+                    'individual_id': f"IND_{len(db_data.get('individuals', [])) + 1:04d}",
+                    'roll_number': roll_number,
+                    'name': form.viewer_name.data,
+                    'email': form.viewer_email.data,
+                    'contact_number': form.contact_number.data,
+                    'year': form.year.data,
+                    'branch': 'Unknown',  # You might want to get this from verification
+                    'college': 'Sphoorthy Engineering College',
+                    'registration_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    'payment_method': 'cash',
+                    'payment_verified': False,
+                    'cash_receipt_photo': relative_path,
+                    'receipt_number': receipt_no,
+                    'cash_receiver_name': form.receiver_name.data,
+                    'payment_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    'registration_fee': int(form.amount.data)
+                }
+                
+                if 'individuals' not in db_data:
+                    db_data['individuals'] = []
+                db_data['individuals'].append(individual_data)
+                
+                with open(DATABASE_FILE, 'w') as f:
+                    json.dump(db_data, f, indent=4)
+                print(f"✅ Created new individual entry for: {roll_number}")
+
             # Send email
-            send_receipt_email(receipt_data['viewer_email'], receipt_data, pdf_path)
+            try:
+                # Get absolute path for email attachment
+                email_pdf_path = os.path.join(app.root_path, pdf_path)
+                if os.path.exists(email_pdf_path):
+                    email_sent = send_receipt_email(receipt_data['viewer_email'], receipt_data, email_pdf_path)
+                    if email_sent:
+                        flash('Receipt generated and email sent successfully!', 'success')
+                    else:
+                        flash('Receipt generated but email failed to send. Please check email configuration.', 'warning')
+                else:
+                    flash('Receipt generated but could not attach to email (file not found).', 'warning')
+            except Exception as e:
+                print(f"❌ Email sending error: {e}")
+                flash('Receipt generated but email sending failed.', 'warning')
             
             # Log receipt generation
             log_receipt_generation(receipt_data)
             
-            flash('Receipt generated and sent successfully!', 'success')
             return redirect(url_for('generate_receipt'))
             
         except Exception as e:
-            app.logger.error(f"Error generating receipt: {str(e)}", exc_info=True)
+            app.logger.error(f"❌ Error generating receipt: {str(e)}", exc_info=True)
             flash(f'Error generating receipt: {str(e)}', 'error')
+            return redirect(url_for('generate_receipt'))
 
     elif request.method == 'POST' and not form.validate():
         # Form validation failed
@@ -4008,6 +4179,355 @@ def generate_receipt():
         flash('; '.join(error_messages), 'error')
 
     return render_template('generate_receipt.html', form=form)
+
+
+def create_receipt_pdf(data):
+    """Generate a professional PDF receipt with clean styling and save in receiver-specific folder."""
+    try:
+        # Create receiver-specific folder path
+        receiver_name = data['receiver_name'].replace(' ', '_')
+        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+        receiver_dir = os.path.join(receipts_base_dir, receiver_name)
+        
+        # Ensure directories exist
+        os.makedirs(receiver_dir, exist_ok=True)
+
+        # Create safe filename - use consistent naming
+        filename = f"receipt_{data['receipt_no']}.pdf"
+        pdf_path = os.path.join(receiver_dir, filename)
+
+        # Create PDF document with smaller margins
+        doc = SimpleDocTemplate(pdf_path, pagesize=letter,
+                              rightMargin=36, leftMargin=36,
+                              topMargin=36, bottomMargin=36)
+        
+        # Get default styles
+        styles = getSampleStyleSheet()
+        
+        # Custom styles
+        styles.add(ParagraphStyle(name='ReceiptTitle', 
+                                fontSize=16, 
+                                leading=18,
+                                alignment=TA_CENTER,
+                                spaceAfter=12,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='ReceiptHeader', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=6))
+        
+        styles.add(ParagraphStyle(name='ReceiptBold', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=6,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='SectionHeader', 
+                                fontSize=12, 
+                                leading=14,
+                                alignment=TA_LEFT,
+                                spaceAfter=8,
+                                fontName='Helvetica-Bold',
+                                textColor=colors.HexColor('#333333')))
+        
+        styles.add(ParagraphStyle(name='ItemLabel', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=2))
+        
+        styles.add(ParagraphStyle(name='ItemValue', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_RIGHT,
+                                spaceAfter=2))
+        
+        styles.add(ParagraphStyle(name='TotalLabel', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_LEFT,
+                                spaceAfter=2,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='TotalValue', 
+                                fontSize=10, 
+                                leading=12,
+                                alignment=TA_RIGHT,
+                                spaceAfter=2,
+                                fontName='Helvetica-Bold'))
+        
+        styles.add(ParagraphStyle(name='FooterText', 
+                                fontSize=8, 
+                                leading=10,
+                                alignment=TA_CENTER,
+                                spaceAfter=6,
+                                textColor=colors.HexColor('#666666')))
+        
+        styles.add(ParagraphStyle(name='DeveloperInfo', 
+                                fontSize=9, 
+                                leading=11,
+                                alignment=TA_CENTER,
+                                spaceAfter=4,
+                                fontName='Helvetica-Bold',
+                                textColor=colors.HexColor('#1e3c72')))
+        
+        styles.add(ParagraphStyle(name='EventTitle', 
+                                fontSize=14, 
+                                leading=16,
+                                alignment=TA_CENTER,
+                                spaceAfter=6,
+                                fontName='Helvetica-Bold',
+                                textColor=colors.HexColor('#1e3c72')))
+
+        # Story (content elements)
+        story = []
+        
+        # Title Section with Event Name
+        story.append(Paragraph("FRESHERS FIESTA 2025", styles['EventTitle']))
+        story.append(Paragraph("PAYMENT RECEIPT", styles['ReceiptTitle']))
+        story.append(Spacer(1, 8))
+        
+        # Receipt number and date
+        receipt_info = [
+            Paragraph(f"<b>Receipt Number:</b> {data['receipt_no']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Date & Time:</b> {data['timestamp']}", styles['ReceiptHeader'])
+        ]
+        story.extend(receipt_info)
+        story.append(Spacer(1, 12))
+        
+        # Horizontal line
+        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
+        story.append(Spacer(1, 12))
+        
+        # Billed By section
+        story.append(Paragraph("BILLED BY", styles['SectionHeader']))
+        billed_by = [
+            Paragraph("<b>Smart N Light Innovations</b>", styles['ReceiptBold']),
+            Paragraph("Organized by Creators Club", styles['ReceiptHeader']),
+            Paragraph("Freshers Fiesta 2025", styles['ReceiptHeader']),
+            Paragraph("Email: smartnlightinnovations@gmail.com", styles['ReceiptHeader']),
+            Paragraph("Phone: +91 9059160424 (24/7 Support)", styles['ReceiptHeader'])
+        ]
+        story.extend(billed_by)
+        story.append(Spacer(1, 12))
+        
+        # Horizontal line
+        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
+        story.append(Spacer(1, 12))
+        
+        # Payer Information
+        story.append(Paragraph("PAYER INFORMATION", styles['SectionHeader']))
+        payer_info = [
+            Paragraph(f"<b>Name:</b> {data['viewer_name']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Email:</b> {data['viewer_email']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Contact:</b> {data['contact_number']}", styles['ReceiptHeader']),
+            Paragraph(f"<b>Year:</b> {data['year']}", styles['ReceiptHeader'])
+        ]
+        story.extend(payer_info)
+        story.append(Spacer(1, 12))
+        
+        # Payment Details
+        story.append(Paragraph("PAYMENT DETAILS", styles['SectionHeader']))
+        
+        # Create payment table
+        payment_data = [
+            ["1.", "Event Registration Fee", f"₹ {data['amount']}.00"],
+            ["", "", ""],
+            ["", "<b>Total Amount</b>", f"<b>₹ {data['amount']}.00</b>"]
+        ]
+        
+        # Calculate column widths (10%, 60%, 30%)
+        col_widths = [doc.width*0.1, doc.width*0.6, doc.width*0.3]
+        
+        payment_table = Table(payment_data, colWidths=col_widths)
+        
+        # Style the table
+        payment_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+            ('LINEABOVE', (1, -1), (-1, -1), 1, colors.HexColor('#333333')),
+            ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#f8f9fa')),
+        ]))
+        
+        story.append(payment_table)
+        story.append(Spacer(1, 8))
+        
+        # Total in words
+        try:
+            amount_in_words = num2words(float(data['amount']), lang='en_IN').upper()
+            story.append(Paragraph(f"<b>Total (in words):</b> {amount_in_words} RUPEES ONLY", styles['ReceiptHeader']))
+        except:
+            story.append(Paragraph(f"<b>Total (in words):</b> {data['amount']} RUPEES ONLY", styles['ReceiptHeader']))
+        
+        story.append(Spacer(1, 12))
+        
+        # Payment method and receiver's signature
+        payment_method_data = [
+            ["", "Payment Method", "Cash"],
+            ["", "Received by", data['receiver_name']],
+            ["", "Date of Payment", data['timestamp'].split(' ')[0]]
+        ]
+        
+        payment_method_table = Table(payment_method_data, colWidths=col_widths)
+        payment_method_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'LEFT'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
+        ]))
+        
+        story.append(payment_method_table)
+        story.append(Spacer(1, 20))
+        
+        # Signature area
+        signature_data = [
+            ["", "Receiver's Signature", "Payer's Signature"],
+            ["", "___________________", "___________________"]
+        ]
+        
+        signature_table = Table(signature_data, colWidths=[doc.width*0.2, doc.width*0.4, doc.width*0.4])
+        signature_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (1, 0), (-1, 0), 'Helvetica-Bold'),
+        ]))
+        
+        story.append(signature_table)
+        story.append(Spacer(1, 25))
+        
+        # Thank you message
+        thank_you = Paragraph("<b>Thank you for your payment!</b>", styles['ReceiptBold'])
+        story.append(thank_you)
+        story.append(Spacer(1, 8))
+        
+        # Important notes
+        notes = [
+            "• This is an official receipt for payment received",
+            "• Please keep this receipt for your records",
+            "• Present this receipt if any clarification is required",
+            "• For event updates, check your registered email"
+        ]
+        
+        for note in notes:
+            story.append(Paragraph(note, styles['FooterText']))
+            story.append(Spacer(1, 3))
+        
+        story.append(Spacer(1, 15))
+        
+        # Developer information
+        story.append(HRFlowable(width="100%", thickness=0.5, lineCap='round', color=colors.HexColor('#CCCCCC')))
+        story.append(Spacer(1, 8))
+        
+        developer_info = [
+            Paragraph("🛠️ Developed by Smart N Light Innovations", styles['DeveloperInfo']),
+            Paragraph("24/7 Technical Support Available", styles['FooterText']),
+            Paragraph("Contact: +91 9059160424 | Email: smartnlightinnovations@gmail.com", styles['FooterText']),
+            Paragraph("Website: https://smartnlightinnovation.netlify.app", styles['FooterText'])
+        ]
+        
+        for info in developer_info:
+            story.append(info)
+            story.append(Spacer(1, 3))
+        
+        story.append(Spacer(1, 8))
+        story.append(HRFlowable(width="100%", thickness=0.5, lineCap='round', color=colors.HexColor('#CCCCCC')))
+        story.append(Spacer(1, 8))
+        
+        # Footer with event details
+        footer_data = [
+            ["Event:", "Freshers Fiesta 2025"],
+            ["Date:", "November 08, 2025"],
+            ["Location:", "SPHN GROUNDS"]
+        ]
+        
+        footer_table = Table(footer_data, colWidths=[doc.width*0.2, doc.width*0.8])
+        footer_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+            ('TOPPADDING', (0, 0), (-1, -1), 2),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#666666')),
+        ]))
+        
+        story.append(footer_table)
+        story.append(Spacer(1, 5))
+        
+        # Final copyright and generation info
+        footer_text = f"© {datetime.now().year} Smart N Light Innovations. All rights reserved. | Generated on: {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')}"
+        story.append(Paragraph(footer_text, styles['FooterText']))
+        
+        # Build the PDF
+        doc.build(story)
+
+        print(f"✅ Receipt PDF created successfully: {pdf_path}")
+        print(f"✅ File size: {os.path.getsize(pdf_path)} bytes")
+        print(f"✅ Receiver: {data['receiver_name']}")
+        print(f"✅ Amount: ₹{data['amount']}")
+        
+        # Return the relative path for database storage
+        relative_path = f"static/receipts/{receiver_name}/{filename}"
+        return relative_path
+
+    except Exception as e:
+        app.logger.error(f"❌ Error in create_receipt_pdf: {str(e)}")
+        import traceback
+        app.logger.error(f"❌ Traceback: {traceback.format_exc()}")
+        
+        # Create a simple error PDF as fallback
+        try:
+            error_receiver_dir = os.path.join(app.root_path, 'static', 'receipts', 'errors')
+            os.makedirs(error_receiver_dir, exist_ok=True)
+            
+            error_pdf_path = os.path.join(error_receiver_dir, f"error_receipt_{data['receipt_no']}.pdf")
+            c = canvas.Canvas(error_pdf_path)
+            
+            # Add basic receipt information even in error case
+            c.setFont("Helvetica-Bold", 16)
+            c.drawString(100, 750, "PAYMENT RECEIPT (ERROR VERSION)")
+            
+            c.setFont("Helvetica", 10)
+            c.drawString(100, 720, f"Receipt No: {data['receipt_no']}")
+            c.drawString(100, 700, f"Date: {data['timestamp']}")
+            c.drawString(100, 680, f"Payer: {data['viewer_name']}")
+            c.drawString(100, 660, f"Amount: ₹{data['amount']}")
+            c.drawString(100, 640, f"Received by: {data['receiver_name']}")
+            
+            c.setFont("Helvetica", 8)
+            c.drawString(100, 620, "Note: This is a simplified receipt due to PDF generation error.")
+            c.drawString(100, 610, "Original receipt generation failed. Please contact support.")
+            
+            c.drawString(100, 590, f"Error: {str(e)}")
+            c.drawString(100, 580, "Please contact: +91 9059160424 for assistance")
+            
+            c.save()
+            
+            print(f"⚠️ Created error fallback PDF: {error_pdf_path}")
+            return f"static/receipts/errors/error_receipt_{data['receipt_no']}.pdf"
+            
+        except Exception as fallback_error:
+            app.logger.error(f"❌ Even fallback PDF creation failed: {fallback_error}")
+            return None
+        
 
 @app.route('/debug-receipts')
 def debug_receipts():
@@ -4693,220 +5213,71 @@ def success():
                          qr_img=qr_img_base64,
                          ticket_image_data=ticket_image_data)
 
-def create_receipt_pdf(data):
-    """Generate a professional PDF receipt with clean styling and save in receiver-specific folder."""
+
+# Fix the view_document endpoint
+@app.route('/view_document/<filename>')
+def view_document(filename):
+    """Serve document files with proper MIME types"""
+    if not session.get('admin_logged_in') and not session.get('receipt_logged_in'):
+        return "Unauthorized", 401
+    
     try:
-        # Create receiver-specific folder path
-        receiver_name = data['receiver_name'].replace(' ', '_')
-        receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
-        receiver_dir = os.path.join(receipts_base_dir, receiver_name)
+        # Security check
+        filename = secure_filename(filename)
+        if not filename:
+            return "Invalid filename", 400
         
-        # Ensure directories exist
-        os.makedirs(receiver_dir, exist_ok=True)
-
-        # Create safe filename - use consistent naming
-        filename = f"receipt_{data['receipt_no']}.pdf"
-        pdf_path = os.path.join(receiver_dir, filename)
-
-        # Create PDF document with smaller margins
-        doc = SimpleDocTemplate(pdf_path, pagesize=letter,
-                              rightMargin=36, leftMargin=36,
-                              topMargin=36, bottomMargin=36)
-        # Get default styles
-        styles = getSampleStyleSheet()
+        # Remove any path prefixes to get just the filename
+        clean_filename = os.path.basename(filename)
         
-        # Custom styles
-        styles.add(ParagraphStyle(name='ReceiptTitle', 
-                                fontSize=16, 
-                                leading=18,
-                                alignment=TA_CENTER,
-                                spaceAfter=12,
-                                fontName='Helvetica-Bold'))
+        # First, check in uploads folder (for payment screenshots)
+        uploads_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], clean_filename)
         
-        styles.add(ParagraphStyle(name='ReceiptHeader', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=6))
+        # Second, check in receipts folder (for generated receipts)
+        receipts_path = os.path.join(app.root_path, 'static', 'receipts', clean_filename)
         
-        styles.add(ParagraphStyle(name='ReceiptBold', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=6,
-                                fontName='Helvetica-Bold'))
+        # Third, check if it's a receiver-specific receipt
+        file_path = None
+        if os.path.exists(uploads_path):
+            file_path = uploads_path
+        elif os.path.exists(receipts_path):
+            file_path = receipts_path
+        else:
+            # Check in receiver-specific subfolders
+            receipts_base_dir = os.path.join(app.root_path, 'static', 'receipts')
+            if os.path.exists(receipts_base_dir):
+                for receiver_folder in os.listdir(receipts_base_dir):
+                    receiver_path = os.path.join(receipts_base_dir, receiver_folder, clean_filename)
+                    if os.path.exists(receiver_path):
+                        file_path = receiver_path
+                        break
         
-        styles.add(ParagraphStyle(name='SectionHeader', 
-                                fontSize=12, 
-                                leading=14,
-                                alignment=TA_LEFT,
-                                spaceAfter=8,
-                                fontName='Helvetica-Bold',
-                                textColor=colors.HexColor('#333333')))
+        if not file_path:
+            return "File not found", 404
         
-        styles.add(ParagraphStyle(name='ItemLabel', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=2))
+        # Determine MIME type
+        file_extension = clean_filename.lower().split('.')[-1]
+        mime_types = {
+            'png': 'image/png',
+            'jpg': 'image/jpeg', 
+            'jpeg': 'image/jpeg',
+            'gif': 'image/gif',
+            'pdf': 'application/pdf'
+        }
         
-        styles.add(ParagraphStyle(name='ItemValue', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_RIGHT,
-                                spaceAfter=2))
+        mimetype = mime_types.get(file_extension, 'application/octet-stream')
         
-        styles.add(ParagraphStyle(name='TotalLabel', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_LEFT,
-                                spaceAfter=2,
-                                fontName='Helvetica-Bold'))
-        
-        styles.add(ParagraphStyle(name='TotalValue', 
-                                fontSize=10, 
-                                leading=12,
-                                alignment=TA_RIGHT,
-                                spaceAfter=2,
-                                fontName='Helvetica-Bold'))
-        
-        styles.add(ParagraphStyle(name='FooterText', 
-                                fontSize=8, 
-                                leading=10,
-                                alignment=TA_CENTER,
-                                spaceAfter=6,
-                                textColor=colors.HexColor('#666666')))
-        
-        # Story (content elements)
-        story = []
-        
-        # Title
-        story.append(Paragraph("PAYMENT RECEIPT", styles['ReceiptTitle']))
-        
-        # Receipt number and date
-        receipt_info = [
-            Paragraph(f"<b>Receipt Number #</b> {data['receipt_no']}", styles['ReceiptHeader']),
-            Paragraph(f"<b>Date:</b> {data['timestamp']}", styles['ReceiptHeader'])
-        ]
-        story.extend(receipt_info)
-        story.append(Spacer(1, 12))
-        
-        # Horizontal line
-        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
-        story.append(Spacer(1, 12))
-        
-        # Billed By section
-        story.append(Paragraph("BILLED BY", styles['SectionHeader']))
-        billed_by = [
-            Paragraph("<b>SmartnLight Innovations</b>", styles['ReceiptBold']),
-            Paragraph("Freshers Fiesta 2025", styles['ReceiptHeader']),
-            Paragraph("Email: smartnlightinnovations@gmail.com", styles['ReceiptHeader']),
-            Paragraph("Phone: +91 9059160424", styles['ReceiptHeader'])
-        ]
-        story.extend(billed_by)
-        story.append(Spacer(1, 12))
-        
-        # Horizontal line
-        story.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#CCCCCC')))
-        story.append(Spacer(1, 12))
-        
-        # Payer Information
-        story.append(Paragraph("PAYER INFORMATION", styles['SectionHeader']))
-        payer_info = [
-            Paragraph(f"<b>Name:</b> {data['viewer_name']}", styles['ReceiptHeader']),
-            Paragraph(f"<b>Email:</b> {data['viewer_email']}", styles['ReceiptHeader']),
-            Paragraph(f"<b>Contact:</b> {data['contact_number']}", styles['ReceiptHeader'])
-        ]
-        story.extend(payer_info)
-        story.append(Spacer(1, 12))
-        
-        # Payment Details
-        story.append(Paragraph("PAYMENT DETAILS", styles['SectionHeader']))
-        
-        # Create payment table
-        payment_data = [
-            ["1.", "Event Registration Fee", f"Rs. {data['amount']}.00"],
-            ["", "Total", f"Rs. {data['amount']}.00"]
-        ]
-        
-        # Calculate column widths (10%, 60%, 30%)
-        col_widths = [doc.width*0.1, doc.width*0.6, doc.width*0.3]
-        
-        payment_table = Table(payment_data, colWidths=col_widths)
-        
-        # Style the table
-        payment_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-            ('TOPPADDING', (0, 0), (-1, -1), 4),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
-            ('LINEABOVE', (1, -1), (-1, -1), 1, colors.HexColor('#333333')),
-            ('FONTNAME', (1, -1), (-1, -1), 'Helvetica-Bold'),
-        ]))
-        
-        story.append(payment_table)
-        story.append(Spacer(1, 8))
-        
-        # Total in words
-        amount_in_words = num2words(float(data['amount']), lang='en_IN').upper()
-        story.append(Paragraph(f"<b>Total (in words):</b> {amount_in_words} RUPEES ONLY", styles['ReceiptHeader']))
-        story.append(Spacer(1, 12))
-        
-        # Tax information
-        tax_data = [
-            ["", "Amount", f"Rs. {data['amount']}.00"],
-            ["", "CGST", "Rs. 0.00"],
-            ["", "SGST", "Rs. 0.00"]
-        ]
-        
-        tax_table = Table(tax_data, colWidths=col_widths)
-        tax_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-            ('TOPPADDING', (0, 0), (-1, -1), 4),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('ALIGN', (0, 0), (1, -1), 'LEFT'),
-            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
-        ]))
-        
-        story.append(tax_table)
-        story.append(Spacer(1, 12))
-        
-        # Payment method and receiver's name
-        payment_method = [
-            Paragraph("<b>Payment Method:</b> Cash", styles['ReceiptHeader']),
-            Paragraph(f"<b>Received by:</b> {data['receiver_name']}", styles['ReceiptHeader']),
-            Paragraph("<b>Date of Payment:</b> " + data['timestamp'], styles['ReceiptHeader'])
-        ]
-        story.extend(payment_method)
-        story.append(Spacer(1, 20))
-        
-        # Thank you message
-        story.append(Paragraph("Thank you for your payment!", styles['ReceiptBold']))
-        story.append(Spacer(1, 8))
-        
-        # Footer contact
-        footer_contact = Paragraph("For any queries, email at <b>smartnlightinnovations@gmail.com</b>, call on <b>+91 9059160424</b>", 
-                                 styles['FooterText'])
-        story.append(footer_contact)
-        
-        # Build the PDF
-        doc.build(story)
-
-        print(f"✅ Receipt saved to: {pdf_path}")
-        
-        # Return the relative path for database storage
-        relative_path = f"static/receipts/{receiver_name}/{filename}"
-        return relative_path
-
+        # For PDFs, we want to display in browser, not download
+        if file_extension == 'pdf':
+            response = send_file(file_path, mimetype=mimetype)
+            response.headers['Content-Disposition'] = f'inline; filename="{clean_filename}"'
+            return response
+        else:
+            return send_file(file_path, mimetype=mimetype)
+    
     except Exception as e:
-        app.logger.error(f"Error in create_receipt_pdf: {str(e)}")
-        raise
+        print(f"Error in view_document: {str(e)}")
+        return f"Server error: {str(e)}", 500
 
 
 @app.route('/payment', methods=['GET', 'POST'])
@@ -5141,6 +5512,20 @@ def payment():
                          registration_fee=registration_fee)
 
 
+# Also update the allowed_file function to separate image and PDF validation
+def allowed_file(filename, file_type='image'):
+    """Check if file extension is allowed based on file type"""
+    if file_type == 'image':
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    elif file_type == 'pdf':
+        ALLOWED_EXTENSIONS = {'pdf'}
+    else:
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+    
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 def generate_ticket_image(individual_data, qr_img_base64):
     """Generate ticket image using HTML2Canvas via JavaScript"""
     # This function will be called by the template to generate the image
@@ -5329,6 +5714,100 @@ def generate_ticket_image_for_email(individual_data, qr_img_base64):
         print(f"❌ Error generating ticket image: {e}")
         return None
 
+
+@app.route('/api/check-payment-status/<individual_id>')
+def check_payment_status(individual_id):
+    """API to check payment status for an individual"""
+    try:
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            individual = next((ind for ind in data.get('individuals', []) 
+                             if ind['individual_id'] == individual_id), None)
+            
+            if not individual:
+                return jsonify({'success': False, 'message': 'Individual not found'}), 404
+            
+            payment_status = {
+                'registered': True,
+                'payment_method': individual.get('payment_method'),
+                'payment_verified': individual.get('payment_verified', False),
+                'payment_date': individual.get('payment_date'),
+                'has_incomplete_payment': individual.get('payment_method') is None and not individual.get('payment_verified'),
+                'is_pending_verification': individual.get('payment_method') is not None and not individual.get('payment_verified'),
+                'is_completed': individual.get('payment_verified', False)
+            }
+            
+            return jsonify({
+                'success': True,
+                'payment_status': payment_status,
+                'individual': {
+                    'name': individual.get('name'),
+                    'email': individual.get('email'),
+                    'individual_id': individual.get('individual_id'),
+                    'roll_number': individual.get('roll_number'),
+                    'year': individual.get('year'),
+                    'branch': individual.get('branch')
+                }
+            })
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/check-payment-status-by-roll/<roll_number>')
+def check_payment_status_by_roll(roll_number):
+    """API to check payment status by roll number"""
+    try:
+        roll_number = roll_number.upper().strip()
+        with open(DATABASE_FILE, 'r') as f:
+            data = json.load(f)
+            individual = next((ind for ind in data.get('individuals', []) 
+                             if ind.get('roll_number') == roll_number), None)
+            
+            if not individual:
+                return jsonify({'success': False, 'message': 'No registration found for this roll number'}), 404
+            
+            payment_status = {
+                'registered': True,
+                'payment_method': individual.get('payment_method'),
+                'payment_verified': individual.get('payment_verified', False),
+                'payment_date': individual.get('payment_date'),
+                'has_incomplete_payment': individual.get('payment_method') is None and not individual.get('payment_verified'),
+                'is_pending_verification': individual.get('payment_method') is not None and not individual.get('payment_verified'),
+                'is_completed': individual.get('payment_verified', False),
+                'registration_date': individual.get('registration_date')
+            }
+            
+            return jsonify({
+                'success': True,
+                'payment_status': payment_status,
+                'individual': {
+                    'name': individual.get('name'),
+                    'email': individual.get('email'),
+                    'individual_id': individual.get('individual_id'),
+                    'roll_number': individual.get('roll_number'),
+                    'year': individual.get('year'),
+                    'branch': individual.get('branch'),
+                    'college': individual.get('college'),
+                    'contact_number': individual.get('contact_number')
+                },
+                'message': get_payment_status_message(payment_status)
+            })
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+def get_payment_status_message(payment_status):
+    """Helper function to generate user-friendly payment status messages"""
+    if payment_status['is_completed']:
+        return "Your payment has been verified and registration is complete!"
+    elif payment_status['is_pending_verification']:
+        return "Your payment is submitted and pending admin verification."
+    elif payment_status['has_incomplete_payment']:
+        return "You have an incomplete payment. Please complete your payment to finalize registration."
+    else:
+        return "Registration status unknown."
+    
 def send_thank_you_email_individual(recipient_email, individual_data, qr_img_base64, ticket_image_path=None):
     """Send thank you email to individual with QR code and ticket image attachment"""
     def send_email():

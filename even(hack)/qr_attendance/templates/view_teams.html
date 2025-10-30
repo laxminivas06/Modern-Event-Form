@@ -810,12 +810,7 @@
                         <span>View Users</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('receipt_login') }}">
-                        <i class="fas fa-receipt"></i>
-                        <span>Receipt Management</span>
-                    </a>
-                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('message_center') }}">
                         <i class="fas fa-envelope"></i>
@@ -882,17 +877,44 @@
 </button>
                 
  
- <button class="nav-button payment-btn" onclick="window.location.href='{{ url_for('view_pdf_receipts') }}'">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span>Cash Receipts</span>
-                </button>
 
-                <button class="nav-button payment-btn" onclick="window.location.href='{{ url_for('view_payment_screenshots') }}'">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span>Payment Screenshots</span>
-                </button>
             </div>
-            <br>
+            
+         
+    <button 
+        onclick="window.location.href='{{ url_for('view_pdf_receipts') }}'" 
+        style="
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(135deg, #007bff, #00c3ff);
+            color: white; border: none; border-radius: 50px;
+            padding: 10px 20px; font-size: 15px; font-weight: 500;
+            cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        "
+        onmouseover="this.style.background='linear-gradient(135deg, #0056d6, #00a8e8)'; this.style.transform='translateY(-2px)';"
+        onmouseout="this.style.background='linear-gradient(135deg, #007bff, #00c3ff)'; this.style.transform='none';"
+    >
+        <i class="fas fa-file-invoice-dollar" style="font-size: 18px;"></i>
+        <span>Cash Receipts</span>
+    </button>
+<br>
+    <button 
+        onclick="window.location.href='{{ url_for('view_payment_screenshots') }}'" 
+        style="
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(135deg, #007bff, #00c3ff);
+            color: white; border: none; border-radius: 50px;
+            padding: 10px 20px; font-size: 15px; font-weight: 500;
+            cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        "
+        onmouseover="this.style.background='linear-gradient(135deg, #0056d6, #00a8e8)'; this.style.transform='translateY(-2px)';"
+        onmouseout="this.style.background='linear-gradient(135deg, #007bff, #00c3ff)'; this.style.transform='none';"
+    >
+        <i class="fas fa-file-invoice-dollar" style="font-size: 18px;"></i>
+        <span>Payment Screenshots</span>
+    </button>
+</div>
 
             <!-- Header Stats -->
             <div class="card">

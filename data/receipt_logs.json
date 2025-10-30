@@ -1,3 +1,10 @@
 [
-    
+    {
+        "receipt_no": "RC-00010",
+        "receiver_name": "Sathish (Civil) 24N81A0104",
+        "payer_name": "MANI",
+        "amount": "600",
+        "timestamp": "2025-10-29 15:32:19",
+        "generated_by": "unknown"
+    }
 ]

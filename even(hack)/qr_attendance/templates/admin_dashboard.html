@@ -570,10 +570,26 @@ h1, h2, h3, h4, h5, h6 {
                         <div class="card-icon">
                             <i class="fas fa-building pulse"></i>
                         </div>
-                        <h5 class="card-title">Administration</h5>
-                        <p class="card-text">Only Access to the administration team</p>
+                        <h5 class="card-title">Receipt Login</h5>
+                        <p class="card-text">Only Sub team coordinators are allowed</p>
                         <a href="{{ url_for('receipt_login') }}" class="btn btn-primary btn-dashboard">
-                            <i class="fas fa-building me-1"></i> View Administration
+                            <i class="fas fa-building me-1"></i> View Receipts
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Receipt Management Card -->
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp animate-delay-3">
+                <div class="card dashboard-card h-100">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-user-shield me-2"></i>
+                        </div>
+                        <h5 class="card-title">Teams</h5>
+                        <p class="card-text">Only Access to the administration team</p>
+                        <a href="{{ url_for('teams_login') }}" class="btn btn-primary btn-dashboard">
+                            <i class="fas fa-user-shield me-2"></i> View Administration
                         </a>
                     </div>
                 </div>
